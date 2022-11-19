@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import UserList from './UserLists'
 
 import users from '../data/users'
 
@@ -18,6 +19,7 @@ export default function FormDialog(props) {
 
     const [name, setName] = useState('')
     const [openUsers, setOpenUsers] = useState(false)
+    const [searchResult, setSearchResult] = useState([])
     const dispatch = useDispatch()
 
     const searchUser = async () => {
@@ -26,6 +28,7 @@ export default function FormDialog(props) {
             let res = await users.searchUser(name)
             checkRes(res)
             checkResult(verifyObj(res.data, 'user'))
+            setSearchResult([...res.data])
             setOpenUsers(true)
         } catch (e) {
             dispatch(setError({
@@ -55,18 +58,9 @@ export default function FormDialog(props) {
                 <Button onClick={searchUser}>Go</Button>
             </DialogActions>
             <Dialog open={openUsers} onClose={() => {setOpenUsers(false)}}>
-                <DialogTitle>Search</DialogTitle>
+                <DialogTitle>Search Result</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Name"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                        onChange={(e) => setName(e.target.value)}
-                    />
+                    <UserList users={searchResult}/>
                 </DialogContent>
             </Dialog>
         </Dialog>
