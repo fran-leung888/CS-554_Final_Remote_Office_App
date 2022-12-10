@@ -25,7 +25,7 @@ const style = {
   p: 4,
 };
 
-function App() {
+function App({ socket }) {
   // const status = useSelector((state) => state.error.status)
   // const description = useSelector((state) => state.error.description)
   const error = useSelector((state) => state.error);
@@ -52,7 +52,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/search" element={<UserDetail />} />
+          <Route path="/search" element={<UserDetail socket={socket} />} />
         </Routes>
       </Router>
     </div>

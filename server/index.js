@@ -46,8 +46,26 @@ app.use((err, req, res, next) => {
   }
 });
 
+global.onlineUsers = new Map();
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  global.chatSocket = socket;
+  socket.on("addUser", (userId) => {
+    console.log(`addUser: ${userId}`);
+    console.log(`socket.id:${socket.id}`);
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("addFriend", (data) => {
+    const sendToUser = onlineUsers.get(data.id);
+    console.log(`sendToUser: ${sendToUser}`);
+    if (sendToUser) {
+      console.log(data);
+      socket.emit("addFriendResponse", data);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
