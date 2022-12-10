@@ -29,10 +29,13 @@ const getUser = async (id) => {
   return response;
 };
 const addFriend = async (friendId) => {
+  console.log("Add friend");
   let response = await axios.post("/add", {
     // curId,
     friendId,
   });
+  console.log(`response:`);
+  console.log(response);
   return response;
 };
 

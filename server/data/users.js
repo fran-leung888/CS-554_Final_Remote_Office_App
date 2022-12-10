@@ -59,7 +59,8 @@ module.exports = {
       // console.log(typeof friendId);
       const curUser = await this.getUser(curId);
       const otherUser = await this.getUser(friendId);
-      console.log(otherUser);
+      console.log(`curUser:${curUser}`);
+      console.log(`otherUser: ${otherUser}`);
 
       // console.log(`curUser.friends.length:${curUser.friends.length}`);
       // if (curUser.friends.length) {
@@ -89,8 +90,25 @@ module.exports = {
           },
         }
       );
+      console.log(`updatedInfo:${updatedInfo}`);
       const newUser = await this.getUser(curId);
-      console.log(newUser.friends);
+      console.log(`newUser.friends:${newUser.friends}`);
+
+      await usersCollection.update(
+        { _id: ObjectId(friendId) },
+        {
+          $push: {
+            friends: {
+              _id: curId,
+              name: curUser.name,
+              username: curUser.username,
+              friends: curUser.friends,
+            },
+          },
+        }
+      );
+      console.log(`otherUser update:`);
+      console.log(await this.getUser(friendId));
       return newUser;
     } catch (e) {
       throw Error(e.message);
@@ -111,6 +129,15 @@ module.exports = {
 
       const newUser = await this.getUser(curId);
       console.log(newUser);
+
+      //  In the same time, also delete the cur user from the friend database
+      await usersCollection.update(
+        { _id: ObjectId(friendId) },
+        { $pull: { friends: { _id: ObjectId(curId) } } },
+        { multi: true }
+      );
+      console.log("after delete the cur user from friend database");
+      console.log(await this.getUser(friendId));
       return newUser;
     } catch (e) {
       throw Error(e.message);
