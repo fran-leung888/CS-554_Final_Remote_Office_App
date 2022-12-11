@@ -3,12 +3,16 @@ import { useSelector } from "react-redux";
 import { Button } from "@mui/material";
 import users from "../data/users";
 import { io } from "socket.io-client";
+import Card from "react-bootstrap/Card";
 
 const UserDetail = ({ socket }) => {
   console.log(`socket: ${socket}`);
   const [showAdd, setShowAdd] = useState(true);
   const [addSuccess, setAddSuccess] = useState(false);
+  const [reject, setReject] = useState(false);
+  const [rejectData, setRejectData] = useState(undefined);
   const [isFriend, setIsFriend] = useState(false);
+
   const curUser = useSelector((state) => state.user);
   console.log(`curUser: ${JSON.stringify(curUser)}`);
 
@@ -28,6 +32,8 @@ const UserDetail = ({ socket }) => {
       let temp = false;
       console.log(curUser.friends);
       for (let i = 0; i < curUser.friends.length; i++) {
+        console.log(`curUser.friends[i]._id: ${curUser.friends[i]._id}`);
+        console.log(`searchUser._id: ${searchUser._id}`);
         if (curUser.friends[i]._id === searchUser._id) {
           console.log("already have this friend");
           temp = true;
@@ -38,6 +44,8 @@ const UserDetail = ({ socket }) => {
     } else {
       setIsFriend(false);
     }
+
+    console.log(isFriend);
   }, []);
 
   if (!curUser.name) {
@@ -66,6 +74,17 @@ const UserDetail = ({ socket }) => {
       friendUsername: searchUser.username,
     });
 
+    // socket.on("agreeResponse", (data) => {
+    //   console.log(`Agree response: ${data}`);
+    //   if (data && data.applyId) {
+    //     setReject(!data.agree);
+    //     setRejectData(undefined);
+    //   } else {
+    //     setRejectData(data);
+    //     setReject(true);
+    //   }
+    // });
+
     // socket.on("addFriendResponse", (data) => {
     //   console.log(data.username);
     //   if (data.username) {
@@ -90,7 +109,8 @@ const UserDetail = ({ socket }) => {
     console.log("delete search user");
     console.log(searchUser._id);
     let deleteF = await users.deleteFriend(searchUser._id);
-    setShowAdd(true);
+    // setShowAdd(true);
+    setIsFriend(false);
     setAddSuccess(false);
 
     console.log(deleteF.data);
@@ -103,6 +123,16 @@ const UserDetail = ({ socket }) => {
       ) : (
         <Button onClick={addFriend}>Add</Button>
       )}
+
+      {/* {reject ? (
+        <Card className="text-center">
+          <Card.Body>
+            <Card.Text>{`${rejectData.friendUsername}reject your invite`}</Card.Text>
+          </Card.Body>
+        </Card>
+      ) : (
+        <div></div>
+      )} */}
     </div>
   );
 };

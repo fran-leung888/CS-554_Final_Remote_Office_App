@@ -4,7 +4,6 @@ import users from "../data/users";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "../data/redux/userSlice";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -52,10 +51,6 @@ const UserAdd = ({ socket }) => {
 
   const agree = async () => {
     let add = await users.addFriend(applyUser.applyId);
-    console.log(add);
-    if (add.data) {
-      dispatch(setUser(add.data));
-    }
 
     socket.emit("agree", {
       agree: true,
