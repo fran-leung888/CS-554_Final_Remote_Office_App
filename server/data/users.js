@@ -82,10 +82,9 @@ module.exports = {
         {
           $push: {
             friends: {
-              _id: otherUser._id,
+              _id: friendId,
               name: otherUser.name,
               username: otherUser.username,
-              friends: otherUser.friends,
             },
           },
         }
@@ -102,7 +101,6 @@ module.exports = {
               _id: curId,
               name: curUser.name,
               username: curUser.username,
-              friends: curUser.friends,
             },
           },
         }
@@ -120,20 +118,22 @@ module.exports = {
       const usersCollection = await users();
       // const curUser = await this.getUser(curId);
       // const otherUser = await this.getUser(friendId);
-      // console.log(otherUser);
+      console.log("delete before, the friendId:");
+      console.log(friendId);
       await usersCollection.update(
         { _id: ObjectId(curId) },
-        { $pull: { friends: { _id: ObjectId(friendId) } } },
+        { $pull: { friends: { _id: friendId } } },
         { multi: true }
       );
 
       const newUser = await this.getUser(curId);
+      console.log("after delete, the curUser data is:");
       console.log(newUser);
 
       //  In the same time, also delete the cur user from the friend database
       await usersCollection.update(
         { _id: ObjectId(friendId) },
-        { $pull: { friends: { _id: ObjectId(curId) } } },
+        { $pull: { friends: { _id: curId } } },
         { multi: true }
       );
       console.log("after delete the cur user from friend database");
