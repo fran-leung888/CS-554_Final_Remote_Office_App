@@ -99,6 +99,7 @@ router.post("/delete", async (req, res) => {
     }
 
     const updatedInfo = await users.deleteFriend(curId, req.body.friendId);
+    console.log("after delete, the curUser data is:");
     console.log(updatedInfo);
     res.send(new response(updatedInfo).success(res));
   } catch (e) {
