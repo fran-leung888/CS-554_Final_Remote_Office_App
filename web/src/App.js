@@ -3,6 +3,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./component/Home";
 import Login from "./component/Login";
+import UserAdd from "./component/UserAdd";
 // import SearchUser from "./component/SearchUser";
 import { Link, Routes, BrowserRouter as Router, Route } from "react-router-dom";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
@@ -51,8 +52,9 @@ function App({ socket }) {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Home socket={socket} />} />
           <Route path="/search" element={<UserDetail socket={socket} />} />
+          <Route path="/invite" element={<UserAdd socket={socket} />} />
         </Routes>
       </Router>
     </div>
