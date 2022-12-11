@@ -48,7 +48,6 @@ export default function FormDialog(props) {
                     margin="dense"
                     id="name"
                     label="Name"
-                    type="email"
                     fullWidth
                     variant="standard"
                     onChange={(e) => setName(e.target.value)}
