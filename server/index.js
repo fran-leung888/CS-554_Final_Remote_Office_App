@@ -46,27 +46,61 @@ app.use((err, req, res, next) => {
   }
 });
 
-global.onlineUsers = new Map();
+// global.onlineUsers = new Map();
+onlineName = [];
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  global.chatSocket = socket;
+  // global.chatSocket = socket;
   socket.on("addUser", (userId) => {
     console.log(`addUser: ${userId}`);
     console.log(`socket.id:${socket.id}`);
-    onlineUsers.set(userId, socket.id);
+    if (userId) onlineName.push({ socketId: socket.id, id: userId });
+    console.log(onlineName);
+    // onlineUsers.set(userId, socket.id);
   });
 
   socket.on("addFriend", (data) => {
-    const sendToUser = onlineUsers.get(data.id);
+    // console.log(`addFriend data: ${data}`);
+    // const sendToUser = onlineUsers.get(data.friendId);
+    let sendToUser = "";
+    for (let i = 0; i < onlineName.length; i++) {
+      if (onlineName[i].id === data.friendId)
+        sendToUser = onlineName[i].socketId;
+    }
+
     console.log(`sendToUser: ${sendToUser}`);
     if (sendToUser) {
+      console.log(`will emit addFriend response: `);
       console.log(data);
-      socket.emit("addFriendResponse", data);
+      console.log(sendToUser);
+      io.to(sendToUser).emit("addFriendResponse", data);
+    }
+  });
+
+  socket.on("agree", (data) => {
+    console.log(`agreeFriend:`);
+    console.log(data);
+    let sendToUser = "";
+    for (let i = 0; i < onlineName.length; i++) {
+      if (onlineName[i].id === data.applyId)
+        sendToUser = onlineName[i].socketId;
+    }
+    console.log(`sendToUser: ${sendToUser}`);
+    if (sendToUser) {
+      // const sendToUser = onlineUsers.get(data.applyId);
+      io.to(sendToUser).emit("agreeResponse", data);
     }
   });
 
   socket.on("disconnect", () => {
+    for (let i = 0; i < onlineName.length; i++) {
+      if (onlineName[i].socketId === socket.id) {
+        onlineName.splice(0, 1);
+      }
+    }
+    console.log(`disconnect onlineName`);
+    console.log(onlineName);
     console.log("user disconnected");
   });
 });
