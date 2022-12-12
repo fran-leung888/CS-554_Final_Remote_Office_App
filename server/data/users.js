@@ -32,12 +32,14 @@ module.exports = {
 
     let hash = await this.hashPassword(password);
     let friends = [];
+    let groups = [];
     // let hash = password
     let user = {
       name,
       username,
       password: hash,
       friends: friends,
+      groups: groups,
     };
 
     const userInfo = await usersCollection.insertOne(user);
@@ -52,7 +54,7 @@ module.exports = {
   async updateFriend(curId, friendId) {
     try {
       if (!curId || !friendId) {
-        throw Error("you must input the people id you want to add");
+        throw "you must input the people id you want to add";
       }
       const usersCollection = await users();
       // console.log(typeof curId);
@@ -174,6 +176,38 @@ module.exports = {
       return user;
     } else {
       throw "Please check username and password.";
+    }
+  },
+
+  async userUpdateGroup(curId, groupId, groupName, ifGrouper) {
+    console.log("in userUpdateGroup");
+    try {
+      if (!curId || !groupId || !groupName) {
+        throw "Please input curId or grouperId or grouperUsername";
+      }
+      const usersCollection = await users();
+      const updatedInfo = await usersCollection.update(
+        { _id: ObjectId(curId) },
+        {
+          $push: {
+            groups: {
+              groupId: groupId,
+              groupName: groupName,
+              ifGrouper: ifGrouper,
+            },
+          },
+        }
+      );
+
+      console.log(
+        `after create a group, the group information will update in user database`
+      );
+      console.log(JSON.stringify(updatedInfo));
+
+      const newUser = await this.getUser(curId);
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
     }
   },
 };
