@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { doSignOut } from "../firebase/FirebaseFunctions";
+import { Button } from "@mui/material";
+import { AuthContext } from './Auth';
 
 const SignOutButton = () => {
-    return (<button type="button" onClick={ doSignOut }>
-        Sign Out
-    </button>
-    );
+    const { currentUser } = useContext(AuthContext);
+    return currentUser ? (<Button onClick={ doSignOut }>
+        Sign Out {currentUser.displayName}
+    </Button>
+    ) : "";
 };
 
 export default SignOutButton;

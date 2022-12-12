@@ -1,3 +1,5 @@
+import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
+
 import React from "react";
 import{ Navigate } from 'react-router-dom';
 import { doSocialSignIn } from '../firebase/FirebaseFunctions';
@@ -13,8 +15,8 @@ const SocialSignIn = () => {
     };
     return (
         <div>
-        <img onClick={() => socialSignOn('google')} alt='google signin' src='/imgs/btn_google_signin.png'></img>
-        <img onClick={() => socialSignOn('facebook')} alt='facebook signin' src='/imgs/facebook_signin.png'></img>
+            <FacebookLoginButton onClick={() => socialSignOn('facebook')} />
+            <GoogleLoginButton onClick={() => socialSignOn('google')} />
         </div>
     );
     

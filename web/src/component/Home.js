@@ -5,6 +5,7 @@ import SideBar from "./SideBar";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import SignOutButton from "./SignOut";
 
 export default ({ socket }) => {
   const curUser = useSelector((state) => state.user);
@@ -32,13 +33,13 @@ export default ({ socket }) => {
         <SideBar></SideBar>
       </Grid>
       <Grid item xs={4}>
-        <SideBar></SideBar>
-      </Grid>
-      <Grid item xs={4}>
         <Button onClick={invite}>Invite</Button>
       </Grid>
       <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>
+      </Grid>
+      <Grid item xs={2}>
+        <SignOutButton />
       </Grid>
     </Grid>
   );
