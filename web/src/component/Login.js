@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { redirect, Link } from "react-router-dom";
 
 import users from '../data/users'
@@ -10,6 +10,9 @@ import { checkResult, verifyString, verifyObj, checkRes } from '../utils/verific
 
 import Box from '@mui/material/Box';
 import { TextField, Button, Stack } from '@mui/material';
+import { AuthContext } from './Auth';
+import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions';
+import SocialSignIn from './SocialSignIn';
 
 export default () => {
 
@@ -18,6 +21,7 @@ export default () => {
     const [username, setUsername] = useState('')
     const [name, setName] = useState('')
     const [passwd, setPasswd] = useState('')
+    const { currentUser } = useContext(AuthContext);
 
     const dispatch = useDispatch()
 
@@ -57,6 +61,10 @@ export default () => {
         } catch (e) {
             dispatch(setError({ status: true, description: e }))
         }
+    };
+
+    if (currentUser) {
+        return <Navigate to='/home' />;
     }
 
     return (
@@ -77,9 +85,12 @@ export default () => {
                 noValidate
                 autoComplete="off"
             >
+                
+                
                 {isSignUp && <TextField required label="Name" variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />}
                 <TextField required label="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
                 <TextField required label="password" variant="outlined" type="password" value={passwd} onChange={(e) => setPasswd(e.target.value)} />
+                
 
                 {!isSignUp ?
                     (<Stack sx={{ textAlign: 'center' }}>
@@ -94,6 +105,7 @@ export default () => {
                 }
 
             </Stack>
+            <SocialSignIn />
         </Box>
     )
 }
