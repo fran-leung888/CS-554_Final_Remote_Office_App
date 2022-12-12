@@ -30,8 +30,8 @@ const UserDetail = ({ socket }) => {
   // }, [curUser]);
 
   useEffect(() => {
-    console.log(curUser.friends.length);
-    if (curUser.friends.length) {
+    // console.log(curUser?.friends?.length);
+    if (curUser?.friends?.length) {
       let temp = false;
       console.log(curUser.friends);
       for (let i = 0; i < curUser.friends.length; i++) {

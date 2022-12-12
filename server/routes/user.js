@@ -26,8 +26,9 @@ router.post("/login", async (req, res) => {
     sessions.add(user._id.toString());
     store.set(store.SESSION_KEY, sessions);
     res.cookie(store.SESSION_KEY, user._id.toString());
+    console.log('Set session ', user._id.toString())
     res.send(new response(user).success(res));
-  } catch (e) {
+  } catch (e) { 
     res.send(new response(null, e).fail(res));
   }
 });
@@ -50,7 +51,7 @@ router.post("/add", async (req, res) => {
     return res.status(400).json({ message: "You cannot add yourself" });
   }
 
-  if (curUser.friends.length) {
+  if (curUser?.friends?.length) {
     for (let i = 0; i < curUser.friends.length; i++) {
       if (curUser.friends[i]._id.toString() === otherId) {
         return res
