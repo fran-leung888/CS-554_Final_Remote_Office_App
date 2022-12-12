@@ -81,7 +81,20 @@ router.post("/addToGroup", async (req, res) => {
     console.log("already add this member in group");
     console.log(newGroup);
 
-    res.send(new response(newGroup).success(res));
+    const curId = memberId;
+    const groupId = group._id.toString();
+    const ifGrouper = false;
+    const newUser = await users.userUpdateGroup(
+      curId,
+      groupId,
+      groupName,
+      ifGrouper
+    );
+
+    console.log("update the user database(add the group info)");
+    console.log(newUser);
+
+    res.send(new response(newUser).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));
   }
