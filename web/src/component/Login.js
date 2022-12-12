@@ -74,6 +74,8 @@ export default () => {
                 '& > :not(style)': { m: 1, width: '25ch' },
             }}
             noValidate
+            display="flex"
+            justifyContent="center"
             autoComplete="off"
         >
             <Stack
@@ -103,9 +105,8 @@ export default () => {
                         <Button variant="contained" onClick={handleSignUp}>Sign Up</Button>
                     )
                 }
-
+                <SocialSignIn />
             </Stack>
-            <SocialSignIn />
         </Box>
     )
 }
