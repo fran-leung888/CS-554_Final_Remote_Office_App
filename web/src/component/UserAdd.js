@@ -39,18 +39,19 @@ const UserAdd = ({ socket }) => {
   });
 
   socket.on("agreeResponse", (data) => {
+    setRejectData(data);
     console.log(`Agree response: ${data}`);
-    if (data && data.applyId) {
-      setReject(data.agree);
-      setRejectData(data);
+    if (data && data.applyId && data.applyId === curUser._id) {
+      setReject(!data.agree);
     } else {
-      setRejectData(undefined);
-      setReject(false);
+      setReject(true);
     }
   });
 
   const agree = async () => {
     let add = await users.addFriend(applyUser.applyId);
+    console.log("add friend:");
+    console.log(add);
 
     socket.emit("agree", {
       agree: true,
@@ -89,15 +90,14 @@ const UserAdd = ({ socket }) => {
   //       [curUser]
   //     );
 
-  //     socket.on("agreeResponse", (data) => {
-  //       setRejectData(data);
-  //       if (data && data.applyId && curUser._id === data.applyId) {
-  //         setReject(data.agree);
-  //       } else {
-  //         setRejectData(undefined);
-  //         setReject(false);
-  //       }
-  //     });
+  // socket.on("agreeResponse", (data) => {
+  //   setRejectData(data);
+  //   if (data && data.applyId && curUser._id === data.applyId) {
+  //     setReject(!data.agree);
+  //   } else {
+  //     setReject(true);
+  //   }
+  // });
   //   });
 
   return (
@@ -122,7 +122,7 @@ const UserAdd = ({ socket }) => {
       {reject ? (
         <Card className="text-center">
           <Card.Body>
-            <Card.Text>{`reject your invite`}</Card.Text>
+            <Card.Text>{`${rejectData.friendUsername} reject your invite`}</Card.Text>
           </Card.Body>
         </Card>
       ) : (

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import users from "../data/users";
-import { io } from "socket.io-client";
-import Card from "react-bootstrap/Card";
+// import { io } from "socket.io-client";
+// import Card from "react-bootstrap/Card";
 
 const UserDetail = ({ socket }) => {
-  console.log(`socket: ${socket}`);
-  const [showAdd, setShowAdd] = useState(true);
+  // console.log(`socket: ${socket}`);
+  // const [showAdd, setShowAdd] = useState(true);
   const [addSuccess, setAddSuccess] = useState(false);
-  const [reject, setReject] = useState(false);
-  const [rejectData, setRejectData] = useState(undefined);
+  // const [reject, setReject] = useState(false);
+  // const [rejectData, setRejectData] = useState(undefined);
   const [isFriend, setIsFriend] = useState(false);
+
+  const navigate = useNavigate();
 
   const curUser = useSelector((state) => state.user);
   console.log(`curUser: ${JSON.stringify(curUser)}`);
@@ -103,6 +106,7 @@ const UserDetail = ({ socket }) => {
     // } else {
     //   console.log("add unsuccessful");
     // }
+    navigate("/login");
   };
 
   const deleteFriend = async () => {

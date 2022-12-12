@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import UserDetail from "./component/UserDetail";
+import Friends from "./component/Friends";
 
 const style = {
   position: "absolute",
@@ -55,6 +56,7 @@ function App({ socket }) {
           <Route path="/home" element={<Home socket={socket} />} />
           <Route path="/search" element={<UserDetail socket={socket} />} />
           <Route path="/invite" element={<UserAdd socket={socket} />} />
+          <Route path="/friends" element={<Friends />} />
         </Routes>
       </Router>
     </div>
