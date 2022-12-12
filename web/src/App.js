@@ -10,6 +10,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import Account from './component/Account';
+import { AuthProvider } from './component/Auth';
+import PrivateRoute from './component/PrivateRoute';
+import React, {Fragment} from 'react';
 
 const style = {
   position: 'absolute',
@@ -32,6 +36,7 @@ function App() {
   const dispatch = useDispatch()
 
   return (
+    <AuthProvider>
     <div>
       <Modal
         open={error.status}
@@ -49,10 +54,12 @@ function App() {
         <Routes>
           <Route path='/' element={<Login />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/home' element={<Home />} />
+          {/* <PrivateRoute path='/home' element={<Home />} />
+          <PrivateRoute path='/account' element={<Account />} /> */}
         </Routes>
       </Router>
     </div>
+    </AuthProvider>
   );
 }
 
