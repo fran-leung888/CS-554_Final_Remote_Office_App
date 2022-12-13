@@ -1,10 +1,11 @@
-const user = require('./user')
-
+const user = require("./user");
+const chats = require("./chats");
 
 const constructorMethod = (app) => {
-  app.use('/', user)
+  app.use("/", user);
+  app.use("/chat", chats);
 
-  app.use('*', (req, res) => {
+  app.use("*", (req, res) => {
     res.sendStatus(404);
   });
 };
