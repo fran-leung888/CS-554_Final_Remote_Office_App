@@ -100,6 +100,29 @@ module.exports = {
     return true;
   },
 
+  async deleteMember(curUser, group) {
+    if (!curUser || !group)
+      throw Error("Please input curUser and group information");
+
+    const groupsCollection = await groups();
+    const updatedInfo = await groupsCollection.update(
+      { _id: group._id },
+      {
+        $pull: {
+          groupMembers: {
+            memberId: curUser._id.toString(),
+          },
+        },
+      },
+      { multi: true }
+    );
+
+    console.log("success delete the member in group data ");
+    const newGroup = await this.getGroup(group._id.toString());
+    console.log(newGroup);
+    return newGroup;
+  },
+
   async getAllGroup(curUser) {
     if (!curUser) throw "Please login and get all groups you have";
     const groupsCollection = await groups();
