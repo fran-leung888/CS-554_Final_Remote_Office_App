@@ -87,4 +87,28 @@ module.exports = {
 
     return group;
   },
+
+  async deleteGroup(group) {
+    console.log("the group data you want to delete: ");
+    console.log(group);
+    if (!group) {
+      throw Error("Please input a group you want to delete");
+    }
+
+    const groupsCollection = await groups();
+    const deletedGroup = await groupsCollection.remove({ _id: group._id });
+    return true;
+  },
+
+  async getAllGroup(curUser) {
+    if (!curUser) throw "Please login and get all groups you have";
+    const groupsCollection = await groups();
+    const allGroups = await groupsCollection
+      .find({ grouperId: curUser._id.toString() })
+      .toArray();
+
+    console.log("finish getAllGroup function");
+
+    return allGroups;
+  },
 };

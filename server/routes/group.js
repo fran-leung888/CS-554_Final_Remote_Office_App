@@ -3,6 +3,7 @@ const groups = require("../data/groups");
 const users = require("../data/users");
 const store = require("../store/dataStore");
 const response = require("../response/response");
+const { ObjectID } = require("bson");
 
 router.post("/createGroup", async (req, res) => {
   console.log(req.body);
@@ -116,6 +117,132 @@ router.get("/getByName", async (req, res) => {
   } catch (e) {
     res.send(new response(null, e).fail(res));
   }
+});
+
+router.get("/getAll", async (req, res) => {
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  const curId = curUser._id.toString();
+
+  if (!curId) return res.status(400).json({ message: "Please login frist" });
+
+  const allGroups = await groups.getAllGroup(curUser);
+
+  console.log("already get all groups this person have: ");
+  console.log(allGroups);
+
+  res.send(new response(allGroups).success(res));
+});
+
+router.post("/delete", async (req, res) => {
+  console.log(req.body);
+  /* delete logical: 
+    1. get the group ID which you want to delete
+    2. get the curUser ID, get all group information
+    3. compare curUser id === grouper ID, if equal, can delete, if not, cannot delete
+    4. when delete success, we also need to get all members who in this group, traverse these members and delete their database one by one
+   */
+  if (!req.body.groupId)
+    return res
+      .status(400)
+      .json({ message: "Please input the groupId you want to delete" });
+
+  const groupId = req.body.groupId;
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  // console.log("\tCurrent user is ", curUser);
+  // console.log(JSON.stringify(curUser._id));
+  const curId = curUser._id.toString();
+  if (!curId)
+    return res
+      .status(400)
+      .json({ message: "Please login, then you can delete" });
+  console.log("current curId:");
+  console.log(curId);
+
+  const group = await groups.getGroup(groupId);
+  if (!group)
+    return res
+      .status(400)
+      .json({ message: "We have not find this group, please try again" });
+  if (curId !== group.grouperId)
+    return res.status(400).json({
+      message:
+        "you are not this group's grouper, you cannot dismiss this group",
+    });
+
+  // create a array to store all this group's members
+  let members = group.groupMembers;
+
+  // delete group from groups database
+  const ifDeleted = await groups.deleteGroup(group);
+
+  console.log("already delete this group: ");
+  console.log(ifDeleted);
+
+  // delete group from users database
+  console.log("members.length");
+  console.log(members.length);
+  if (members.length) {
+    for (let i = 0; i < members.length; i++) {
+      console.log("delete the members data: ");
+      let temp = await users.userDeleteGroup(members[i], group);
+      console.log(`members[i]: ${members[i]}, temp: `);
+      console.log(temp);
+    }
+  }
+  const newUser = await users.userDeleteGroup(curUser, group);
+  console.log("already delete the group info from this user:");
+  console.log(newUser);
+
+  res.send(new response(newUser).success(res));
+});
+
+router.post("/exit", async (req, res) => {
+  /* logical:
+      1. input id(must be === the current login user => curUser ID), if not euqal, cannot exit , if equal, can exit
+      2. when equal, update curUser database = > delete this group info 
+   */
+  console.log(req.body);
+  const groupId = req.body.groupId;
+  if (!groupId)
+    return res
+      .status(400)
+      .json({ message: "Please input the groupId you want to exit" });
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  const curId = curUser._id.toString();
+
+  if (!curId) return res.status(400).json({ message: "Please login frist" });
+
+  // get group data by call getGroup by id:
+  const group = await groups.getGroup(groupId);
+  console.log("the group data you want to exit: ");
+  console.log(group);
+
+  const members = group.groupMembers;
+  let ifBelong = false;
+  if (members.length) {
+    for (let i = 0; i < members.length; i++) {
+      // console.log(`curId: ${curId}`);
+      // console.log(`members[i].memberId: ${members[i].memberId}`);
+      if (curId === members[i].memberId) ifBelong = true;
+    }
+  }
+
+  console.log(`members.length: ${members.length}`);
+  console.log(`ifBelong: ${ifBelong}`);
+  if (!members.length || !ifBelong)
+    return res
+      .status(400)
+      .json({ message: "You are not in this group, cannot exit" });
+
+  // call function to update user data
+  const newUser = await users.userDeleteGroup(curUser, group);
+  console.log("success delete this group in user data");
+  console.log(newUser);
+
+  res.send(new response(newUser).success(res));
 });
 
 module.exports = router;
