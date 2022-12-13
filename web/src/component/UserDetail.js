@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import users from "../data/users";
 // import { io } from "socket.io-client";
 // import Card from "react-bootstrap/Card";
@@ -122,6 +122,7 @@ const UserDetail = ({ socket }) => {
 
   return (
     <div>
+      <Avatar></Avatar>
       {isFriend ? (
         <Button onClick={deleteFriend}>Delete</Button>
       ) : (

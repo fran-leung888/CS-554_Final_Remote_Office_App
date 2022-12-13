@@ -44,7 +44,7 @@ function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
 
   return (
-    <div>
+    <div >
       <Modal
         open={error.status}
         onClose={() => {

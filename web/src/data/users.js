@@ -28,6 +28,16 @@ const getUser = async (id) => {
   let response = await axios.get(id);
   return response;
 };
+
+const getUsers = async (ids) => {
+  let response = await axios.get("/user/list", {
+    params: {
+      id: ids + '',
+    }
+  });
+  return response;
+};
+
 const addFriend = async (friendId) => {
   console.log("Add friend");
   let response = await axios.post("/add", {
@@ -52,6 +62,7 @@ export default {
   login,
   searchUser,
   getUser,
+  getUsers,
   addFriend,
   deleteFriend,
 };
