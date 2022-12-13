@@ -5,7 +5,13 @@ import Home from "./component/Home";
 import Login from "./component/Login";
 import UserAdd from "./component/UserAdd";
 // import SearchUser from "./component/SearchUser";
-import { Link, Routes, BrowserRouter as Router, Route, Navigate } from "react-router-dom";
+import {
+  Link,
+  Routes,
+  BrowserRouter as Router,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { setError, resetError } from "./data/redux/errorSlice";
 import Box from "@mui/material/Box";
@@ -14,7 +20,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import UserDetail from "./component/UserDetail";
 import Friends from "./component/Friends";
-import { AuthContext, AuthProvider } from "./component/Auth"
+import { AuthContext, AuthProvider } from "./component/Auth";
 import { useContext } from "react";
 import PrivateRoute from "./component/PrivateRoute";
 
@@ -38,32 +44,52 @@ function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
 
   return (
-      <div>
-        <Modal
-          open={error.status}
-          onClose={() => {
-            dispatch(resetError());
-          }}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              {error.description}
-            </Typography>
-          </Box>
-        </Modal>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            {PrivateRoute({loggedIn: !!currentUser, path:"/home", element: <Home socket={socket} />})}
-            {PrivateRoute({loggedIn: !!currentUser, path:"/search", element: <UserDetail socket={socket} />})}
-            {PrivateRoute({loggedIn: !!currentUser, path:"/invite", element: <UserAdd socket={socket} />})}
-            {PrivateRoute({loggedIn: !!currentUser, path:"/friends", element: <Friends />})}
-          </Routes>
-        </Router>
-      </div>
+    <div>
+      <Modal
+        open={error.status}
+        onClose={() => {
+          dispatch(resetError());
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            {error.description}
+          </Typography>
+        </Box>
+      </Modal>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home socket={socket} />} />
+          <Route path="/search" element={<UserDetail socket={socket} />} />
+          <Route path="/invite" element={<UserAdd socket={socket} />} />
+          <Route path="/friends" element={<Friends />} />
+          {/* {PrivateRoute({
+            loggedIn: !!currentUser,
+            path: "/home",
+            element: <Home socket={socket} />,
+          })}
+          {PrivateRoute({
+            loggedIn: !!currentUser,
+            path: "/search",
+            element: <UserDetail socket={socket} />,
+          })}
+          {PrivateRoute({
+            loggedIn: !!currentUser,
+            path: "/invite",
+            element: <UserAdd socket={socket} />,
+          })}
+          {PrivateRoute({
+            loggedIn: !!currentUser,
+            path: "/friends",
+            element: <Friends />,
+          })} */}
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
