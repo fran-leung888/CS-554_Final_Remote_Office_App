@@ -53,7 +53,7 @@ export default () => {
             let res = await users.addUser(name, username, passwd)
             checkRes(res)
             checkResult(verifyObj(res.data, 'user'))
-            navigate('/')
+            setIsSignUp(false)
         } catch (e) {
             dispatch(setError({ status: true, description: e }))
         }
