@@ -1,16 +1,16 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-require("express-async-errors");
-const http = require("http");
+require('express-async-errors')
+const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const store = require("./store/dataStore");
-const configRoutes = require("./routes/router");
+const store = require('./store/dataStore')
+const configRoutes = require('./routes/router');
 
-const cookieParser = require("cookie-parser");
+const cookieParser = require('cookie-parser');
 
-const usersCollection = require("./data/users");
+const usersCollection = require('./data/users')
 
 app.use(cookieParser());
 

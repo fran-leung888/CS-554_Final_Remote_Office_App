@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import FunctionBar from "./FunctionBar";
 import Content from './Content'
 import ChatDiagram from "./chats/ChatDiagram";
+import SignOutButton from "./SignOut";
 
 export default ({ socket }) => {
   const curUser = useSelector((state) => state.user);
@@ -45,6 +46,9 @@ export default ({ socket }) => {
       </Grid>
       <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>
+      </Grid>
+      <Grid item xs={2}>
+        <SignOutButton />
       </Grid>
     </Grid>
   );
