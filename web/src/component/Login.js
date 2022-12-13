@@ -53,19 +53,20 @@ export default () => {
       );
     }
   };
+
   const handleSignUp = async () => {
     try {
-      checkResult(verifyString(name, "name"));
-      checkResult(verifyString(username, "username"));
-      checkResult(verifyString(passwd, "password"));
-      let res = await users.addUser(name, username, passwd);
-      checkRes(res);
-      checkResult(verifyObj(res.data, "user"));
-      navigate("/");
+        checkResult(verifyString(name, 'name'))
+        checkResult(verifyString(username, 'username'))
+        checkResult(verifyString(passwd, 'password'))
+        let res = await users.addUser(name, username, passwd)
+        checkRes(res)
+        checkResult(verifyObj(res.data, 'user'))
+        setIsSignUp(false)
     } catch (e) {
-      dispatch(setError({ status: true, description: e }));
+        dispatch(setError({ status: true, description: e }))
     }
-  };
+}
 
   if (currentUser) {
     return <Navigate to="/home" />;

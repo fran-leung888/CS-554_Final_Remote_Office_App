@@ -1,10 +1,13 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import { Button } from "@mui/material";
-import SideBar from "./SideBar";
+import ChatList  from "./chats/ChatList";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import FunctionBar from "./FunctionBar";
+import Content from './Content'
+import ChatDiagram from "./chats/ChatDiagram";
 import SignOutButton from "./SignOut";
 
 export default ({ socket }) => {
@@ -29,8 +32,14 @@ export default ({ socket }) => {
   };
   return (
     <Grid container>
-      <Grid item xs={2}>
-        <SideBar></SideBar>
+      <Grid item xs={1}>
+        <FunctionBar></FunctionBar>
+      </Grid>
+      <Grid item xs={4}>
+        <Content></Content>
+      </Grid>
+      <Grid item xs={7}>
+        <ChatDiagram></ChatDiagram>
       </Grid>
       <Grid item xs={4}>
         <Button onClick={invite}>Invite</Button>
