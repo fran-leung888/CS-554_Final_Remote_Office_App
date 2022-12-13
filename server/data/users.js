@@ -210,4 +210,37 @@ module.exports = {
       throw Error(e.message);
     }
   },
+
+  async userDeleteGroup(curUser, group) {
+    try {
+      if (!curUser || !group) {
+        throw Error("Please input the delete information: curUser and group");
+      }
+      let curId = curUser._id ? curUser._id : ObjectId(curUser.memberId);
+      console.log("userDeleteGroup: cueUser: ");
+      console.log(curId);
+
+      const usersCollection = await users();
+      const updatedInfo = await usersCollection.update(
+        { _id: curId },
+        {
+          $pull: {
+            groups: {
+              groupId: group._id.toString(),
+            },
+          },
+        },
+        { multi: true }
+      );
+
+      console.log(
+        "success delete the group in user database, the newUser info is "
+      );
+      const newUser = await this.getUser(curId.toString());
+      console.log(newUser);
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
 };
