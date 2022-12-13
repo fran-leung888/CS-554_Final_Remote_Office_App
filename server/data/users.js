@@ -155,6 +155,27 @@ module.exports = {
     return user;
   },
 
+  async getUsers(ids) {
+    if (ids && ids.length !== 0) {
+      const usersCollection = await users();
+      let objectIds = []
+      ids.split(",").forEach(each => {
+        objectIds.push(ObjectId(each))
+      })
+      const cursor = await usersCollection.find({ _id: { $in : objectIds } });
+      if (await cursor.count() === 0) throw "Can not find user.";
+      else {
+        let result = [];
+        await cursor.forEach((each) => {
+          result.push(each);
+        });
+        return result;
+      }
+    } else {
+      return [];
+    }
+  },
+
   async getUserByname(name) {
     const usersCollection = await users();
     var str = ".*" + name + ".*$";
