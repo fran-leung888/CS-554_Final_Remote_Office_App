@@ -5,7 +5,7 @@ const store = require("../store/dataStore");
 const response = require("../response/response");
 const { ObjectID } = require("bson");
 
-router.post("/createGroup", async (req, res) => {
+router.post("/create", async (req, res) => {
   console.log(req.body);
   // const groupName = res.body.groupName;
   const groupName = req.body.groupName;
@@ -205,6 +205,7 @@ router.post("/exit", async (req, res) => {
    */
   console.log(req.body);
   const groupId = req.body.groupId;
+  console.log(`the groupId you want to delete : ${groupId}`);
   if (!groupId)
     return res
       .status(400)
@@ -219,6 +220,12 @@ router.post("/exit", async (req, res) => {
   const group = await groups.getGroup(groupId);
   console.log("the group data you want to exit: ");
   console.log(group);
+
+  if (curId === group.grouperId)
+    return res.status(400).json({
+      message:
+        "You are master this group, cannot exit, but you can dismiss this group",
+    });
 
   const members = group.groupMembers;
   let ifBelong = false;
@@ -237,6 +244,11 @@ router.post("/exit", async (req, res) => {
       .status(400)
       .json({ message: "You are not in this group, cannot exit" });
 
+  // delete the user info from group data
+  const newGroup = await groups.deleteMember(curUser, group);
+
+  console.log("already delete the user info in group");
+  console.log(newGroup);
   // call function to update user data
   const newUser = await users.userDeleteGroup(curUser, group);
   console.log("success delete this group in user data");
