@@ -128,4 +128,14 @@ router.get("/user", async (req, res) => {
   }
 });
 
+router.get("/user/list", async (req, res) => {
+  const ids = req.query.id
+  try {
+    const allUser = await users.getUsers(ids);
+    res.send(new response(allUser).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
 module.exports = router;
