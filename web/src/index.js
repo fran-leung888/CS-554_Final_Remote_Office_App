@@ -1,4 +1,3 @@
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -7,13 +6,16 @@ import reportWebVitals from "./reportWebVitals";
 import { io } from "socket.io-client";
 import { Provider } from "react-redux";
 import store from "./data/redux/store";
+import { AuthProvider } from "./component/Auth"
 const socket = io();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+    <AuthProvider>
       <App socket={socket} />
+    </AuthProvider>
     </Provider>
   </React.StrictMode>
 );

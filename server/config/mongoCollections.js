@@ -21,4 +21,5 @@ module.exports = {
   users: getCollectionFn("users"),
   chats: getCollectionFn("chats"),
   messages: getCollectionFn("messages"),
+  groups: getCollectionFn("groups"),
 };
