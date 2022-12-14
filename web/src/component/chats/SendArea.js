@@ -13,76 +13,56 @@ import io from "socket.io-client";
 import {
   addLoadingMessage,
   resetLoadingMessage,
+  failMessage,
 } from "../../data/redux/chatDiagramSlice";
 
 export default function SendArea(props) {
-
   const [messageToSend, setMessageToSend] = useState("");
   const currentUser = useSelector((state) => state.user);
-  const _id = useSelector(state => state.chatDiagram._id)
+  const _id = useSelector((state) => state.chatDiagram._id);
   const dispatch = useDispatch();
   const socketRef = useRef();
 
   useEffect(() => {
-    console.log('initial render.')
     socketRef.current = io("/");
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
 
-  // const handleSend = async () => {
-  //   try {
-  //     if (socketRef.current.connected) {
-  //       socketRef.current.timeout(5000).emit(
-  //         chatData.getServerChatSocket(props.chat),
-  //         {
-  //           message: messageToSend,
-  //           user: currentUser,
-  //         },
-  //         (err, response) => {
-  //           if (err) {
-  //             console.log(err);
-  //             throw "Send message failed!";
-  //           } else {
-  //             console.log("Add message response", response);
-  //             // TODO success remove loading message.
-  //           }
-  //         }
-  //       );
-  //       setMessageToSend("");
-  //     } else {
-  //       throw "Socket connection error.";
-  //     }
-  //   } catch (e) {}
-  // };
-
   const handleSend = async () => {
+    let randomId;
     try {
       // add message to redux and set it as loading
       if (!verifyString(messageToSend).valid) throw "Message can not be empty.";
-      let randomId = Math.random();
+      randomId = Math.random();
       dispatch(
         addLoadingMessage({
+          _id,
           randomId,
           message: messageToSend,
           user: currentUser,
         })
       );
-      let res = await chatData.sendMessage(
-        _id,
-        messageToSend,
-        currentUser
-      );
+      let res = await chatData.sendMessage(_id, messageToSend, currentUser);
       checkRes(res);
       dispatch(
         resetLoadingMessage({
+          _id,
           randomId,
           realId: res.data.insertedIds[0],
+          time: res.data.time
         })
       );
-      setMessageToSend('')
-    } catch (e) {}
+      setMessageToSend("");
+    } catch (e) {
+      dispatch(
+        failMessage({
+          _id,
+          randomId,
+        })
+      );
+    }
   };
 
   return (
@@ -93,7 +73,7 @@ export default function SendArea(props) {
             placeholder="Type your message here."
             value={messageToSend}
             onChange={(e) => {
-              setMessageToSend(e.target.value)
+              setMessageToSend(e.target.value);
             }}
           ></TextField>
         </FormControl>

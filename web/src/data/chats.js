@@ -43,6 +43,5 @@ export default {
   sendMessage,
   getChats,
   getMessages,
-  getServerChatSocket,
-  getClientChatSocket
+
 };
