@@ -44,7 +44,7 @@ function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
 
   return (
-    <div >
+    <div>
       <Modal
         open={error.status}
         onClose={() => {
@@ -66,7 +66,7 @@ function App({ socket }) {
           <Route path="/home" element={<Home socket={socket} />} />
           <Route path="/search" element={<UserDetail socket={socket} />} />
           <Route path="/invite" element={<UserAdd socket={socket} />} />
-          <Route path="/friends" element={<Friends />} />
+          <Route path="/friends" element={<Friends socket={socket} />} />
           {/* {PrivateRoute({
             loggedIn: !!currentUser,
             path: "/home",

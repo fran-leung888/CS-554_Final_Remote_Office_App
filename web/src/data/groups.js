@@ -5,8 +5,18 @@ const createGroups = async (groupName) => {
   return response;
 };
 
+const addToGroup = async (memberId, groupName) => {
+  const response = await axios.post("/group/addToGroup", {
+    memberId,
+    groupName,
+  });
+  return response;
+};
+
 const getByName = async (groupName) => {
-  const response = await axios.get("/group/getByName", { groupName });
+  // console.log(groupName);
+  // let response = await axios.get("/user?name=" + name);
+  const response = await axios.get("/group/getByName?groupName=" + groupName);
   return response;
 };
 const allGroups = async () => {
@@ -26,6 +36,7 @@ const exit = async (groupId) => {
 
 export default {
   createGroups,
+  addToGroup,
   getByName,
   allGroups,
   deleteGroup,

@@ -103,8 +103,9 @@ router.post("/addToGroup", async (req, res) => {
 
 router.get("/getByName", async (req, res) => {
   try {
-    console.log(req.body);
-    const groupName = req.body.groupName;
+    // console.log(res.body);
+    console.log(req.query);
+    const groupName = req.query.groupName;
     if (!groupName)
       return res
         .status(400)
