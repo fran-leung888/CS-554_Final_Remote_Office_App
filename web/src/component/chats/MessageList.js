@@ -1,34 +1,29 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Avatar from "@mui/material/Avatar";
-import users from "../../data/users";
-import { setSearchUser } from "../../data/redux/searchUser";
-import { Grid } from "@mui/material";
-
+import { Grid, CircularProgress } from "@mui/material";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 export default function MessageList() {
   const _id = useSelector((state) => state.chatDiagram._id);
-  const messages = useSelector((state) => state.chatDiagram.messages);
-  console.log(messages)
+  const messages = useSelector((state) => state.chatDiagram.messages[_id]);
+  console.log(messages);
   const buildMessages = (messages) => {
     return (
       messages &&
       messages.map((message) => {
         // name, time, message
-        return (
+        // loading status indicated by message.loading
+        return message.enabled ? (
           <Grid container item>
+            <Grid item>
+              {message.loading && <CircularProgress size={14} />}
+            </Grid>
+            <Grid item>{message.fail && <PriorityHighIcon size={14} />}</Grid>
             <Grid item>{message.name}</Grid>
-            <Grid item>{message.time}</Grid>
             <Grid item>{message.message}</Grid>
+            <Grid item>{message.time}</Grid>
           </Grid>
+        ) : (
+          <div></div>
         );
       })
     );

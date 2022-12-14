@@ -1,16 +1,11 @@
-const express = require('express');
-const app = express();
-require('express-async-errors')
-const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
-const store = require('./store/dataStore')
-const configRoutes = require('./routes/router');
+const {io, app, express, server} = require('./config/socket')
+const store = require("./store/dataStore");
+const configRoutes = require("./routes/router");
+const chatSocket = require("./socket/chatSocket");
 
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
-const usersCollection = require('./data/users')
+const usersCollection = require("./data/users");
 
 app.use(cookieParser());
 
@@ -103,6 +98,8 @@ io.on("connection", (socket) => {
     console.log(onlineName);
     console.log("user disconnected");
   });
+
+  chatSocket.joinRoom(socket);
 });
 
 server.listen(4000, () => {
