@@ -112,6 +112,7 @@ export default function Friends({ socket }) {
       setGroupsSet(undefined);
     }
     console.log(groupsData);
+    console.log(curGroup);
     if (groupsData) tryGroup(groupsData);
     else setResponseData(undefined);
   }, [curGroup, curUser.groups]);
@@ -124,11 +125,11 @@ export default function Friends({ socket }) {
     console.log(group);
     if (group) {
       setCurGroup(group);
-      console.log(curGroup);
-      console.log("1");
+      // console.log(curGroup);
+      // console.log("1");
     }
-    console.log(curGroup);
-    console.log("2");
+    // console.log(curGroup);
+    // console.log("2");
     setInviteShow(true);
   };
 
@@ -304,7 +305,8 @@ export default function Friends({ socket }) {
                               {friend.username}
                               {groupsSet &&
                               curGroup &&
-                              groupsSet[curGroup.groupName] &&
+                              curGroup.groupName &&
+                              groupsSet[curGroup.groupName].length &&
                               groupsSet[curGroup.groupName].has(
                                 friend.username
                               ) ? (
