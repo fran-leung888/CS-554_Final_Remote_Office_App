@@ -206,23 +206,24 @@ router.post("/exit", async (req, res) => {
    */
   console.log(req.body);
   const groupId = req.body.groupId;
+  const exitUserId = req.body.exitUserId;
   console.log(`the groupId you want to delete : ${groupId}`);
-  if (!groupId)
+  if (!groupId || !exitUserId)
     return res
       .status(400)
       .json({ message: "Please input the groupId you want to exit" });
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
-  const curId = curUser._id.toString();
+  // let session = req.cookies[store.SESSION_KEY];
+  // let curUser = await users.getUser(session);
+  // const curId = curUser._id.toString();
 
-  if (!curId) return res.status(400).json({ message: "Please login frist" });
+  // if (!curId) return res.status(400).json({ message: "Please login frist" });
 
   // get group data by call getGroup by id:
   const group = await groups.getGroup(groupId);
   console.log("the group data you want to exit: ");
   console.log(group);
 
-  if (curId === group.grouperId)
+  if (exitUserId === group.grouperId)
     return res.status(400).json({
       message:
         "You are master this group, cannot exit, but you can dismiss this group",
@@ -234,7 +235,7 @@ router.post("/exit", async (req, res) => {
     for (let i = 0; i < members.length; i++) {
       // console.log(`curId: ${curId}`);
       // console.log(`members[i].memberId: ${members[i].memberId}`);
-      if (curId === members[i].memberId) ifBelong = true;
+      if (exitUserId === members[i].memberId) ifBelong = true;
     }
   }
 
@@ -246,12 +247,15 @@ router.post("/exit", async (req, res) => {
       .json({ message: "You are not in this group, cannot exit" });
 
   // delete the user info from group data
-  const newGroup = await groups.deleteMember(curUser, group);
+  const newExitUser = await users.getUser(exitUserId);
+  console.log("the exit user data:");
+  console.log(newExitUser);
+  const newGroup = await groups.deleteMember(newExitUser, group);
 
   console.log("already delete the user info in group");
   console.log(newGroup);
   // call function to update user data
-  const newUser = await users.userDeleteGroup(curUser, group);
+  const newUser = await users.userDeleteGroup(newExitUser, group);
   console.log("success delete this group in user data");
   console.log(newUser);
 

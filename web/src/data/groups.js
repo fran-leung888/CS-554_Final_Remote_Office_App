@@ -29,8 +29,8 @@ const deleteGroup = async (groupId) => {
   return response;
 };
 
-const exit = async (groupId) => {
-  const response = await axios.post("/group/exit", { groupId });
+const exit = async (exitUserId, groupId) => {
+  const response = await axios.post("/group/exit", { exitUserId, groupId });
   return response;
 };
 
