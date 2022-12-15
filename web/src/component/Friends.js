@@ -66,6 +66,8 @@ export default function Friends({ socket }) {
   // }
 
   async function tryGroup(groupsData) {
+    console.log(groupsData);
+    console.log(curGroup);
     let haveMembers = {};
     for (let i = 0; i < groupsData.length; i++) {
       console.log(groupsData[i].groupName);
@@ -96,16 +98,19 @@ export default function Friends({ socket }) {
         console.log(tempGroup);
       }
     }
+    console.log(curGroup.groupName);
     console.log(haveMembers);
-
-    // console.log(haveMembers);
+    if (curGroup.groupName && haveMembers[curGroup.groupName].length)
+      console.log(haveMembers[curGroup.groupName].has("user4"));
     setGroupsSet(haveMembers);
   }
   useEffect(() => {
+    console.log("in this effect, call tryGroup");
     if (groupsData) tryGroup(groupsData);
   }, [groupsData]);
 
   useEffect(() => {
+    // console.log("in this effect, call tryGroup");
     if (curUser.groups) {
       setGroupsData(curUser.groups);
     } else {
@@ -113,8 +118,8 @@ export default function Friends({ socket }) {
     }
     console.log(groupsData);
     console.log(curGroup);
-    if (groupsData) tryGroup(groupsData);
-    else setResponseData(undefined);
+    // if (groupsData) tryGroup(groupsData);
+    // else setResponseData(undefined);
   }, [curGroup, curUser.groups]);
 
   const handleClose = () => setShow(false);
@@ -165,6 +170,27 @@ export default function Friends({ socket }) {
     setShow(false);
   };
 
+  const kick = async (friend) => {
+    console.log(friend);
+    console.log(curGroup);
+    console.log(groupsSet);
+
+    if (groupsSet[curGroup.groupName].has(friend.username)) {
+      let newFriend = await groups.exit(friend._id, curGroup.groupId);
+      console.log("after delete this one:");
+      console.log(newFriend.data);
+      // curGroup
+      let newGroup = await groups.getByName(curGroup.groupName);
+      setCurGroup(newGroup.data);
+      let newCurUser = await users.getUser(curUser._id);
+      console.log("curUser data:");
+      console.log(newCurUser.data);
+      setGroupsData(newCurUser.data.groups);
+    }
+    console.log(curGroup);
+    console.log(groupsData);
+  };
+
   const invite = async (friend, e) => {
     /*Need use socket.io to achieve invite other users add in this group */
     console.log(friend);
@@ -184,9 +210,23 @@ export default function Friends({ socket }) {
     setResponseData(data);
     console.log("got the info which if this friend agree or not agree add in");
     console.log(data);
-    if (data.agree) setAgreeAdd(true);
-    else setAgreeAdd(false);
+    if (data.agree) {
+      setAgreeAdd(true);
+    } else setAgreeAdd(false);
   });
+
+  async function resetCurUser() {
+    let newUser = await users.getUser(curUser._id);
+    console.log("after agree add in group, fresh the curUser data:");
+    console.log(newUser.data);
+    dispatch(setUser(newUser.data));
+    setGroupsData(curUser.groups);
+  }
+  useEffect(() => {
+    if (agreeAdd) {
+      resetCurUser();
+    }
+  }, [agreeAdd]);
 
   useEffect(() => {
     console.log(responseData);
@@ -196,6 +236,14 @@ export default function Friends({ socket }) {
   }, []);
 
   console.log(curGroup);
+  console.log(groupsSet);
+  console.log(groupsData);
+
+  if (groupsSet.length && curGroup.length) {
+    console.log(groupsSet);
+    console.log(curGroup);
+    console.log(groupsSet[curGroup.groupName].length);
+  }
 
   // useEffect(() => {
   //   if (curGroup && groupsSet) {
@@ -303,23 +351,26 @@ export default function Friends({ socket }) {
                           {friendsData.map((friend) => (
                             <Form.Label>
                               {friend.username}
-                              {groupsSet &&
-                              curGroup &&
-                              curGroup.groupName &&
-                              groupsSet[curGroup.groupName].length &&
+                              {curGroup.groupName &&
                               groupsSet[curGroup.groupName].has(
                                 friend.username
                               ) ? (
-                                <span> already in</span>
+                                <Button
+                                  variant="primary"
+                                  onClick={(e) => {
+                                    kick(friend, e);
+                                  }}
+                                >
+                                  Kick
+                                </Button>
                               ) : (
                                 <Button
                                   variant="primary"
-                                  type="submit"
                                   onClick={(e) => {
                                     invite(friend, e);
                                   }}
                                 >
-                                  add
+                                  Add
                                 </Button>
                               )}
                             </Form.Label>
@@ -356,24 +407,6 @@ export default function Friends({ socket }) {
                             )}
                           </Modal.Title>
                         </Modal.Header>
-                        {/* <Modal.Body>
-                        <ListGroup.Item>
-                          {friendsData.map((friend) => (
-                            <Form.Label>
-                              {friend.username}
-                              <Button
-                                variant="primary"
-                                type="submit"
-                                onClick={(e) => {
-                                  invite(friend, e);
-                                }}
-                              >
-                                add
-                              </Button>
-                            </Form.Label>
-                          ))}
-                        </ListGroup.Item>
-                      </Modal.Body> */}
                         <Modal.Footer>
                           <Button
                             variant="primary"
