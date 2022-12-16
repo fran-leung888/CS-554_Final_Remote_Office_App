@@ -1,76 +1,47 @@
 import React from "react";
-import Grid from "@mui/material/Grid";
-import { Button } from "@mui/material";
-import ChatList from "./chats/ChatList";
-import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import users from "../data/users";
+import groups from "../data/groups";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import FunctionBar from "./FunctionBar";
-import Content from "./Content";
-import ChatDiagram from "./chats/ChatDiagram";
-import SignOutButton from "./SignOut";
-import UserAdd from "./UserAdd";
-
-import groups from "../data/groups";
-import users from "../data/users";
 import { useDispatch } from "react-redux";
+
+import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
 import { setUser } from "../data/redux/userSlice";
 
-export default ({ socket }) => {
-  const [showInvite, setShowInvite] = useState(false);
-  const [showGroupInvite, setShowGroupInvite] = useState(false);
-  const [applyUser, setApplyuser] = useState(undefined);
+const UserAdd = ({ socket }, { showInvite }, { showGroupInvite }) => {
+  // const [showInvite, setShowInvite] = useState(false);
+  // const [showGroupInvite, setShowGroupInvite] = useState(false);
   const [groupData, setGroupData] = useState(undefined);
   const [accept, setAccept] = useState(false);
   const [reject, setReject] = useState(false);
   const [rejectData, setRejectData] = useState(undefined);
+  const [applyUser, setApplyuser] = useState(undefined);
   const dispatch = useDispatch();
-
   const curUser = useSelector((state) => state.user);
   console.log(curUser);
 
-  useEffect(() => {
-    if (curUser) {
-      // socket.current = io("http://localhost:3000");
-      // socket.current.emit("addUser", curUser._id);
-      socket.emit("addUser", curUser._id);
-    }
-  }, [curUser]);
+  //   useEffect(() => {
+  //     if (curUser) {
+  //       socket.current = io("http://localhost:3000");
+  //       socket.current.emit("addUser", curUser._id);
+  //     }
+  //   }, [curUser]);
 
-  const navigate = useNavigate();
-  const invite = () => {
-    navigate("/invite");
-  };
-
-  const friends = () => {
-    navigate("/friends");
-  };
-
-  socket.on("addFriendResponse", (data) => {
-    console.log(`data`);
-    console.log(data);
-    if (data) {
-      setApplyuser(data);
-      setShowInvite(true);
-    } else {
-      setApplyuser(undefined);
-      setShowInvite(false);
-    }
-    console.log(data);
-  });
-
-  socket.on("inviteResponse", (data) => {
-    setGroupData(data);
-    console.log("invite response data:");
-    console.log(groupData);
-    if (data && data.invite && data.invite._id === curUser._id) {
-      setShowGroupInvite(true);
-    } else {
-      setShowGroupInvite(false);
-    }
-  });
+  // socket.on("addFriendResponse", (data) => {
+  //   console.log(`data`);
+  //   console.log(data);
+  //   if (data) {
+  //     setApplyuser(data);
+  //     setShowInvite(true);
+  //   } else {
+  //     setApplyuser(undefined);
+  //     setShowInvite(false);
+  //   }
+  //   console.log(data);
+  // });
 
   socket.on("agreeResponse", (data) => {
     setRejectData(data);
@@ -81,6 +52,17 @@ export default ({ socket }) => {
       setReject(true);
     }
   });
+
+  // socket.on("inviteResponse", (data) => {
+  //   setGroupData(data);
+  //   console.log("invite response data:");
+  //   console.log(groupData);
+  //   if (data && data.invite && data.invite._id === curUser._id) {
+  //     setShowGroupInvite(true);
+  //   } else {
+  //     setShowGroupInvite(false);
+  //   }
+  // });
 
   const agree = async () => {
     let add = await users.addFriend(applyUser.applyId);
@@ -94,7 +76,7 @@ export default ({ socket }) => {
       friendId: applyUser.friendId,
       friendUsername: applyUser.friendUsername,
     });
-    setShowInvite(false);
+    // setShowInvite(false);
   };
 
   const disagree = () => {
@@ -122,7 +104,7 @@ export default ({ socket }) => {
       grouperId: groupData.grouperId,
       group: groupData.group,
     });
-    setShowGroupInvite(false);
+    // setShowGroupInvite(false);
   };
 
   const disagreeGroup = async () => {
@@ -134,14 +116,38 @@ export default ({ socket }) => {
       grouperId: groupData.grouperId,
       group: groupData.group,
     });
-    setShowGroupInvite(false);
+    // setShowGroupInvite(false);
   };
 
-  console.log(showInvite);
-  console.log(showGroupInvite);
-  console.log(socket);
+  //   useEffect(() => {
+  //     socket.on(
+  //       "addFriendResponse",
+  //       (data) => {
+  //         console.log(data.applyUsername);
+  //         if (data && data.applyUsername) {
+  //           setApplyuser(data);
+  //           setShowInvite(true);
+  //         } else {
+  //           setApplyuser(undefined);
+  //           setShowInvite(false);
+  //         }
+  //         console.log(data);
+  //       },
+  //       [curUser]
+  //     );
+
+  // socket.on("agreeResponse", (data) => {
+  //   setRejectData(data);
+  //   if (data && data.applyId && curUser._id === data.applyId) {
+  //     setReject(!data.agree);
+  //   } else {
+  //     setReject(true);
+  //   }
+  // });
+  //   });
+
   return (
-    <Grid container>
+    <div>
       {showInvite ? (
         <div
           className="modal show"
@@ -206,21 +212,8 @@ export default ({ socket }) => {
       ) : (
         ""
       )}
-      <Grid item xs={1}>
-        <FunctionBar></FunctionBar>
-      </Grid>
-      <Grid item xs={4}>
-        <Content></Content>
-      </Grid>
-      <Grid item xs={7}>
-        <ChatDiagram></ChatDiagram>
-      </Grid>
-      <Grid item xs={4}>
-        <Button onClick={friends}>My friends</Button>
-      </Grid>
-      <Grid item xs={2}>
-        <SignOutButton />
-      </Grid>
-    </Grid>
+    </div>
   );
 };
+
+export default UserAdd;

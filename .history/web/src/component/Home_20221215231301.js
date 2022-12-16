@@ -216,6 +216,9 @@ export default ({ socket }) => {
         <ChatDiagram></ChatDiagram>
       </Grid>
       <Grid item xs={4}>
+        <Button onClick={invite}>Invite</Button>
+      </Grid>
+      <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>
       </Grid>
       <Grid item xs={2}>

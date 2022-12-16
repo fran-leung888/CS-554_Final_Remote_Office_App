@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-require('express-async-errors')
-const http = require('http');
+require("express-async-errors");
+const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const store = require('./store/dataStore')
-const configRoutes = require('./routes/router');
+const store = require("./store/dataStore");
+const configRoutes = require("./routes/router");
 
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
-const usersCollection = require('./data/users')
+const usersCollection = require("./data/users");
 
 app.use(cookieParser());
 
@@ -90,6 +90,37 @@ io.on("connection", (socket) => {
     if (sendToUser) {
       // const sendToUser = onlineUsers.get(data.applyId);
       io.to(sendToUser).emit("agreeResponse", data);
+    }
+  });
+
+  socket.on("invite", (data) => {
+    console.log("I want to invite this one:");
+    console.log(data);
+
+    let sendToUser = "";
+    for (let i = 0; i < onlineName.length; i++) {
+      if (onlineName[i].id === data.invite._id)
+        sendToUser = onlineName[i].socketId;
+    }
+    console.log(`sendToUser: ${sendToUser}`);
+    if (sendToUser) {
+      io.to(sendToUser).emit("inviteResponse", data);
+    }
+  });
+
+  socket.on("addGroup", (data) => {
+    console.log("the friend agree/disagree add to group, tell you:");
+    console.log(data);
+
+    let sendToUser = "";
+    for (let i = 0; i < onlineName.length; i++) {
+      if (onlineName[i].id === data.grouperId)
+        sendToUser = onlineName[i].socketId;
+    }
+    console.log(`sendToUser: ${sendToUser}`);
+
+    if (sendToUser) {
+      io.to(sendToUser).emit("addGroupRespond", data);
     }
   });
 

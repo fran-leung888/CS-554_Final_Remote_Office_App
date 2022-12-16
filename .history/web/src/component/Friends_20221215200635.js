@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { checkResult, verifyString } from "../utils/verificationUtils";
@@ -35,6 +36,7 @@ export default function Friends({ socket }) {
   const curUser = useSelector((state) => state.user);
   console.log(`curUser: ${JSON.stringify(curUser)}`);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function Friends({ socket }) {
         setGroupsData(undefined);
       }
     }
-  }, [curUser, curUser.friends]);
+  }, []);
   // if (!curUser._id) {
   //   return <div>Error: please login in</div>;
   // }
@@ -83,6 +85,8 @@ export default function Friends({ socket }) {
                 haveMembers[groupsData[i].groupName].add(
                   tempGroup.data.groupMembers[j].memberName
                 );
+              } else {
+                haveMembers[groupsData[i].groupName].add("null");
               }
             } else {
               console.log(haveMembers[groupsData[i].groupName]);
@@ -95,15 +99,15 @@ export default function Friends({ socket }) {
             }
           }
         } else {
-          haveMembers[groupsData[i].groupName] = new Set();
+          haveMembers[groupsData[i].groupName] = [];
         }
         console.log(tempGroup);
       }
     }
     console.log(curGroup.groupName);
     console.log(haveMembers);
-    // if (curGroup.groupName && haveMembers[curGroup.groupName].length)
-    //   console.log(haveMembers[curGroup.groupName].has("user4"));
+    if (curGroup.groupName && haveMembers[curGroup.groupName].length)
+      console.log(haveMembers[curGroup.groupName].has("user4"));
     setGroupsSet(haveMembers);
   }
   useEffect(() => {
@@ -130,7 +134,13 @@ export default function Friends({ socket }) {
   const handleInviteClose = () => setInviteShow(false);
   const handleInviteShow = (group) => {
     console.log(group);
-    if (group) setCurGroup(group);
+    if (group) {
+      setCurGroup(group);
+      // console.log(curGroup);
+      // console.log("1");
+    }
+    // console.log(curGroup);
+    // console.log("2");
     setInviteShow(true);
   };
 
@@ -167,9 +177,9 @@ export default function Friends({ socket }) {
   };
 
   const kick = async (friend) => {
-    // console.log(friend);
-    // console.log(curGroup);
-    // console.log(groupsSet);
+    console.log(friend);
+    console.log(curGroup);
+    console.log(groupsSet);
 
     if (groupsSet[curGroup.groupName].has(friend.username)) {
       let newFriend = await groups.exit(friend._id, curGroup.groupId);
@@ -181,11 +191,8 @@ export default function Friends({ socket }) {
       let newCurUser = await users.getUser(curUser._id);
       console.log("curUser data:");
       console.log(newCurUser.data);
-      dispatch(setUser(newCurUser.data));
       setGroupsData(newCurUser.data.groups);
-      tryGroup(groupsData);
     }
-
     console.log(curGroup);
     console.log(groupsData);
   };
@@ -201,14 +208,8 @@ export default function Friends({ socket }) {
       group: curGroup,
     });
     setInviteShow(false);
-    if (responseData && agreeAdd) setRespondShow(true);
+    if (responseData) setRespondShow(true);
     else setRespondShow(false);
-  };
-
-  const updateGroup = async () => {
-    console.log("update group data after add a pople in");
-    const newGroup = await groups.getByName(curGroup.groupName);
-    setCurGroup(newGroup.data);
   };
 
   socket.on("addGroupRespond", (data) => {
@@ -217,9 +218,6 @@ export default function Friends({ socket }) {
     console.log(data);
     if (data.agree) {
       setAgreeAdd(true);
-      if (curGroup) {
-        updateGroup();
-      }
     } else setAgreeAdd(false);
   });
 
@@ -241,13 +239,13 @@ export default function Friends({ socket }) {
     if (responseData && responseData.grouperId === curUser._id)
       setShowRespond(true);
     else setShowRespond(false);
-  }, [responseData]);
+  }, []);
 
   console.log(curGroup);
   console.log(groupsSet);
   console.log(groupsData);
 
-  if (groupsSet && curGroup && groupsSet.length && curGroup.length) {
+  if (groupsSet.length && curGroup.length) {
     console.log(groupsSet);
     console.log(curGroup);
     console.log(groupsSet[curGroup.groupName].length);
@@ -359,9 +357,7 @@ export default function Friends({ socket }) {
                           {friendsData.map((friend) => (
                             <Form.Label>
                               {friend.username}
-                              {curGroup &&
-                              groupsSet &&
-                              curGroup.groupName &&
+                              {curGroup.groupName &&
                               groupsSet[curGroup.groupName].has(
                                 friend.username
                               ) ? (
