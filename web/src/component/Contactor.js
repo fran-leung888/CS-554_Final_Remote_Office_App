@@ -22,7 +22,7 @@ export default function Friends() {
     }
   }, []);
   if (!curUser._id) {
-    return <div>Error: please login in</div>;
+    navigate('/')
   }
 
   const handleUserClick = (event, friend) => {

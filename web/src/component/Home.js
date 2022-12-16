@@ -9,6 +9,8 @@ import FunctionBar from "./FunctionBar";
 import Content from "./Content";
 import ChatDiagram from "./chats/ChatDiagram";
 import SignOutButton from "./SignOut";
+import constant from "../data/constant";
+import { addChat } from "../data/redux/chatSlice";
 import UserAdd from "./UserAdd";
 
 import groups from "../data/groups";
@@ -30,14 +32,20 @@ export default ({ socket }) => {
 
   const curUser = useSelector((state) => state.user);
   console.log(curUser);
-
+  console.log("socket in home", socket);
   useEffect(() => {
     if (curUser) {
       // socket.current = io("http://localhost:3000");
       // socket.current.emit("addUser", curUser._id);
       socket.emit("addUser", curUser._id);
     }
-  }, [curUser]);
+    socket.emit("joinRoom", curUser._id);
+    socket.on(constant.event.newChat, (data) => {
+      console.log("receive chat on newChat event.", data);
+      socket.emit("joinRoom", data._id);
+      dispatch(addChat(data));
+    });
+  });
 
   const navigate = useNavigate();
   const invite = () => {

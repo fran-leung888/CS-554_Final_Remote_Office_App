@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { redirect, Link } from "react-router-dom";
-
 import users from "../data/users";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../data/redux/userSlice";
@@ -25,7 +24,6 @@ export default () => {
   const [name, setName] = useState("");
   const [passwd, setPasswd] = useState("");
   const { currentUser } = useContext(AuthContext);
-
   const dispatch = useDispatch();
 
   const handleChange = (set) => {
@@ -56,17 +54,17 @@ export default () => {
 
   const handleSignUp = async () => {
     try {
-        checkResult(verifyString(name, 'name'))
-        checkResult(verifyString(username, 'username'))
-        checkResult(verifyString(passwd, 'password'))
-        let res = await users.addUser(name, username, passwd)
-        checkRes(res)
-        checkResult(verifyObj(res.data, 'user'))
-        setIsSignUp(false)
+      checkResult(verifyString(name, "name"));
+      checkResult(verifyString(username, "username"));
+      checkResult(verifyString(passwd, "password"));
+      let res = await users.addUser(name, username, passwd);
+      checkRes(res);
+      checkResult(verifyObj(res.data, "user"));
+      setIsSignUp(false);
     } catch (e) {
-        dispatch(setError({ status: true, description: e }))
+      dispatch(setError({ status: true, description: e }));
     }
-}
+  };
 
   if (currentUser) {
     return <Navigate to="/home" />;
@@ -130,9 +128,18 @@ export default () => {
             </div>
           </Stack>
         ) : (
-          <Button variant="contained" onClick={handleSignUp}>
-            Sign Up
-          </Button>
+          <Stack sx={{ textAlign: "center" }}>
+            <Button variant="contained" onClick={handleSignUp}>
+              Sign Up
+            </Button>
+
+            <div
+              style={{ fontSize: "0.8em" }}
+              onClick={(e) => setIsSignUp(false)}
+            >
+              Back to sign in
+            </div>
+          </Stack>
         )}
         <SocialSignIn />
       </Stack>
