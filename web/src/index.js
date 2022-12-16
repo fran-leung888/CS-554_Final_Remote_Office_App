@@ -6,16 +6,20 @@ import reportWebVitals from "./reportWebVitals";
 import { io } from "socket.io-client";
 import { Provider } from "react-redux";
 import store from "./data/redux/store";
-import { AuthProvider } from "./component/Auth"
+import { AuthProvider } from "./component/Auth";
+import { SocketContext} from "./socketContext";
+
 const socket = io();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-    <AuthProvider>
-      <App socket={socket} />
-    </AuthProvider>
+      <AuthProvider>
+        <SocketContext.Provider value={socket}>
+          <App socket={socket} />
+        </SocketContext.Provider>
+      </AuthProvider>
     </Provider>
   </React.StrictMode>
 );

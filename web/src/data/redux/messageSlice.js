@@ -20,53 +20,85 @@ function constructMessage(
   };
 }
 
-export const chatDiagramSlice = createSlice({
-  name: "chatDiagram",
+export const messageSlice = createSlice({
+  name: "message",
   initialState: {
-    _id: -1,
-    type: 0,
+    initialized: false,
+    // all messages
     messages: {},
-    users: [],
     enabled: false,
+    // current chat
+    chatId: -1,
+    type: 0,
+    users: [],
   },
   reducers: {
+    setInitialized: (state, action) => {
+      state.initialized = action.payload;
+    },
     setData: (state, action) => {
-      return { ...state, ...action.payload, enabled: true };
+      return {
+        ...state,
+        ...action.payload,
+        enabled: true,
+        chatId: action.payload.chatId,
+      };
     },
     setMessages: (state, action) => {
       action.payload.messages.forEach((messgae) => (messgae.enabled = true));
       state.messages[action.payload._id] = action.payload.messages;
     },
+    setAllMessages: (state, action) => {
+      let messageObj = {};
+      action.payload.forEach((messgae) => {
+        if (!messageObj[messgae.chatId]) {
+          messageObj[messgae.chatId] = [messgae];
+        } else {
+          messageObj[messgae.chatId].push(messgae);
+        }
+        messgae.enabled = true;
+      });
+      state.messages = messageObj;
+    },
     addMessage: (state, action) => {
-      console.log("test Add Message");
-      if (state.messages[action.payload._id]) {
+      console.log("Add message, ", action.payload);
+      if (state.messages[action.payload.chatId]) {
         let exist = false;
-        state.messages[action.payload._id].forEach((message) => {
+        state.messages[action.payload.chatId].forEach((message) => {
           if (message._id == action.payload.messageId && message.enabled)
             exist = true;
         });
         if (!exist) {
           console.log("Add Message");
-          state.messages[action.payload._id] = [
-            ...state.messages[action.payload._id],
+          state.messages[action.payload.chatId] = [
+            ...state.messages[action.payload.chatId],
             constructMessage(
               action.payload.messageId,
               action.payload.message,
-              action.payload.user,
+              action.payload.userId,
               action.payload.time
             ),
           ];
         }
+      } else {
+        state.messages[action.payload.chatId] = [
+          constructMessage(
+            action.payload.messageId,
+            action.payload.message,
+            action.payload.userId,
+            action.payload.time
+          ),
+        ];
       }
     },
     addLoadingMessage: (state, action) => {
-      if (state.messages[action.payload._id]) {
-        state.messages[action.payload._id] = [
-          ...state.messages[action.payload._id],
+      if (state.messages[action.payload.chatId]) {
+        state.messages[action.payload.chatId] = [
+          ...state.messages[action.payload.chatId],
           constructMessage(
             action.payload.randomId,
             action.payload.message,
-            action.payload.user,
+            action.payload.userId,
             action.payload.time,
             true
           ),
@@ -75,8 +107,8 @@ export const chatDiagramSlice = createSlice({
     },
     // action randomId
     resetLoadingMessage(state, action) {
-      if (state.messages[action.payload._id]) {
-        state.messages[action.payload._id].forEach((message) => {
+      if (state.messages[action.payload.chatId]) {
+        state.messages[action.payload.chatId].forEach((message) => {
           if (message._id === action.payload.randomId) {
             message._id = action.payload.realId;
             message.loading = false;
@@ -87,8 +119,8 @@ export const chatDiagramSlice = createSlice({
       }
     },
     failMessage(state, action) {
-      if (state.messages[action.payload._id]) {
-        state.messages[action.payload._id].forEach((message) => {
+      if (state.messages[action.payload.chatId]) {
+        state.messages[action.payload.chatId].forEach((message) => {
           if (message._id === action.payload.randomId) {
             message.loading = false;
             message.fail = true;
@@ -105,6 +137,8 @@ export const chatDiagramSlice = createSlice({
 // Action creators are generated for each case reducer function
 
 export const {
+  setInitialized,
+  setAllMessages,
   setData,
   setMessages,
   addMessage,
@@ -112,6 +146,6 @@ export const {
   resetLoadingMessage,
   failMessage,
   disableDiagram,
-} = chatDiagramSlice.actions;
+} = messageSlice.actions;
 
-export default chatDiagramSlice.reducer;
+export default messageSlice.reducer;

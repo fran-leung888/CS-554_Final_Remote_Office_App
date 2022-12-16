@@ -9,57 +9,52 @@ import {
   checkRes,
   verifyObj,
 } from "../../utils/verificationUtils";
-import io from "socket.io-client";
 import {
   addLoadingMessage,
   resetLoadingMessage,
   failMessage,
-} from "../../data/redux/chatDiagramSlice";
+} from "../../data/redux/messageSlice";
+
+import TextareaAutosize from '@mui/base/TextareaAutosize';
 
 export default function SendArea(props) {
   const [messageToSend, setMessageToSend] = useState("");
   const currentUser = useSelector((state) => state.user);
-  const _id = useSelector((state) => state.chatDiagram._id);
+  const chatId = useSelector((state) => state.message.chatId);
   const dispatch = useDispatch();
-  const socketRef = useRef();
 
-  useEffect(() => {
-    socketRef.current = io("/");
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
 
   const handleSend = async () => {
-    let randomId;
+    let tempMessageId, tempChatId;
     try {
       // add message to redux and set it as loading
       if (!verifyString(messageToSend).valid) throw "Message can not be empty.";
-      randomId = Math.random();
+      tempMessageId = Math.random();
       dispatch(
         addLoadingMessage({
-          _id,
-          randomId,
+          chatId,
+          randomId: tempMessageId,
           message: messageToSend,
-          user: currentUser,
+          userId: currentUser._id,
         })
       );
-      let res = await chatData.sendMessage(_id, messageToSend, currentUser);
+      let res = await chatData.sendMessage(chatId, messageToSend, currentUser);
       checkRes(res);
       dispatch(
         resetLoadingMessage({
-          _id,
-          randomId,
-          realId: res.data.insertedIds[0],
+          chatId,
+          randomId: tempMessageId,
+          realId: res.data.insertedId,
           time: res.data.time
         })
       );
       setMessageToSend("");
     } catch (e) {
+      console.log(e)
       dispatch(
         failMessage({
-          _id,
-          randomId,
+          chatId,
+          randomId: tempMessageId,
         })
       );
     }
@@ -69,13 +64,13 @@ export default function SendArea(props) {
     <Grid container>
       <Grid item xs={12}>
         <FormControl>
-          <TextField
+          <TextareaAutosize
             placeholder="Type your message here."
             value={messageToSend}
             onChange={(e) => {
               setMessageToSend(e.target.value);
             }}
-          ></TextField>
+          ></TextareaAutosize>
         </FormControl>
       </Grid>
       <Grid item>
