@@ -134,6 +134,8 @@ io.on("connection", (socket) => {
     console.log(onlineName);
     console.log("user disconnected");
   });
+
+  chatSocket.joinRoom(socket);
 });
 
 server.listen(4000, () => {
