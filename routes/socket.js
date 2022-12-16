@@ -26,7 +26,7 @@ expressWs(router);  //将 express 实例上绑定 websocket 的一些方法
 
 router.ws("/uploadImage", async function (ws, req) {
 
-	ws.send("接成功了");
+	ws.send("connect successfully!");
 	ws.on("message", async function (msg) {
 	    let msgObj = JSON.parse(msg);
 		const img = await new ImageModel({
