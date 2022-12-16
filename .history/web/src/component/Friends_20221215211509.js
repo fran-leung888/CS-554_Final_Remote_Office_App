@@ -185,7 +185,6 @@ export default function Friends({ socket }) {
       setGroupsData(newCurUser.data.groups);
       tryGroup(groupsData);
     }
-
     console.log(curGroup);
     console.log(groupsData);
   };
@@ -247,7 +246,7 @@ export default function Friends({ socket }) {
   console.log(groupsSet);
   console.log(groupsData);
 
-  if (groupsSet && curGroup && groupsSet.length && curGroup.length) {
+  if (groupsSet.length && curGroup.length) {
     console.log(groupsSet);
     console.log(curGroup);
     console.log(groupsSet[curGroup.groupName].length);
