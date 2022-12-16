@@ -25,15 +25,15 @@ const searchUser = async (name) => {
 };
 
 const getUser = async (id) => {
-  let response = await axios.get(id);
+  let response = await axios.get("/user?id=" + id);
   return response;
 };
 
 const getUsers = async (ids) => {
   let response = await axios.get("/user/list", {
     params: {
-      id: ids + '',
-    }
+      id: ids + "",
+    },
   });
   return response;
 };
