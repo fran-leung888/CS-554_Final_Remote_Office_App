@@ -12,7 +12,6 @@ import SignOutButton from "./SignOut";
 import UserAdd from "./UserAdd";
 
 import groups from "../data/groups";
-import users from "../data/users";
 import { useDispatch } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
@@ -214,6 +213,9 @@ export default ({ socket }) => {
       </Grid>
       <Grid item xs={7}>
         <ChatDiagram></ChatDiagram>
+      </Grid>
+      <Grid item xs={4}>
+        <Button onClick={invite}>Invite</Button>
       </Grid>
       <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>

@@ -170,7 +170,7 @@ export default function Friends({ socket }) {
     // console.log(friend);
     // console.log(curGroup);
     // console.log(groupsSet);
-
+    let tempCurGroup = curGroup;
     if (groupsSet[curGroup.groupName].has(friend.username)) {
       let newFriend = await groups.exit(friend._id, curGroup.groupId);
       console.log("after delete this one:");
@@ -185,7 +185,7 @@ export default function Friends({ socket }) {
       setGroupsData(newCurUser.data.groups);
       tryGroup(groupsData);
     }
-
+    setCurGroup(tempCurGroup);
     console.log(curGroup);
     console.log(groupsData);
   };
@@ -247,7 +247,7 @@ export default function Friends({ socket }) {
   console.log(groupsSet);
   console.log(groupsData);
 
-  if (groupsSet && curGroup && groupsSet.length && curGroup.length) {
+  if (groupsSet.length && curGroup.length) {
     console.log(groupsSet);
     console.log(curGroup);
     console.log(groupsSet[curGroup.groupName].length);

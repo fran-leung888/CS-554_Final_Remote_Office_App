@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Button } from "@mui/material";
 import users from "../data/users";
-import { setUser } from "../data/redux/userSlice";
 // import { io } from "socket.io-client";
 // import Card from "react-bootstrap/Card";
 
@@ -15,7 +14,7 @@ const UserDetail = ({ socket }) => {
   // const [rejectData, setRejectData] = useState(undefined);
   const [isFriend, setIsFriend] = useState(false);
 
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const curUser = useSelector((state) => state.user);
   console.log(`curUser: ${JSON.stringify(curUser)}`);
@@ -107,10 +106,7 @@ const UserDetail = ({ socket }) => {
     // } else {
     //   console.log("add unsuccessful");
     // }
-    let newCurUser = await users.getUser(curUser._id);
-    console.log("after add friend, update the curUser");
-    console.log(newCurUser.data);
-    dispatch(setUser(newCurUser.data));
+    navigate("/login");
   };
 
   const deleteFriend = async () => {
@@ -122,11 +118,6 @@ const UserDetail = ({ socket }) => {
     setAddSuccess(false);
 
     console.log(deleteF.data);
-
-    let newCurUser = await users.getUser(curUser._id);
-    console.log("after add friend, update the curUser");
-    console.log(newCurUser.data);
-    dispatch(setUser(newCurUser.data));
   };
 
   return (
