@@ -54,7 +54,7 @@ module.exports = {
   async updateFriend(curId, friendId) {
     try {
       if (!curId || !friendId) {
-        throw "you must input the people id you want to add";
+        throw Error("you must input the people id you want to add");
       }
       const usersCollection = await users();
       // console.log(typeof curId);
