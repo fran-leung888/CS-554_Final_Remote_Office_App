@@ -85,19 +85,19 @@ export default function Friends({ socket }) {
                 haveMembers[groupsData[i].groupName].add(
                   tempGroup.data.groupMembers[j].memberName
                 );
+              } else {
+                haveMembers[groupsData[i].groupName].add("null");
               }
             } else {
               console.log(haveMembers[groupsData[i].groupName]);
-              if (tempGroup.data.groupMembers[j].memberName)
-                haveMembers[groupsData[i].groupName].add(
-                  tempGroup.data.groupMembers[j].memberName
-                );
-
+              haveMembers[groupsData[i].groupName].add(
+                tempGroup.data.groupMembers[j].memberName
+              );
               console.log(haveMembers[groupsData[i].groupName]);
             }
           }
         } else {
-          haveMembers[groupsData[i].groupName] = new Set();
+          haveMembers[groupsData[i].groupName] = [];
         }
         console.log(tempGroup);
       }

@@ -97,7 +97,7 @@ export default function Friends({ socket }) {
             }
           }
         } else {
-          haveMembers[groupsData[i].groupName] = new Set();
+          haveMembers[groupsData[i].groupName] = [];
         }
         console.log(tempGroup);
       }
