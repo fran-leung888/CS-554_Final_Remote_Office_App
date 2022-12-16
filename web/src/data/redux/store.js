@@ -7,7 +7,8 @@ import userSlice from "./userSlice";
 import errorSlice from "./errorSlice";
 import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
-import chatDiagramSlice from "./chatDiagramSlice";
+import messageSlice from "./messageSlice";
+import chatSlice from "./chatSlice";
 
 export default configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export default configureStore({
     searchUser: searchUser,
     error: errorSlice,
     status: statusSlice,
-    chatDiagram: chatDiagramSlice,
+    message: messageSlice,
+    chat: chatSlice
   },
 });

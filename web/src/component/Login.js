@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { redirect, Link } from "react-router-dom";
-
 import users from "../data/users";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../data/redux/userSlice";
@@ -25,7 +24,6 @@ export default () => {
   const [name, setName] = useState("");
   const [passwd, setPasswd] = useState("");
   const { currentUser } = useContext(AuthContext);
-
   const dispatch = useDispatch();
 
   const handleChange = (set) => {

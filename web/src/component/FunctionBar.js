@@ -7,7 +7,7 @@ import SearchUser from "./SearchUser";
 import { useDispatch } from "react-redux";
 import { setContentStatus } from "../data/redux/statusSlice";
 import ChatIcon from "@mui/icons-material/Chat";
-import { disableDiagram } from "../data/redux/chatDiagramSlice";
+import { disableDiagram } from "../data/redux/messageSlice";
 export default () => {
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();

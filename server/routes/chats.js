@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
   try {
     let chat;
     if (id) {
-      chat = await chats.addMessageById(id, user._id, message, type);
+      chat = await chats.addMessageById(id, user._id, message, type, true);
     } else {
       chat = await chats.addMessage(from, to, message, type);
     }
