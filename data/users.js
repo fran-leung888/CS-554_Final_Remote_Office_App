@@ -1,109 +1,179 @@
-const { ObjectId } = require("mongodb");
-const bcrypt = require("bcrypt");
 const mongoCollections = require("../config/mongoCollections");
+const bcrypt = require("bcryptjs");
 const users = mongoCollections.users;
-const func = require("./functions");
+const { ObjectId } = require("mongodb");
 
 module.exports = {
-  async createUser(firstname, lastname, email, password) {
-    if (!firstname || !lastname || !email || !password)
-      throw "Please provide firstname, lastname, email address and password";
-    if (arguments.length != 4) throw "the number of parameter is wrong";
-    func.checkUserName(firstname);
-    func.checkUserName(lastname);
-    func.checkEmail(email);
-    func.checkPassword(password);
-
-    const userCollection = await users();
-    const user = await userCollection.findOne({ email: email.toLowerCase() });
-    if (user !== null) throw "this email has been registered!";
-
-    const saltRounds = 16;
-    const hash = await bcrypt.hash(password, saltRounds);
-    const newId = ObjectId();
-    let newUser = {
-      _id: newId,
-      firstname: firstname,
-      lastname: lastname,
-      email: email.toLowerCase(),
-      gender: "",
-      city: "",
-      state: "",
-      age: 0,
-      phonenumber: "",
-      hashedPassword: hash,
-    };
-    const insertInfo = await userCollection.insertOne(newUser);
-    if (!insertInfo.acknowledged || !insertInfo.insertedId)
-      throw "Could not add user";
-    newUser = await userCollection.findOne(newUser);
-    return newUser;
+  async checkId(id) {
+    if (!id) throw "id can not be empty.";
+    if (typeof id !== "string") throw "Id must be a string";
+    id = id.trim();
+    if (id.length === 0) throw "Id cannot be an empty string or just spaces";
+    if (!ObjectId.isValid(id)) throw "invalid object ID";
   },
 
-  async checkUser(email, password) {
-    if (!email || !password) throw "Please provide email address and password";
-    if (arguments.length != 2) throw "the number of parameter is wrong";
-    func.checkEmail(email);
-    func.checkPassword(password);
-    const userCollection = await users();
-    const user = await userCollection.findOne({ email: email.toLowerCase() });
-    if (user === null) throw "Either the email address or password is invalid";
-    let comparePassword = bcrypt.compare(password, user.hashedPassword);
-    if (comparePassword) return user;
-    else throw "Either the username or password is invalid";
+  async hashPassword(plaintextPassword) {
+    const hash = await bcrypt.hash(plaintextPassword, 10);
+    return hash;
   },
-  async modifyUserProfile(id, email, gender, city, state, age, phonenumber) {
-    if (!id || !email || !gender || !city || !state || !age || !phonenumber)
-      throw "must provide all parameters for modify user profile";
-    if (arguments.length != 7) throw "the number of parameter is wrong";
-    if (!ObjectId.isValid(id)) throw "invalid user ID";
-    if (!id) throw "You must provide an id to search for";
-    func.checkId(id);
-    func.checkEmail(email);
-    func.checkString(gender);
-    func.checkString(city);
-    func.checkString(state);
-    func.checkNumber(age);
-    if (age < 0) throw "age must be positive";
-    func.checkString(phonenumber);
 
-    const userCollection = await users();
-    let modifyuser = {
-      email: email,
-      gender: gender,
-      city: city,
-      state: state,
-      age: age,
-      phonenumber: phonenumber,
+  async comparePassword(plaintextPassword, hash) {
+    const result = await bcrypt.compare(plaintextPassword, hash);
+    return result;
+  },
+
+  async addUser(name, username, password) {
+    name = name.trim();
+    username = username.trim();
+
+    const usersCollection = await users();
+    const userExist = await usersCollection.findOne({ username });
+    if (userExist != null) throw "User exists.";
+
+    let hash = await this.hashPassword(password);
+    let friends = [];
+    // let hash = password
+    let user = {
+      name,
+      username,
+      password: hash,
+      friends: friends,
     };
 
-    const updatedInfo = await userCollection.updateOne(
-      { _id: ObjectId(id) },
-      { $set: modifyuser }
-    );
-    if (!updatedInfo.matchedCount && !updatedInfo.modifiedCount) {
-      throw "could not update user successfully";
+    const userInfo = await usersCollection.insertOne(user);
+    if (!userInfo.acknowledged || !userInfo.insertedId)
+      throw "Could not add user.";
+
+    const userId = userInfo.insertedId.toString();
+
+    return await this.getUser(userId);
+  },
+
+  async updateFriend(curId, friendId) {
+    try {
+      if (!curId || !friendId) {
+        throw Error("you must input the people id you want to add");
+      }
+      const usersCollection = await users();
+      // console.log(typeof curId);
+      // console.log(typeof friendId);
+      const curUser = await this.getUser(curId);
+      const otherUser = await this.getUser(friendId);
+      console.log(`curUser:${curUser}`);
+      console.log(`otherUser: ${otherUser}`);
+
+      // console.log(`curUser.friends.length:${curUser.friends.length}`);
+      // if (curUser.friends.length) {
+      //   for (let i = 0; i < curUser.friends.length; i++) {
+      //     console.log(
+      //       `curUser.friends[i]: ${JSON.stringify(curUser.friends[i])}`
+      //     );
+      //     if (
+      //       curUser.friends[i] &&
+      //       curUser.friends[i]._id.toString() === friendId
+      //     ) {
+      //       return curUser;
+      //     }
+      //   }
+      // }
+
+      const updatedInfo = await usersCollection.update(
+        { _id: ObjectId(curId) },
+        {
+          $push: {
+            friends: {
+              _id: friendId,
+              name: otherUser.name,
+              username: otherUser.username,
+            },
+          },
+        }
+      );
+      console.log(`updatedInfo:${updatedInfo}`);
+      const newUser = await this.getUser(curId);
+      console.log(`newUser.friends:${newUser.friends}`);
+
+      await usersCollection.update(
+        { _id: ObjectId(friendId) },
+        {
+          $push: {
+            friends: {
+              _id: curId,
+              name: curUser.name,
+              username: curUser.username,
+            },
+          },
+        }
+      );
+      console.log(`otherUser update:`);
+      console.log(await this.getUser(friendId));
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
     }
-    return true;
   },
-  async getUserById(id) {
-    func.checkId(id);
-    if (arguments.length != 1) throw 'the number of parameter is wrong';
-    const userCollection = await users();
-    const user = await userCollection.findOne({ _id: ObjectId(id) });
+
+  async deleteFriend(curId, friendId) {
+    try {
+      const usersCollection = await users();
+      // const curUser = await this.getUser(curId);
+      // const otherUser = await this.getUser(friendId);
+      console.log("delete before, the friendId:");
+      console.log(friendId);
+      await usersCollection.update(
+        { _id: ObjectId(curId) },
+        { $pull: { friends: { _id: friendId } } },
+        { multi: true }
+      );
+
+      const newUser = await this.getUser(curId);
+      console.log("after delete, the curUser data is:");
+      console.log(newUser);
+
+      //  In the same time, also delete the cur user from the friend database
+      await usersCollection.update(
+        { _id: ObjectId(friendId) },
+        { $pull: { friends: { _id: curId } } },
+        { multi: true }
+      );
+      console.log("after delete the cur user from friend database");
+      console.log(await this.getUser(friendId));
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
+
+  async getUser(id) {
+    await this.checkId(id);
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ _id: ObjectId(id) });
     if (user === null) throw "No user with that id";
-    user._id = user._id.toString();
+
     return user;
   },
 
-  async getUserByEmail(email) {
-    if (!email) throw "must provid email for getting a user"
-    if (arguments.length != 1) throw 'the number of parameter is wrong';
-    const userCollection = await users();
-    const user = await userCollection.findOne({ email: email });
-    if (user === null) throw "No user with that email";
-    user._id = user._id.toString();
-    return user;
+  async getUserByname(name) {
+    const usersCollection = await users();
+    var str = ".*" + name + ".*$";
+    var reg = new RegExp(str);
+    const user = await usersCollection.find({ name: reg });
+    if ((await user.count()) === 0) throw "No user with that name";
+    let userList = [];
+    await user.forEach((each) => {
+      userList.push(each);
+    });
+    return userList;
+  },
+
+  async login(username, password) {
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ username: username });
+    if (user == null) throw "User does not exist.";
+    if (await this.comparePassword(password, user.password)) {
+      return user;
+    } else {
+      throw "Please check username and password.";
+    }
   },
 };
-
