@@ -1,10 +1,5 @@
-const express = require("express");
-const app = express();
-require("express-async-errors");
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const { io, app, express, server } = require('./config/socket')
+const chatSocket = require('./socket/chatSocket')
 const store = require("./store/dataStore");
 const configRoutes = require("./routes/router");
 

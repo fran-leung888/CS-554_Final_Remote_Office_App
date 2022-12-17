@@ -53,6 +53,7 @@ module.exports = {
         ...mesageToInsert,
       };
       if (notify) {
+        console.log('chatSocket is', chatSocket)
         chatSocket.notifyMessage(constant.event.message, chatId, {
           chatId,
           messageId: result.insertedId,
