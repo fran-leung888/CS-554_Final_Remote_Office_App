@@ -26,6 +26,7 @@
     "react-social-login-buttons": "^3.6.1",
     "redux": "^4.2.0",
     "redux-devtools-extension": "^2.13.9",
+    "redux-persist": "^6.0.0",
     "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3",
     "web-vitals": "^2.1.4"

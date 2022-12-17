@@ -5,24 +5,29 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { io } from "socket.io-client";
 import { Provider } from "react-redux";
-import store from "./data/redux/store";
+import { persistor, store } from "./data/redux/store";
 import { AuthProvider } from "./component/Auth";
 import { SocketContext } from "./socketContext";
 import { SnackbarProvider } from "notistack";
+import { PersistGate } from 'redux-persist/integration/react'
+import { CircularIndeterminate } from './component/CircularIndeterminate'
 
 const socket = io();
 console.log('Socket in index.js is', socket)
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   // <React.StrictMode>
     <Provider store={store}>
-      <SnackbarProvider maxSnack={3}>
-        <AuthProvider>
-          <SocketContext.Provider value={socket}>
-            <App socket={socket} />
-          </SocketContext.Provider>
-        </AuthProvider>
-      </SnackbarProvider>
+      <PersistGate loading={<CircularIndeterminate />} persistor={persistor}>
+        <SnackbarProvider maxSnack={3}>
+          <AuthProvider>
+            <SocketContext.Provider value={socket}>
+              <App socket={socket} />
+            </SocketContext.Provider>
+          </AuthProvider>
+        </SnackbarProvider>
+      </PersistGate>
     </Provider>
   // </React.StrictMode>
 );

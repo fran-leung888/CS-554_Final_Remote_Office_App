@@ -22,7 +22,7 @@ module.exports = {
     return result;
   },
 
-  async addUser(name, username, password) {
+  async addUser(name, username, password, isFirebaseAuth = false) {
     name = name.trim();
     username = username.trim();
 
@@ -30,7 +30,7 @@ module.exports = {
     const userExist = await usersCollection.findOne({ username });
     if (userExist != null) throw "User exists.";
 
-    let hash = await this.hashPassword(password);
+    let hash = isFirebaseAuth ? "" : await this.hashPassword(password);
     let friends = [];
     let groups = [];
     // let hash = password
@@ -38,8 +38,9 @@ module.exports = {
       name,
       username,
       password: hash,
-      friends: friends,
-      groups: groups,
+      isFirebaseAuth,
+      friends,
+      groups,
     };
 
     const userInfo = await usersCollection.insertOne(user);
@@ -193,7 +194,7 @@ module.exports = {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ username: username });
     if (user == null) throw "User does not exist.";
-    if (await this.comparePassword(password, user.password)) {
+    if (user.isFirebaseAuth || await this.comparePassword(password, user.password)) {
       return user;
     } else {
       throw "Please check username and password.";

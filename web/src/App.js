@@ -39,6 +39,7 @@ const style = {
 
 function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
+  console.debug("current user", currentUser);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   console.log("Socket in app is ", socket);
 
@@ -61,30 +62,27 @@ function App({ socket }) {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home socket={socket} />} />
-          <Route path="/search" element={<UserDetail socket={socket} />} />
-          {/* <Route path="/invite" element={<UserAdd socket={socket} />} /> */}
           <Route path="/friends" element={<Friends socket={socket} />} />
-          {/* {PrivateRoute({
-            loggedIn: !!currentUser,
+          {PrivateRoute({
+            loggedIn: !!currentUser._id,
             path: "/home",
             element: <Home socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/search",
             element: <UserDetail socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/invite",
             element: <UserAdd socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/friends",
             element: <Friends />,
-          })} */}
+          })}
         </Routes>
       </Router>
     </div>
