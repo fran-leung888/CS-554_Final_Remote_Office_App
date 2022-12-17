@@ -53,7 +53,6 @@ function App({ socket }) {
       console.log("Socket get disconnected!!!", socket);
       enqueueSnackbar("Connection is unstable", noti.errOpt);
     });
-    
   }, []);
 
   return (
@@ -62,7 +61,10 @@ function App({ socket }) {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/friends" element={<Friends socket={socket} />} />
+          {/* <Route path="/home" element={<Home socket={socket} />} />
+          <Route path="/search" element={<UserDetail socket={socket} />} />
+          <Route path="/invite" element={<UserAdd socket={socket} />} />
+          <Route path="/friends" element={<Friends socket={socket} />} /> */}
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/home",

@@ -45,6 +45,7 @@ module.exports = {
     if (!member || !group)
       throw "please input a member who want to add and input a group which someone want to add in";
 
+    const attendTime = Date.parse(new Date());
     const groupsCollection = await groups();
     const updatedInfo = await groupsCollection.update(
       { _id: group._id },
@@ -53,6 +54,7 @@ module.exports = {
           groupMembers: {
             memberId: member._id.toString(),
             memberName: member.username,
+            attendTime: attendTime,
           },
         },
       }
@@ -71,7 +73,7 @@ module.exports = {
   },
 
   async getGroup(id) {
-    await this.checkId(id);
+    // await this.checkId(id);
     const groupsCollection = await groups();
     const group = await groupsCollection.findOne({ _id: ObjectId(id) });
     if (group === null) throw "No group with that id";
