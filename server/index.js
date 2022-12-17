@@ -11,6 +11,8 @@ const configRoutes = require("./routes/router");
 const cookieParser = require("cookie-parser");
 
 const usersCollection = require("./data/users");
+const users = require("./data/users");
+const groups = require("./data/groups");
 
 app.use(cookieParser());
 
@@ -60,7 +62,7 @@ io.on("connection", (socket) => {
     // onlineUsers.set(userId, socket.id);
   });
 
-  socket.on("addFriend", (data) => {
+  socket.on("addFriend", async (data) => {
     // console.log(`addFriend data: ${data}`);
     // const sendToUser = onlineUsers.get(data.friendId);
     let sendToUser = "";
@@ -75,6 +77,12 @@ io.on("connection", (socket) => {
       console.log(data);
       console.log(sendToUser);
       io.to(sendToUser).emit("addFriendResponse", data);
+    } else {
+      console.log("curUser want to add people are not online");
+      console.log(data);
+      // storeFriend(data);
+      const temp = await users.updateOfflineInvite(data.friendId, data.applyId);
+      console.log(temp);
     }
   });
 
@@ -93,9 +101,9 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("invite", (data) => {
+  socket.on("invite", async (data) => {
     console.log("I want to invite this one:");
-    console.log(data);
+    console.log(JSON.stringify(data));
 
     let sendToUser = "";
     for (let i = 0; i < onlineName.length; i++) {
@@ -105,6 +113,15 @@ io.on("connection", (socket) => {
     console.log(`sendToUser: ${sendToUser}`);
     if (sendToUser) {
       io.to(sendToUser).emit("inviteResponse", data);
+    } else {
+      console.log("curUser want to add people are not online");
+      console.log(data);
+      const temp = await users.updateOfflineGroupInvite(
+        data.invite._id,
+        data.grouperId,
+        data.group.groupId
+      );
+      console.log(temp);
     }
   });
 

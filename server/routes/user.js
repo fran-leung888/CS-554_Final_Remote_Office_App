@@ -111,6 +111,94 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+router.post("/delofflinefri", async (req, res) => {
+  try {
+    // userId, inviteUserId
+    if (!req.body.userId || !req.body.inviteUserId) {
+      return res
+        .status(400)
+        .json({ message: "please input the friend you already solve" });
+    }
+
+    console.log("in delofflinefri");
+    console.log(req.body.userId, req.body.inviteUserId);
+    const updatedInfo = await users.deleteInviteInfo(
+      req.body.userId,
+      req.body.inviteUserId
+    );
+    console.log("after delete, the curUser data is:");
+    console.log(updatedInfo);
+    res.send(new response(updatedInfo).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
+router.post("/deloffgroup", async (req, res) => {
+  console.log(req.body.userId, req.body.inviteUserId);
+  try {
+    if (!req.body.userId || !req.body.inviteUserId) {
+      return res
+        .status(400)
+        .json({ message: "please input the friend you already solve" });
+    }
+
+    const updatedInfo = await users.deleteOfflineGroupInvite(
+      req.body.userId,
+      req.body.inviteUserId
+    );
+    console.log("after delete, the curUser data is:");
+    console.log(updatedInfo);
+    res.send(new response(updatedInfo).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
+router.post("/addofflinefri", async (req, res) => {
+  // userId, inviteUserId
+  try {
+    if (!req.body.userId || !req.body.inviteUserId) {
+      return res.status(400).json({
+        message: "you must input the people who got invite when he off-online",
+      });
+    }
+
+    const updatedInfo = await users.updateOfflineInvite(
+      req.body.userId,
+      req.body.inviteUserId
+    );
+    console.log("after delete, the curUser data is:");
+    console.log(updatedInfo);
+    res.send(new response(updatedInfo).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
+router.post("/addoffgroup", async (req, res) => {
+  // userId, inviteUserId, attendGroupId
+  try {
+    if (!req.body.userId || !req.body.inviteUserId || !req.body.attendGroupId) {
+      return res.status(400).json({
+        message:
+          "please input the people you invite, who invite, and which group the people want he friend in",
+      });
+    }
+
+    const updatedInfo = await users.updateOfflineGroupInvite(
+      req.body.userId,
+      req.body.inviteUserId,
+      req.body.attendGroupId
+    );
+    console.log("after delete, the curUser data is:");
+    console.log(updatedInfo);
+    res.send(new response(updatedInfo).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
 router.get("/user", async (req, res) => {
   // console.log(`req.body.name: ${req.query.name}`);
   const name = req.query.name;
@@ -129,7 +217,7 @@ router.get("/user", async (req, res) => {
 });
 
 router.get("/user/list", async (req, res) => {
-  const ids = req.query.id
+  const ids = req.query.id;
   try {
     const allUser = await users.getUsers(ids);
     res.send(new response(allUser).success(res));
