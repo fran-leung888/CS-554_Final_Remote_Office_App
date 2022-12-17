@@ -19,12 +19,16 @@ import {
 
 import { useDispatch } from "react-redux";
 import { setError } from "../data/redux/errorSlice";
+import { useSnackbar } from "notistack";
+import noti from "../data/notification";
+
 
 export default function FormDialog(props) {
   const [name, setName] = useState("");
   const [openUsers, setOpenUsers] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const dispatch = useDispatch();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const searchUser = async () => {
     try {
@@ -36,12 +40,7 @@ export default function FormDialog(props) {
       setSearchResult([...res.data]);
       setOpenUsers(true);
     } catch (e) {
-      dispatch(
-        setError({
-          status: true,
-          description: e,
-        })
-      );
+      enqueueSnackbar(e, noti.errOpt);
     }
   };
 
