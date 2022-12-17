@@ -19,7 +19,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
     <Provider store={store}>
-      <PersistGate loading={<CircularIndeterminate />} persistor={persistor}>
+      {/* <PersistGate loading={<CircularIndeterminate />} persistor={persistor}> */}
         <SnackbarProvider maxSnack={3}>
           <AuthProvider>
             <SocketContext.Provider value={socket}>
@@ -27,7 +27,7 @@ root.render(
             </SocketContext.Provider>
           </AuthProvider>
         </SnackbarProvider>
-      </PersistGate>
+      {/* </PersistGate> */}
     </Provider>
   // </React.StrictMode>
 );
