@@ -57,6 +57,39 @@ const deleteFriend = async (friendId) => {
   return response;
 };
 
+const addOffFri = async (userId, inviteUserId) => {
+  let response = await axios.post("/addofflinefri", {
+    userId,
+    inviteUserId,
+  });
+  return response;
+};
+
+const addOffGroup = async (userId, inviteUserId, attendGroupId) => {
+  let response = await axios.post("/addoffgroup", {
+    userId,
+    inviteUserId,
+    attendGroupId,
+  });
+  return response;
+};
+
+const delFriRecord = async (userId, inviteUserId) => {
+  let response = await axios.post("/delofflinefri", {
+    userId,
+    inviteUserId,
+  });
+  return response;
+};
+
+const delGroupRecord = async (userId, inviteUserId) => {
+  let response = await axios.post("/deloffgroup", {
+    userId,
+    inviteUserId,
+  });
+  return response;
+};
+
 export default {
   addUser,
   login,
@@ -65,4 +98,8 @@ export default {
   getUsers,
   addFriend,
   deleteFriend,
+  addOffFri,
+  addOffGroup,
+  delFriRecord,
+  delGroupRecord,
 };

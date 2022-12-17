@@ -150,7 +150,7 @@ export default function Friends({ socket }) {
   const deleteGro = async (group, e) => {
     console.log(group);
     if (group.groupId) {
-      let exitG = await groups.exit(group.groupId);
+      let exitG = await groups.exit(curUser._id, group.groupId);
       console.log(exitG.data);
       dispatch(setUser(exitG.data));
       setGroupsData(curUser.groups);
