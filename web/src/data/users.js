@@ -1,10 +1,11 @@
 import axios from "../config/axios";
 
-const addUser = async (name, username, passwd) => {
+const addUser = async (name, username, passwd, isFirebaseAuth=false) => {
   let response = await axios.post("/user", {
     name,
     username,
     passwd,
+    isFirebaseAuth
   });
   return response;
 };

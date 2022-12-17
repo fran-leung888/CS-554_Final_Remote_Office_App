@@ -1,7 +1,5 @@
-const { Server } = require("socket.io");
-const io = new Server(server);
-const chatData = require("../data/chats");
-const constant = require("../data/constant");
+const { io, app, express, server } = require("../config/socket");
+
 function getServerChatSocket(id) {
   return "server-chat-" + id;
 }
@@ -10,33 +8,21 @@ function getClientChatSocket(id) {
   return "client-chat-" + id;
 }
 
-async function listenAfterLogin(user) {
-  if (user?._id) {
-    const chats = await chatData.getChats(user._id);
-    chats.forEach((chat) => {
-      io.on(getServerChatSocket(chat._id), async (data, callback) => {
-        if (data?.type) {
-          try {
-            let newMessage = await chatData.addMessage(data.user, data.message);
-            io.emit(getClientChatSocket(chat._id), {
-              message: newMessage,
-            });
-            callback({
-              status: constant.socketRes.success,
-            });
-          } catch (e) {
-            callback({
-              status: constant.socketRes.fail,
-            });
-          }
-        } else {
-          callback({
-            status: constant.socketRes.fail,
-          });
-        }
-      });
+module.exports = {
+  async notifyMessage(event, room, data) {
+    if (room) {
+      console.log("notify message to ", room);
+      io.to(room).emit(event, data);
+      console.log("sids are ", io.of("/").adapter.sids);
+    } else {
+      throw "Chat invalid.";
+    }
+  },
+
+  joinRoom(socket) {
+    socket.on("joinRoom", (id) => {
+      console.log(`socket ${socket.id} join room ${id}`);
+      socket.join(id);
     });
-  } else {
-    throw "User invalid.";
-  }
-}
+  },
+};

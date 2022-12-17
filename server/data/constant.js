@@ -7,4 +7,12 @@ module.exports = {
     success: 0,
     fail: 1,
   },
+  socketMessageType: {
+    newChat: 0,
+    newMessage: 1,
+  },
+  event: {
+    message: "message",
+    newChat: "newChat",
+  },
 };

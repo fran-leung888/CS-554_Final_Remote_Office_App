@@ -10,10 +10,13 @@ router.post("/user", async (req, res) => {
   const name = req.body.name;
   const username = req.body.username;
   const password = req.body.passwd;
+  const isFirebaseAuth = !!req.body.isFirebaseAuth;
+
   try {
-    const user = await users.addUser(name, username, password);
+    const user = await users.addUser(name, username, password, isFirebaseAuth);
     res.send(new response(user).success(res));
   } catch (e) {
+    console.error(e);
     res.send(new response(null, e).fail(res));
   }
 });

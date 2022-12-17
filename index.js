@@ -1,17 +1,28 @@
-const { io, app, express, server } = require('./config/socket')
-const chatSocket = require('./socket/chatSocket')
-const store = require("./store/dataStore");
-const configRoutes = require("./routes/router");
+const express = require('express');
+const app = express();
+require('express-async-errors')
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+const store = require('./store/dataStore')
+const configRoutes = require('./routes/router');
+const cookieParser = require('cookie-parser');
+const usersCollection = require('./data/users')
+const bodyParser = require('body-parser')
 
-const cookieParser = require("cookie-parser");
-
-const usersCollection = require("./data/users");
-const users = require("./data/users");
-const groups = require("./data/groups");
 
 app.use(cookieParser());
-
 app.use(express.json());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+
+// ws 
+var expressWs = require("express-ws");
+expressWs(app);
+
 
 app.use(async (req, res, next) => {
   console.log("Url ", req.originalUrl, " is in...");
@@ -21,12 +32,13 @@ app.use(async (req, res, next) => {
   )
     next();
   else {
-    let session = req.cookies[store.SESSION_KEY];
-    if (!session) throw "Please login in.";
-    let user = await usersCollection.getUser(session);
-    console.log("\tCurrent user is ", user.name);
-    if (!user) throw "Please login in.";
-    console.log("\tAuth verified.");
+    // !!! 解开注释后验证登录信息
+    // let session = req.cookies[store.SESSION_KEY];
+    // if (!session) throw "Please login in.";
+    // let user = await usersCollection.getUser(session);
+    // console.log("\tCurrent user is ", user.name);
+    // if (!user) throw "Please login in.";
+    // console.log("\tAuth verified.");
     next();
   }
 });
@@ -45,6 +57,8 @@ app.use((err, req, res, next) => {
 
 // global.onlineUsers = new Map();
 onlineName = [];
+
+
 io.on("connection", (socket) => {
   console.log("a user connected");
 
@@ -57,7 +71,7 @@ io.on("connection", (socket) => {
     // onlineUsers.set(userId, socket.id);
   });
 
-  socket.on("addFriend", async (data) => {
+  socket.on("addFriend", (data) => {
     // console.log(`addFriend data: ${data}`);
     // const sendToUser = onlineUsers.get(data.friendId);
     let sendToUser = "";
@@ -72,12 +86,6 @@ io.on("connection", (socket) => {
       console.log(data);
       console.log(sendToUser);
       io.to(sendToUser).emit("addFriendResponse", data);
-    } else {
-      console.log("curUser want to add people are not online");
-      console.log(data);
-      // storeFriend(data);
-      const temp = await users.updateOfflineInvite(data.friendId, data.applyId);
-      console.log(temp);
     }
   });
 
@@ -96,46 +104,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("invite", async (data) => {
-    console.log("I want to invite this one:");
-    console.log(JSON.stringify(data));
-
-    let sendToUser = "";
-    for (let i = 0; i < onlineName.length; i++) {
-      if (onlineName[i].id === data.invite._id)
-        sendToUser = onlineName[i].socketId;
-    }
-    console.log(`sendToUser: ${sendToUser}`);
-    if (sendToUser) {
-      io.to(sendToUser).emit("inviteResponse", data);
-    } else {
-      console.log("curUser want to add people are not online");
-      console.log(data);
-      const temp = await users.updateOfflineGroupInvite(
-        data.invite._id,
-        data.grouperId,
-        data.group.groupId
-      );
-      console.log(temp);
-    }
-  });
-
-  socket.on("addGroup", (data) => {
-    console.log("the friend agree/disagree add to group, tell you:");
-    console.log(data);
-
-    let sendToUser = "";
-    for (let i = 0; i < onlineName.length; i++) {
-      if (onlineName[i].id === data.grouperId)
-        sendToUser = onlineName[i].socketId;
-    }
-    console.log(`sendToUser: ${sendToUser}`);
-
-    if (sendToUser) {
-      io.to(sendToUser).emit("addGroupRespond", data);
-    }
-  });
-
   socket.on("disconnect", () => {
     for (let i = 0; i < onlineName.length; i++) {
       if (onlineName[i].socketId === socket.id) {
@@ -146,10 +114,14 @@ io.on("connection", (socket) => {
     console.log(onlineName);
     console.log("user disconnected");
   });
-
-  chatSocket.joinRoom(socket);
 });
 
-server.listen(4000, () => {
-  console.log("listening on *:http://localhost:4000");
+
+
+app.listen(8080, () => {
+  console.log("listening on *:http://localhost:8080");
 });
+
+
+
+

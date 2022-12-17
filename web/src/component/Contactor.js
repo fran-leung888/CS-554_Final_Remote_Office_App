@@ -20,10 +20,12 @@ export default function Friends() {
     } else {
       setFriendsData([]);
     }
+
+    if (!curUser._id) {
+      navigate('/')
+    }
   }, []);
-  if (!curUser._id) {
-    return <div>Error: please login in</div>;
-  }
+
 
   const handleUserClick = (event, friend) => {
     console.log("show or close user card.");
