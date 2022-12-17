@@ -64,7 +64,7 @@ export default () => {
     }
   };
 
-  if (currentUser) {
+  if (currentUser && !!currentUser._id) {
     return <Navigate to="/home" />;
   }
 
