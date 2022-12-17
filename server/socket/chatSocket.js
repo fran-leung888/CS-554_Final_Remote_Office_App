@@ -1,5 +1,3 @@
-const chatData = require("../data/chats");
-const constant = require("../data/constant");
 const { io, app, express, server } = require("../config/socket");
 
 function getServerChatSocket(id) {
