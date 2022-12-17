@@ -61,10 +61,6 @@ function App({ socket }) {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/home" element={<Home socket={socket} />} />
-          <Route path="/search" element={<UserDetail socket={socket} />} />
-          <Route path="/invite" element={<UserAdd socket={socket} />} />
-          <Route path="/friends" element={<Friends socket={socket} />} /> */}
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/home",
@@ -83,7 +79,7 @@ function App({ socket }) {
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/friends",
-            element: <Friends />,
+            element: <Friends socket={socket}/>,
           })}
         </Routes>
       </Router>
