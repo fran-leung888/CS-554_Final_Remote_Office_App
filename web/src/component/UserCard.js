@@ -15,12 +15,16 @@ import { addChat, showChat } from "../data/redux/chatSlice";
 import { setData } from "../data/redux/messageSlice";
 import constant from "../data/constant";
 import { SocketContext } from "../socketContext";
+import { useSnackbar } from "notistack";
+import noti from "../data/notification";
+
 export default (props) => {
   console.log("props.user", props.user);
   const currentUser = useSelector((state) => state.user);
   const userChats = useSelector((state) => state.chat.chats);
   const dispatch = useDispatch();
   const socket = useContext(SocketContext)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
 
   const ChatWithUser = async () => {
@@ -65,7 +69,10 @@ export default (props) => {
         );
       }
       dispatch(setContentStatus(0));
-    } catch (e) {}
+    } catch (e) {
+      enqueueSnackbar(e, noti.errOpt);
+
+    }
   };
 
   if (props.user._id) {

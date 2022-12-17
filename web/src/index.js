@@ -7,21 +7,24 @@ import { io } from "socket.io-client";
 import { Provider } from "react-redux";
 import store from "./data/redux/store";
 import { AuthProvider } from "./component/Auth";
-import { SocketContext} from "./socketContext";
+import { SocketContext } from "./socketContext";
+import { SnackbarProvider } from "notistack";
 
 const socket = io();
-
+console.log('Socket in index.js is', socket)
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
-      <AuthProvider>
-        <SocketContext.Provider value={socket}>
-          <App socket={socket} />
-        </SocketContext.Provider>
-      </AuthProvider>
+      <SnackbarProvider maxSnack={3}>
+        <AuthProvider>
+          <SocketContext.Provider value={socket}>
+            <App socket={socket} />
+          </SocketContext.Provider>
+        </AuthProvider>
+      </SnackbarProvider>
     </Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
