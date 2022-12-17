@@ -6,9 +6,12 @@ import { doSocialSignIn, getCurrentUser } from '../firebase/FirebaseFunctions';
 import users from "../data/users";
 import { useDispatch } from "react-redux";
 import { setUser } from "../data/redux/userSlice";
+import { useSnackbar } from "notistack";
+import noti from "../data/notification"
 
 const SocialSignIn = () => {
     const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
     const socialSignOn = async (provider) => {
 
         let user = null;
@@ -28,6 +31,9 @@ const SocialSignIn = () => {
             switch (error.code) {
                 case "auth/popup-closed-by-user":
                     console.debug("User closed signin window");
+                    break;
+                case "auth/account-exists-with-different-credential":
+                    enqueueSnackbar("An account already exists with the same email address.", {...noti.errOpt, autoHideDuration: 30_000});
                     break;
                 case 400:
                     if (error.msg != "User exists.") {

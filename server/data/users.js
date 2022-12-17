@@ -42,6 +42,7 @@ module.exports = {
       name,
       username,
       password: hash,
+      isFirebaseAuth,
       friends,
       groups,
       offlineInvite: offlineInvite,
@@ -404,10 +405,7 @@ module.exports = {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ username: username });
     if (user == null) throw "User does not exist.";
-    if (
-      user.isFirebaseAuth ||
-      (await this.comparePassword(password, user.password))
-    ) {
+    if (user.isFirebaseAuth || await this.comparePassword(password, user.password)) {
       return user;
     } else {
       throw "Please check username and password.";
