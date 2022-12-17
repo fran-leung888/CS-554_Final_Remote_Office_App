@@ -13,7 +13,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import { setError, resetError } from "./data/redux/errorSlice";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -21,8 +20,10 @@ import Modal from "@mui/material/Modal";
 import UserDetail from "./component/UserDetail";
 import Friends from "./component/Friends";
 import { AuthContext, AuthProvider } from "./component/Auth";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import PrivateRoute from "./component/PrivateRoute";
+import { useSnackbar } from "notistack";
+import noti from "./data/notification";
 
 const style = {
   position: "absolute",
@@ -37,28 +38,25 @@ const style = {
 };
 
 function App({ socket }) {
-  // const status = useSelector((state) => state.error.status)
-  // const description = useSelector((state) => state.error.description)
-  const error = useSelector((state) => state.error);
-  const dispatch = useDispatch();
   const { currentUser } = useContext(AuthContext);
+  console.debug("current user", currentUser);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  console.log("Socket in app is ", socket);
+
+  // config behaviour when socket disconnects.
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket get connected!!!", socket);
+      enqueueSnackbar("Connection has built", noti.successOpt);
+    });
+    socket.on("disconnect", () => {
+      console.log("Socket get disconnected!!!", socket);
+      enqueueSnackbar("Connection is unstable", noti.errOpt);
+    });
+  }, []);
 
   return (
     <div>
-      <Modal
-        open={error.status}
-        onClose={() => {
-          dispatch(resetError());
-        }}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {error.description}
-          </Typography>
-        </Box>
-      </Modal>
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -68,22 +66,22 @@ function App({ socket }) {
           <Route path="/invite" element={<UserAdd socket={socket} />} />
           <Route path="/friends" element={<Friends socket={socket} />} /> */}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/home",
             element: <Home socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/search",
             element: <UserDetail socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/invite",
             element: <UserAdd socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/friends",
             element: <Friends />,
           })}

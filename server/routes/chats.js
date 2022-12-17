@@ -8,11 +8,12 @@ router.post("/", async (req, res) => {
   const from = req.body.from;
   const to = req.body.to;
   const message = req.body.message;
+  const user = req.body.user;
   const type = req.body.type;
   try {
     let chat;
     if (id) {
-      chat = await chats.addMessageById(id, message, type);
+      chat = await chats.addMessageById(id, user._id, message, type, true);
     } else {
       chat = await chats.addMessage(from, to, message, type);
     }
@@ -26,7 +27,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   const id = req.query.id;
   try {
-    const chat = await chats.getChats(id);
+    const chat = await chats.getChatsByUser(id);
     res.send(new response(chat).success(res));
   } catch (e) {
     console.log(e);
