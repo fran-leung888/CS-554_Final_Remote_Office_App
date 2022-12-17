@@ -13,6 +13,8 @@ import {
   verifyObj,
 } from "../../utils/verificationUtils";
 import Constant from "../../data/constant";
+import { useSnackbar } from "notistack";
+import noti from "../../data/notification";
 // {
 //     users:[]
 //     messages:[]
@@ -20,9 +22,11 @@ import Constant from "../../data/constant";
 // }
 export default function ChatPre(props) {
   console.log("load chat pre ", props.data);
-  const [userMap, setUserMap] = useState(null)
+  const [userMap, setUserMap] = useState(null);
   const currentUser = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
   // Get data at start.
   // get user map for convenience of searching user.
   useEffect(() => {
@@ -37,16 +41,16 @@ export default function ChatPre(props) {
             users[user._id] = user;
           }
         });
-        console.log('user data is' ,users)
+        console.log("user data is", users);
         setUserMap(users);
       })();
-    } catch (e) {}
+    } catch (e) {
+      enqueueSnackbar(e, noti.errOpt);
+    }
   }, []);
 
   const filterUser = (users) => {
-    const filteredOtherUser = users.filter(
-      (user) => user != currentUser._id
-    );
+    const filteredOtherUser = users.filter((user) => user != currentUser._id);
     if (filteredOtherUser.length !== 1) throw "Chat is wrong!";
     return filteredOtherUser;
   };
@@ -120,7 +124,7 @@ export default function ChatPre(props) {
         <Grid item container>
           {/* username */}
           <Grid item xs={12}>
-          {buildName(props.data)}
+            {buildName(props.data)}
           </Grid>
           <Grid item xc={12} container>
             {/* message */}

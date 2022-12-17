@@ -15,14 +15,15 @@ import {
   failMessage,
 } from "../../data/redux/messageSlice";
 
-import TextareaAutosize from '@mui/base/TextareaAutosize';
-
+import TextareaAutosize from "@mui/base/TextareaAutosize";
+import { useSnackbar } from "notistack";
+import noti from "../../data/notification";
 export default function SendArea(props) {
   const [messageToSend, setMessageToSend] = useState("");
   const currentUser = useSelector((state) => state.user);
   const chatId = useSelector((state) => state.message.chatId);
   const dispatch = useDispatch();
-
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleSend = async () => {
     let tempMessageId, tempChatId;
@@ -45,12 +46,12 @@ export default function SendArea(props) {
           chatId,
           randomId: tempMessageId,
           realId: res.data.insertedId,
-          time: res.data.time
+          time: res.data.time,
         })
       );
       setMessageToSend("");
     } catch (e) {
-      console.log(e)
+      enqueueSnackbar(e, noti.errOpt);
       dispatch(
         failMessage({
           chatId,

@@ -15,6 +15,7 @@
     "bootstrap": "^5.2.2",
     "firebase": "^7.23.0",
     "i": "^0.3.7",
+    "notistack": "^2.0.8",
     "npm": "^9.2.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.6.0",

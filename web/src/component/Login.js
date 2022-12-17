@@ -17,6 +17,8 @@ import { TextField, Button, Stack } from "@mui/material";
 import { AuthContext } from "./Auth";
 import { doCreateUserWithEmailAndPassword } from "../firebase/FirebaseFunctions";
 import SocialSignIn from "./SocialSignIn";
+import { useSnackbar } from "notistack";
+import noti from "../data/notification";
 
 export default () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -25,6 +27,7 @@ export default () => {
   const [passwd, setPasswd] = useState("");
   const { currentUser } = useContext(AuthContext);
   const dispatch = useDispatch();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleChange = (set) => {
     return (e) => set(e.target.value);
@@ -43,12 +46,7 @@ export default () => {
       dispatch(setUser(res.data));
       navigate("/home");
     } catch (e) {
-      dispatch(
-        setError({
-          status: true,
-          description: e,
-        })
-      );
+      enqueueSnackbar(e, noti.errOpt);
     }
   };
 
@@ -62,7 +60,7 @@ export default () => {
       checkResult(verifyObj(res.data, "user"));
       setIsSignUp(false);
     } catch (e) {
-      dispatch(setError({ status: true, description: e }));
+      enqueueSnackbar(e, noti.errOpt);
     }
   };
 
