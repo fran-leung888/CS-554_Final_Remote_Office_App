@@ -9,7 +9,8 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { TransitionProps } from "@mui/material/transitions";
 import constant from "../../data/constant";
-
+import Tooltip from "@mui/material/Tooltip";
+import ImageIcon from "@mui/icons-material/Image";
 export default function ActionBar(props) {
   const [isHover, setIsHover] = useState(false);
   const message = props.data;
@@ -19,7 +20,9 @@ export default function ActionBar(props) {
   return (
     <Grid container item>
       <Grid item>
-        <LocalFireDepartmentIcon />
+        <Tooltip title="Burn after reading">
+          <LocalFireDepartmentIcon color="warning" onClick={() => {}} />
+        </Tooltip>
       </Grid>
     </Grid>
   );

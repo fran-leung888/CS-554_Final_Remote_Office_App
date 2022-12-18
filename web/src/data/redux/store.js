@@ -8,7 +8,9 @@ import {
 } from "@reduxjs/toolkit";
 import storage from 'redux-persist/lib/storage'
 
+
 import userSlice from "./userSlice";
+
 
 import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
@@ -19,7 +21,7 @@ import chatSlice from "./chatSlice";
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ['chat', 'message', 'searchUser']
+  blacklist: ['chat', 'message', 'searchUser', 'status']
 };
 
 const reducer = combineReducers({

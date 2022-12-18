@@ -57,7 +57,7 @@ export default function ChatList() {
           userId: data.userId,
           time: data.time,
           message: data.message,
-          type: data.type
+          type: data.type,
         })
       );
     });
@@ -130,7 +130,11 @@ export default function ChatList() {
           console.log("build chat ", chat);
           return chat.show || chatDiagramMessages[chat._id]?.length > 0 ? (
             <div
-              className={currentChatId !== -1 ? "Focus" : ""}
+              className={
+                currentChatId !== -1 && currentChatId === chat._id
+                  ? "Focus"
+                  : ""
+              }
               id={chat._id}
               onClick={() => {
                 handleClickPreview(chat);
