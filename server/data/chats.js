@@ -7,6 +7,7 @@ const { ObjectId } = require("mongodb");
 const verification = require("../utils/verificationUtils");
 const chatSocket = require("../socket/chatSocket");
 const constant = require("./constant");
+const redisStore = require("./redisStore");
 
 function constructMessage(chatId, userId, message, type = 0, enabled = false) {
   let result = {
@@ -14,7 +15,7 @@ function constructMessage(chatId, userId, message, type = 0, enabled = false) {
     message,
     userId,
     // 0 - text
-    type: 0,
+    type,
     time: new Date().toJSON(),
     enabled,
   };
@@ -53,13 +54,13 @@ module.exports = {
         ...mesageToInsert,
       };
       if (notify) {
-        console.log('chatSocket is', chatSocket)
         chatSocket.notifyMessage(constant.event.message, chatId, {
           chatId,
           messageId: result.insertedId,
           message,
           userId,
           time: result.time,
+          type
         });
       }
       return result;
@@ -106,6 +107,7 @@ module.exports = {
           users: [from._id, to._id],
           type,
         });
+        await redisStore.removeChat(from._id);
         return newChat;
       }
     } else {
@@ -114,6 +116,7 @@ module.exports = {
   },
 
   async getMessages(chatId) {
+    // get message from redis
     verification.checkResult(verification.checkId(chatId));
     const chatCollection = await chatsCollection();
     const messageCollection = await messagesCollection();
@@ -133,21 +136,29 @@ module.exports = {
 
   async getChatsByUser(userId) {
     verification.checkResult(verification.checkId(userId));
+    // check redis cache
+    let chats = await redisStore.getChat(userId);
     const users = await usersCollection();
     const chatCollection = await chatsCollection();
     const messageCollection = await messagesCollection();
 
     const user = await users.findOne({ _id: new ObjectId(userId) });
     if (user) {
-      //   console.log({ users: userId });
-      let cursor = await chatCollection.find({ users: userId });
-      let chats = [],
+      let cursor,
         chatIds = [],
         messages = [];
-      await cursor.forEach((chat) => {
-        chats.push(chat);
-        chatIds.push(chat._id.toString());
-      });
+      if (!chats) {
+        chats = []
+        //   console.log({ users: userId });
+        cursor = await chatCollection.find({ users: userId });
+        await cursor.forEach((chat) => {
+          chats.push(chat);
+          chatIds.push(chat._id.toString());
+        });
+        await redisStore.storeChat(userId, chats);
+      } else {
+        chats.forEach((chat) => chatIds.push(chat._id.toString()));
+      }
       // find all messages
       cursor = await messageCollection.find({ chatId: { $in: chatIds } });
       await cursor.forEach((msg) => {

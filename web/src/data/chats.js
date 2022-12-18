@@ -30,6 +30,11 @@ async function getMessages(chatId) {
   return response;
 }
 
+async function burnMessage(messageId){
+  let response = await axios.get("/chat/message/burn?id=" + messageId);
+  return response;
+}
+
 
 function getServerChatSocket(id) {
   return "server-chat-" + id;
