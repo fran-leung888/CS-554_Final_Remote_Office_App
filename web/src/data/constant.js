@@ -11,6 +11,7 @@ export default {
     text: 0,
     image: 1,
     burn: 2,
+    file: 3,
   },
   avatarMax: 9,
   event: {

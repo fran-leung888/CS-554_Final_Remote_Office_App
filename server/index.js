@@ -27,6 +27,7 @@ app.use(async (req, res, next) => {
     console.log("\tCurrent user is ", user.name);
     if (!user) throw "Please login in.";
     console.log("\tAuth verified.");
+    req.user = user;
     next();
   }
 });

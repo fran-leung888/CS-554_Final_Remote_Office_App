@@ -10,7 +10,6 @@ import { AuthProvider } from "./component/Auth";
 import { SocketContext } from "./socketContext";
 import { SnackbarProvider } from "notistack";
 import { PersistGate } from "redux-persist/lib/integration/react";
-import { persistor } from "./data/redux/store";
 import { CircularIndeterminate } from './component/CircularIndeterminate'
 
 const socket = io();
