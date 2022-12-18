@@ -9,8 +9,9 @@ const SignOutButton = () => {
     const dispatch = useDispatch();
     const { currentUser } = useContext(AuthContext);
     const handleSignOut = () => {
-        dispatch(setUser({}))
-        doSignOut()
+        dispatch(setUser({}));
+        doSignOut();
+        localStorage.clear();
     }
     return currentUser ? (<Button onClick={handleSignOut}>
         Sign Out {currentUser.name}

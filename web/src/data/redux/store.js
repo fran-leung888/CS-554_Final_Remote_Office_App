@@ -24,35 +24,27 @@ import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
 import messageSlice from "./messageSlice";
 import chatSlice from "./chatSlice";
-
+import { createStore, combineReducers  } from "redux";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 const persistConfig = {
-  key: 'root',
-  version: 1,
+  key: "root",
   storage,
-}
+  blacklist: ['chat', 'message', 'searchUser']
+};
 
 const reducer = combineReducers({
   user: userSlice,
   searchUser: searchUser,
-  error: errorSlice,
   status: statusSlice,
   message: messageSlice,
-  chat: chatSlice
+  chat: chatSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 
-export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
-});
+const store = configureStore({ reducer: persistedReducer });
 
-export const persistor = persistStore(store)
-
-export default store
+export const persistor = persistStore(store);
+export default store;
