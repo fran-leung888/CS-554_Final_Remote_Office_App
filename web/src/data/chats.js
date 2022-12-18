@@ -16,11 +16,12 @@ async function getChats(id) {
   return response;
 }
 
-async function sendMessage(chatId, message, user) {
+async function sendMessage(chatId, message, user, type) {
   let response = await axios.post("/chat", {
     id: chatId,
     message,
     user,
+    type
   });
   return response;
 }

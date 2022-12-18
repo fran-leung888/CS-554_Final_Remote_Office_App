@@ -42,7 +42,7 @@ export default function SendArea(props) {
           type: constant.messageType.text,
         })
       );
-      let res = await chatData.sendMessage(chatId, messageToSend, currentUser);
+      let res = await chatData.sendMessage(chatId, messageToSend, currentUser, constant.messageType.text);
       checkRes(res);
       dispatch(
         resetLoadingMessage({

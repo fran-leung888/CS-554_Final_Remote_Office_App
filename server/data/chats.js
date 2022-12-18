@@ -89,7 +89,7 @@ module.exports = {
             chat._id,
             from._id,
             message,
-            chat.type,
+            type,
             true
           );
           return result;
@@ -99,7 +99,7 @@ module.exports = {
         // add message to chat
         console.log("add new chat");
         const newChat = await chats.insertOne(
-          constructChat([from, to], type, true)
+          constructChat([from, to], constant.chatType.individual, true)
         );
         // notify new Chat
         chatSocket.notifyMessage(constant.event.newChat, to._id, {
