@@ -25,18 +25,6 @@ import PrivateRoute from "./component/PrivateRoute";
 import { useSnackbar } from "notistack";
 import noti from "./data/notification";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
   console.debug("current user", currentUser);
@@ -61,10 +49,6 @@ function App({ socket }) {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/home" element={<Home socket={socket} />} />
-          <Route path="/search" element={<UserDetail socket={socket} />} />
-          <Route path="/invite" element={<UserAdd socket={socket} />} />
-          <Route path="/friends" element={<Friends socket={socket} />} /> */}
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/home",
@@ -83,7 +67,7 @@ function App({ socket }) {
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/friends",
-            element: <Friends />,
+            element: <Friends socket={socket}/>,
           })}
         </Routes>
       </Router>

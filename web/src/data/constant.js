@@ -7,9 +7,15 @@ export default {
     individual: 0,
     group: 1,
   },
-  avatarMax:9,
+  messageType: {
+    text: 0,
+    image: 1,
+    burn: 2,
+  },
+  avatarMax: 9,
   event: {
     message: "message",
-    newChat:"newChat"
+    newChat: "newChat",
+    disconnect: "disconnect",
   },
 };
