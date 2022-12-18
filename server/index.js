@@ -142,8 +142,8 @@ io.on("connection", (socket) => {
         onlineName.splice(0, 1);
       }
     }
-    console.log(`disconnect onlineName`);
-    console.log(onlineName);
+    // console.log(`disconnect onlineName`);
+    // console.log(onlineName);
     console.log("user disconnected");
   });
 

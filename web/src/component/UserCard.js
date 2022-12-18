@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,useContext } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { Avatar, Button, Card, Grid, CardActions } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setContentStatus } from "../data/redux/statusSlice";
@@ -23,9 +23,8 @@ export default (props) => {
   const currentUser = useSelector((state) => state.user);
   const userChats = useSelector((state) => state.chat.chats);
   const dispatch = useDispatch();
-  const socket = useContext(SocketContext)
+  const socket = useContext(SocketContext);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
 
   const ChatWithUser = async () => {
     console.log(
@@ -34,7 +33,7 @@ export default (props) => {
     // send server add chat request and jump to chat diagram.
     try {
       // check if there is a chat between users at local but no message in it
-      let chatExist = 0,
+      let chatExist = false,
         chatId;
       userChats.forEach((chat) => {
         if (
@@ -68,10 +67,9 @@ export default (props) => {
           })
         );
       }
-      dispatch(setContentStatus(0));
+      dispatch(setContentStatus(constant.status.content));
     } catch (e) {
       enqueueSnackbar(e, noti.errOpt);
-
     }
   };
 
