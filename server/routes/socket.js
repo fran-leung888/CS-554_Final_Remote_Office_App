@@ -16,13 +16,8 @@
 // // });
 // // var ImageModel = mongoose.model('Image', ImageSchema);
 
-
-
-
-
 // var router = express.Router();
 // expressWs(router);  //将 express 实例上绑定 websocket 的一些方法
-
 
 // router.ws("/uploadImage", async function (ws, req) {
 
@@ -33,14 +28,10 @@
 // 	      content : msgObj.imgUrl,
 // 	      type    : msgObj.type,
 // 	    }).save();
-	    
+
 // 	    ws.send(JSON.stringify({code:0,data:img ,msg:""}));
-		
+
 // 	});
 // })
-
-
-
-
 
 // module.exports = router;

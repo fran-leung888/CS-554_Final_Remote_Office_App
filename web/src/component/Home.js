@@ -44,7 +44,7 @@ export default ({ socket }) => {
     }
     socket.on(constant.event.newChat, (data) => {
       console.log("receive chat on newChat event.", data);
-      if(data._id){
+      if (data._id) {
         socket.emit("joinRoom", data._id);
         dispatch(addChat(data));
       }
