@@ -15,6 +15,7 @@ import {
 import Constant from "../../data/constant";
 import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
+import constant from "../../data/constant";
 // {
 //     users:[]
 //     messages:[]
@@ -130,7 +131,9 @@ export default function ChatPre(props) {
         const me = "";
         if (messages.length > 0) {
           lastMessage = messages[messages.length - 1].message;
-          return <div>{lastMessage}</div>;
+          const type = messages[messages.length - 1].type
+          console.debug("lastMessage", lastMessage)
+          return <div>{type === constant.messageType.file ? `[file] ${JSON.parse(lastMessage).originalname}` : lastMessage}</div>;
         }
       }
     } else {

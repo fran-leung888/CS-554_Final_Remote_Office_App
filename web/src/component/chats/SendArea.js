@@ -20,6 +20,7 @@ import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
 import constant from "../../data/constant";
+import { UploadButton } from "../UploadButton";
 export default function SendArea(props) {
   const [messageToSend, setMessageToSend] = useState("");
   const currentUser = useSelector((state) => state.user);
@@ -87,6 +88,9 @@ export default function SendArea(props) {
           <Button sx={{ textTransform: "none" }} onClick={handleSend}>
             Send(S)
           </Button>
+        </Grid>
+        <Grid>
+          <UploadButton chatId={chatId} />
         </Grid>
       </Grid>
     </div>
