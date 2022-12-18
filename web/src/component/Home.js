@@ -39,11 +39,15 @@ export default ({ socket }) => {
       // socket.current.emit("addUser", curUser._id);
       socket.emit("addUser", curUser._id);
     }
-    socket.emit("joinRoom", curUser._id);
+    if (curUser._id) {
+      socket.emit("joinRoom", curUser._id);
+    }
     socket.on(constant.event.newChat, (data) => {
       console.log("receive chat on newChat event.", data);
-      socket.emit("joinRoom", data._id);
-      dispatch(addChat(data));
+      if(data._id){
+        socket.emit("joinRoom", data._id);
+        dispatch(addChat(data));
+      }
     });
   });
 
@@ -225,6 +229,9 @@ export default ({ socket }) => {
       </Grid>
       <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>
+      </Grid>
+      <Grid item xs={4}>
+        <Button onClick={invite}>My invites</Button>
       </Grid>
       <Grid item xs={2}>
         <SignOutButton />

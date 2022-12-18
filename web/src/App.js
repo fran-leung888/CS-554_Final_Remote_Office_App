@@ -13,7 +13,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
-import { setError, resetError } from "./data/redux/errorSlice";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -21,72 +20,55 @@ import Modal from "@mui/material/Modal";
 import UserDetail from "./component/UserDetail";
 import Friends from "./component/Friends";
 import { AuthContext, AuthProvider } from "./component/Auth";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import PrivateRoute from "./component/PrivateRoute";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { useSnackbar } from "notistack";
+import noti from "./data/notification";
 
 function App({ socket }) {
-  // const status = useSelector((state) => state.error.status)
-  // const description = useSelector((state) => state.error.description)
-  const error = useSelector((state) => state.error);
-  const dispatch = useDispatch();
   const { currentUser } = useContext(AuthContext);
+  console.debug("current user", currentUser);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  console.log("Socket in app is ", socket);
+
+  // config behaviour when socket disconnects.
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket get connected!!!", socket);
+      enqueueSnackbar("Connection has built", noti.successOpt);
+    });
+    socket.on("disconnect", () => {
+      console.log("Socket get disconnected!!!", socket);
+      enqueueSnackbar("Connection is unstable", noti.errOpt);
+    });
+  }, []);
 
   return (
     <div>
-      <Modal
-        open={error.status}
-        onClose={() => {
-          dispatch(resetError());
-        }}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            {error.description}
-          </Typography>
-        </Box>
-      </Modal>
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home socket={socket} />} />
-          <Route path="/search" element={<UserDetail socket={socket} />} />
-          {/* <Route path="/invite" element={<UserAdd socket={socket} />} /> */}
-          <Route path="/friends" element={<Friends socket={socket} />} />
-          {/* {PrivateRoute({
-            loggedIn: !!currentUser,
+          {PrivateRoute({
+            loggedIn: !!currentUser._id,
             path: "/home",
             element: <Home socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/search",
             element: <UserDetail socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/invite",
             element: <UserAdd socket={socket} />,
           })}
           {PrivateRoute({
-            loggedIn: !!currentUser,
+            loggedIn: !!currentUser._id,
             path: "/friends",
-            element: <Friends />,
-          })} */}
+            element: <Friends socket={socket}/>,
+          })}
         </Routes>
       </Router>
     </div>

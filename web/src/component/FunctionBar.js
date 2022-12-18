@@ -7,7 +7,7 @@ import SearchUser from "./SearchUser";
 import { useDispatch } from "react-redux";
 import { setContentStatus } from "../data/redux/statusSlice";
 import ChatIcon from "@mui/icons-material/Chat";
-import { disableDiagram } from "../data/redux/messageSlice";
+import { disableDiagram,enableDiagram } from "../data/redux/messageSlice";
 export default () => {
   const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
@@ -28,6 +28,7 @@ export default () => {
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(0));
+            dispatch(enableDiagram());
           }}
         >
           <ChatIcon />
