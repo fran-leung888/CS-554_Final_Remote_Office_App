@@ -133,7 +133,12 @@ export default function ChatPre(props) {
           lastMessage = messages[messages.length - 1].message;
           const type = messages[messages.length - 1].type
           console.debug("lastMessage", lastMessage)
-          return <div>{type === constant.messageType.file ? `[file] ${JSON.parse(lastMessage).originalname}` : lastMessage}</div>;
+          if (type === constant.messageType.file) {
+            const fileInfo = JSON.parse(lastMessage);
+            return <div>{/image*/.test(fileInfo.mimetype) ? `[image]` : `[file] ${fileInfo.originalname}`}</div>
+          } else {
+            return <div>lastMessage</div>
+          }
         }
       }
     } else {
