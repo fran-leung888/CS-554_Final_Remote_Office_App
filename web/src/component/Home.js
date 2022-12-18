@@ -230,6 +230,9 @@ export default ({ socket }) => {
       <Grid item xs={4}>
         <Button onClick={friends}>My friends</Button>
       </Grid>
+      <Grid item xs={4}>
+        <Button onClick={invite}>My invites</Button>
+      </Grid>
       <Grid item xs={2}>
         <SignOutButton />
       </Grid>

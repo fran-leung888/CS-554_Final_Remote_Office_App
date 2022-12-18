@@ -1,4 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
+import {
+  combineReducers,
+  configureStore,
+  createStore
+} from "@reduxjs/toolkit";
+import storage from 'redux-persist/lib/storage'
 import {
   composeWithDevTools,
   devToolsEnhancer,

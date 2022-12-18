@@ -38,6 +38,10 @@ async function doSignOut() {
     await firebase.auth().signOut();
 }
 
+async function getCurrentUser() {
+    return firebase.auth().currentUser;
+}
+
 export {
     doCreateUserWithEmailAndPassword,
     doSocialSignIn,
@@ -45,5 +49,6 @@ export {
     doPasswordReset,
     doPasswordUpdate,
     doSignOut,
-    doChangePassword
+    doChangePassword,
+    getCurrentUser,
 };

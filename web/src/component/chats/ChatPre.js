@@ -35,7 +35,7 @@ export default function ChatPre(props) {
   // get user map for convenience of searching user.
   useEffect(() => {
     try {
-      if (!currentUser?._id) navigate("/");
+      // if (!currentUser?._id) navigate("/");
       (async () => {
         const unknowUsers = [];
         props.data.users.forEach((user) => {
