@@ -3,13 +3,12 @@ import { useSelector } from "react-redux";
 import MessageList from "./MessageList";
 import SendArea from "./SendArea";
 import { Grid } from "@mui/material";
-
 export default function ChatDiagram() {
   // No message show no list
   const chatData = useSelector((state) => state.message);
   console.log("chatDiagram redux is ", chatData);
-  if (!chatData.enabled) {
-    console.log('no message, no diagram.')
+  if (!chatData.enabled || !chatData._id) {
+    console.log("no message, no diagram.");
     return <div></div>;
   } else {
     return (
@@ -23,6 +22,7 @@ export default function ChatDiagram() {
         <Grid item>
           <MessageList></MessageList>
         </Grid>
+
         <Grid item>
           <SendArea></SendArea>
         </Grid>

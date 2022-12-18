@@ -27,10 +27,11 @@ import {
 } from "../../utils/verificationUtils";
 import constant from "../../data/constant";
 import { SocketContext } from "../../socketContext";
+import "../../App.css";
 
 export default function ChatList() {
   const user = useSelector((state) => state.user);
-  const chatDiagramMessages = useSelector((state) => state.message.messages);
+  const messageSlice = useSelector((state) => state.message);
   const userChats = useSelector((state) => state.chat.chats);
   const chatInit = useSelector((state) => state.chat.initialized);
   const messageInit = useSelector((state) => state.message.initialized);
@@ -38,14 +39,14 @@ export default function ChatList() {
   const dispatch = useDispatch();
   const socket = useContext(SocketContext);
 
-  const updateMessage = () => {};
-
+  const currentChatId = messageSlice.chatId;
+  const chatDiagramMessages = messageSlice.messages;
   useEffect(() => {
     console.log("socket in chat list", socket);
     socket.on(constant.event.message, (data) => {
       console.log("receive message on message event.", data);
       userChats.forEach((chat) => {
-        console.log(chat._id === data.chatId && chat.show === false)
+        console.log(chat._id === data.chatId && chat.show === false);
         if (chat._id === data.chatId && chat.show === false)
           dispatch(showChat(chat._id));
       });
@@ -56,9 +57,22 @@ export default function ChatList() {
           userId: data.userId,
           time: data.time,
           message: data.message,
+          type: data.type
         })
       );
     });
+    if (Object.getOwnPropertyNames(userChats) !== 0 && chatInit) {
+      Object.getOwnPropertyNames(userChats).forEach((chat) => {
+        if (userChats[chat]) {
+          // request to join room
+          console.log("join room", userChats[chat]._id);
+          if (userChats[chat]._id) {
+            socket.emit("joinRoom", userChats[chat]._id);
+          }
+          // listen on messages {message,user,time}
+        }
+      });
+    }
     (async () => {
       if (!user?._id) {
         // navigate("/");
@@ -102,20 +116,6 @@ export default function ChatList() {
   }, []);
 
   const handleClickPreview = async (chat) => {
-    // click one preview, get and put messages in redux and show diagram .
-    // try {
-    //   console.log("all messages are ", chatDiagramMessages);
-    //   if (chat._id && chatDiagramMessages[chat._id]) {
-    //     console.log(`Messages exist for ${chat._id}`);
-    //     dispatch(setData(chat));
-    //   } else {
-    //     console.log(`No message exists for ${chat._id}, request for messages.`);
-    //     const messages = await chatData.getMessages(chat._id);
-    //     dispatch(setData(chat));
-    //     dispatch(setMessages({ _id: chat._id, messages: messages.data }));
-    //   }
-    // } catch (e) {}
-
     if (chat._id) {
       dispatch(setData({ ...chat, chatId: chat._id }));
     }
@@ -124,9 +124,13 @@ export default function ChatList() {
   const buildPreviews = (chats) => {
     return chats
       ? chats.map((chat) => {
+          const divStyle = {
+            color: "blue",
+          };
           console.log("build chat ", chat);
           return chat.show || chatDiagramMessages[chat._id]?.length > 0 ? (
             <div
+              className={currentChatId !== -1 ? "Focus" : ""}
               id={chat._id}
               onClick={() => {
                 handleClickPreview(chat);

@@ -9,26 +9,27 @@ import { persistor, store } from "./data/redux/store";
 import { AuthProvider } from "./component/Auth";
 import { SocketContext } from "./socketContext";
 import { SnackbarProvider } from "notistack";
-import { PersistGate } from 'redux-persist/integration/react'
+import { PersistGate } from "redux-persist/lib/integration/react";
+import { persistor } from "./data/redux/store";
 import { CircularIndeterminate } from './component/CircularIndeterminate'
 
 const socket = io();
-console.log('Socket in index.js is', socket)
+console.log("Socket in index.js is", socket);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   // <React.StrictMode>
-    <Provider store={store}>
-      {/* <PersistGate loading={<CircularIndeterminate />} persistor={persistor}> */}
-        <SnackbarProvider maxSnack={3}>
-          <AuthProvider>
-            <SocketContext.Provider value={socket}>
-              <App socket={socket} />
-            </SocketContext.Provider>
-          </AuthProvider>
-        </SnackbarProvider>
-      {/* </PersistGate> */}
-    </Provider>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <SnackbarProvider maxSnack={3}>
+        <AuthProvider>
+          <SocketContext.Provider value={socket}>
+            <App socket={socket} />
+          </SocketContext.Provider>
+        </AuthProvider>
+      </SnackbarProvider>
+    </PersistGate>
+  </Provider>
   // </React.StrictMode>
 );
 

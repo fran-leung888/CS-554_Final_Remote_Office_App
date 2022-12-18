@@ -70,6 +70,12 @@ export const chatSlice = createSlice({
         if (chat._id == action.payload) chat.show = true;
       });
     },
+    addUsers: (state, action) => {
+      console.log("add users in redux", action.payload);
+      action.payload.forEach((user) => {
+        state.users[user._id] = user;
+      });
+    },
   },
 });
 
