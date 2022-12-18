@@ -24,11 +24,6 @@ export default function ActionBar(props) {
           <LocalFireDepartmentIcon color="warning" onClick={() => {}} />
         </Tooltip>
       </Grid>
-      <Grid item>
-        <Tooltip title="Send a image">
-          <ImageIcon onClick={() => {}} />
-        </Tooltip>
-      </Grid>
     </Grid>
   );
 }

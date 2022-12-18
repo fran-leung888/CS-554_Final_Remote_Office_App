@@ -16,3 +16,8 @@ export async function downloadFile({ fileId, filename }) {
     console.debug(data);
     fileDownload(data, filename);
 }
+
+export async function getFileObjectUrl(fileId) {
+    const { data } = await axios.get(`/file/${fileId}`, { responseType: "blob" });
+    return URL.createObjectURL(data);
+  }
