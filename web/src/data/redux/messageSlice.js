@@ -5,6 +5,7 @@ function constructMessage(
   message,
   user,
   time,
+  type,
   loading = false,
   fail = false,
   enabled = true
@@ -17,6 +18,7 @@ function constructMessage(
     fail,
     time,
     enabled,
+    type,
   };
 }
 
@@ -76,7 +78,8 @@ export const messageSlice = createSlice({
               action.payload.messageId,
               action.payload.message,
               action.payload.userId,
-              action.payload.time
+              action.payload.time,
+              action.payload.type,
             ),
           ];
         }
@@ -86,7 +89,8 @@ export const messageSlice = createSlice({
             action.payload.messageId,
             action.payload.message,
             action.payload.userId,
-            action.payload.time
+            action.payload.time,
+            action.payload.type,
           ),
         ];
       }
@@ -100,6 +104,7 @@ export const messageSlice = createSlice({
             action.payload.message,
             action.payload.userId,
             action.payload.time,
+            action.payload.type,
             true
           ),
         ];
@@ -131,6 +136,9 @@ export const messageSlice = createSlice({
     disableDiagram(state, action) {
       state.enabled = false;
     },
+    enableDiagram(state, action){
+      state.enabled = true;
+    }
   },
 });
 
@@ -146,6 +154,8 @@ export const {
   resetLoadingMessage,
   failMessage,
   disableDiagram,
+  enableDiagram,
+
 } = messageSlice.actions;
 
 export default messageSlice.reducer;

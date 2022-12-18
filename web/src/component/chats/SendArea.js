@@ -14,15 +14,18 @@ import {
   resetLoadingMessage,
   failMessage,
 } from "../../data/redux/messageSlice";
+import ActionBar from "./ActionBar";
 
-import TextareaAutosize from '@mui/base/TextareaAutosize';
-
+import TextareaAutosize from "@mui/base/TextareaAutosize";
+import { useSnackbar } from "notistack";
+import noti from "../../data/notification";
+import constant from "../../data/constant";
 export default function SendArea(props) {
   const [messageToSend, setMessageToSend] = useState("");
   const currentUser = useSelector((state) => state.user);
   const chatId = useSelector((state) => state.message.chatId);
   const dispatch = useDispatch();
-
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleSend = async () => {
     let tempMessageId, tempChatId;
@@ -36,21 +39,22 @@ export default function SendArea(props) {
           randomId: tempMessageId,
           message: messageToSend,
           userId: currentUser._id,
+          type: constant.messageType.text,
         })
       );
-      let res = await chatData.sendMessage(chatId, messageToSend, currentUser);
+      let res = await chatData.sendMessage(chatId, messageToSend, currentUser, constant.messageType.text);
       checkRes(res);
       dispatch(
         resetLoadingMessage({
           chatId,
           randomId: tempMessageId,
           realId: res.data.insertedId,
-          time: res.data.time
+          time: res.data.time,
         })
       );
       setMessageToSend("");
     } catch (e) {
-      console.log(e)
+      enqueueSnackbar(e, noti.errOpt);
       dispatch(
         failMessage({
           chatId,
@@ -61,21 +65,30 @@ export default function SendArea(props) {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <FormControl>
-          <TextareaAutosize
-            placeholder="Type your message here."
-            value={messageToSend}
-            onChange={(e) => {
-              setMessageToSend(e.target.value);
-            }}
-          ></TextareaAutosize>
-        </FormControl>
+    <div>
+      <Grid container>
+        <Grid item ><ActionBar></ActionBar></Grid>
+        <Grid item xs={12}>
+          <FormControl>
+            <TextField
+              sx={{ overflow: "auto" }}
+              placeholder="Type your message here."
+              multiline
+              rows={2}
+              maxRows={4}
+              value={messageToSend}
+              onChange={(e) => {
+                setMessageToSend(e.target.value);
+              }}
+            ></TextField>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <Button sx={{ textTransform: "none" }} onClick={handleSend}>
+            Send(S)
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item>
-        <Button onClick={handleSend}>Send</Button>
-      </Grid>
-    </Grid>
+    </div>
   );
 }

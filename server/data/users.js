@@ -2,6 +2,8 @@ const mongoCollections = require("../config/mongoCollections");
 const bcrypt = require("bcryptjs");
 const users = mongoCollections.users;
 const { ObjectId } = require("mongodb");
+const redisStore = require("./redisStore");
+const { getGroup } = require("./groups");
 
 module.exports = {
   async checkId(id) {
@@ -22,7 +24,7 @@ module.exports = {
     return result;
   },
 
-  async addUser(name, username, password) {
+  async addUser(name, username, password, isFirebaseAuth = false) {
     name = name.trim();
     username = username.trim();
 
@@ -30,16 +32,20 @@ module.exports = {
     const userExist = await usersCollection.findOne({ username });
     if (userExist != null) throw "User exists.";
 
-    let hash = await this.hashPassword(password);
+    let hash = isFirebaseAuth ? "" : await this.hashPassword(password);
     let friends = [];
     let groups = [];
+    let offlineInvite = [];
+    let offlineGroupInvite = [];
     // let hash = password
     let user = {
       name,
       username,
       password: hash,
-      friends: friends,
-      groups: groups,
+      friends,
+      groups,
+      offlineInvite: offlineInvite,
+      offlineGroupInvite: offlineGroupInvite,
     };
 
     const userInfo = await usersCollection.insertOne(user);
@@ -115,6 +121,132 @@ module.exports = {
     }
   },
 
+  async updateOfflineInvite(userId, inviteUserId) {
+    try {
+      console.log(userId, inviteUserId);
+      if (!userId || !inviteUserId) {
+        throw "you must input the people who got invite when he off-online";
+      }
+      const usersCollection = await users();
+      let userData = await this.getUser(userId);
+      console.log("pass userData");
+      let inviteUserData = await this.getUser(inviteUserId);
+
+      console.log("store the offonline user:");
+      console.log(userData);
+      console.log("inviteUser");
+      console.log(inviteUserData);
+
+      const updatedInfo = await usersCollection.update(
+        { _id: ObjectId(userId) },
+        {
+          $push: {
+            offlineInvite: {
+              inviteUserId: inviteUserId,
+              inviteUsername: inviteUserData.username,
+            },
+          },
+        }
+      );
+
+      console.log("add the invite info to user:");
+      const newUser = await this.getUser(userId);
+      console.log(newUser);
+
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
+
+  async updateOfflineGroupInvite(userId, inviteUserId, attendGroupId) {
+    try {
+      if (!userId || !inviteUserId || !attendGroupId) {
+        throw "please input the people you invite, who invite, and which group the people want he friend in";
+      }
+
+      const usersCollection = await users();
+      // const userData = await this.getUser(userId);
+      // const inviteUserData = await this.getUser(inviteUserId);
+      const groupData = await getGroup(attendGroupId);
+
+      const updatedInfo = await usersCollection.update(
+        { _id: ObjectId(userId) },
+        {
+          $push: {
+            offlineGroupInvite: {
+              inviteUserId: inviteUserId,
+              inviteUsername: groupData.grouperUsername,
+              attendGroupId: attendGroupId,
+              attendGroupName: groupData.groupName,
+            },
+          },
+        }
+      );
+
+      console.log("already store the inviteGroupData in this one data:");
+
+      const newUser = await this.getUser(userId);
+      console.log(newUser);
+
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
+
+  async deleteInviteInfo(userId, inviteUserId) {
+    try {
+      console.log("in deleteInviteInfo");
+      console.log(userId, inviteUserId);
+      if (!userId || !inviteUserId)
+        throw "you must input the people who already see the invite";
+
+      const usersCollection = await users();
+      await usersCollection.update(
+        { _id: ObjectId(userId) },
+        {
+          $pull: {
+            offlineInvite: { inviteUserId: inviteUserId },
+          },
+        },
+        { multi: true }
+      );
+
+      const newUser = await this.getUser(userId);
+      console.log("already delete this invite");
+      console.log(newUser);
+
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
+
+  async deleteOfflineGroupInvite(userId, inviteUserId) {
+    try {
+      console.log("in deleteInviteInfo");
+      console.log(userId, inviteUserId);
+      if (!userId || !inviteUserId)
+        throw "you must input the people who already see the invite";
+
+      const usersCollection = await users();
+      await usersCollection.update(
+        { _id: ObjectId(userId) },
+        { $pull: { offlineGroupInvite: { inviteUserId: inviteUserId } } },
+        { multi: true }
+      );
+
+      const newUser = await this.getUser(userId);
+      console.log("already delete this group invite");
+      console.log(newUser);
+
+      return newUser;
+    } catch (e) {
+      throw Error(e.message);
+    }
+  },
+
   async deleteFriend(curId, friendId) {
     try {
       const usersCollection = await users();
@@ -147,28 +279,41 @@ module.exports = {
   },
 
   async getUser(id) {
+    // check cache
+    let user = await redisStore.getUser(id);
+    if (user) {
+      return user;
+    }
     await this.checkId(id);
     const usersCollection = await users();
-    const user = await usersCollection.findOne({ _id: ObjectId(id) });
+    user = await usersCollection.findOne({ _id: ObjectId(id) });
+    // store cache
     if (user === null) throw "No user with that id";
+    await redisStore.storeUser(id, user);
 
     return user;
   },
 
   async getUsers(ids) {
+    // check cache
+    let result = await redisStore.getUser(ids);
+    if (result) {
+      return result;
+    }
     if (ids && ids.length !== 0) {
       const usersCollection = await users();
-      let objectIds = []
-      ids.split(",").forEach(each => {
-        objectIds.push(ObjectId(each))
-      })
-      const cursor = await usersCollection.find({ _id: { $in : objectIds } });
-      if (await cursor.count() === 0) throw "Can not find user.";
+      let objectIds = [];
+      ids.split(",").forEach((each) => {
+        objectIds.push(ObjectId(each));
+      });
+      const cursor = await usersCollection.find({ _id: { $in: objectIds } });
+      if ((await cursor.count()) === 0) throw "Can not find user.";
       else {
-        let result = [];
+        result = [];
         await cursor.forEach((each) => {
           result.push(each);
         });
+        await redisStore.storeUser(ids, result);
         return result;
       }
     } else {
@@ -193,7 +338,10 @@ module.exports = {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ username: username });
     if (user == null) throw "User does not exist.";
-    if (await this.comparePassword(password, user.password)) {
+    if (
+      user.isFirebaseAuth ||
+      (await this.comparePassword(password, user.password))
+    ) {
       return user;
     } else {
       throw "Please check username and password.";

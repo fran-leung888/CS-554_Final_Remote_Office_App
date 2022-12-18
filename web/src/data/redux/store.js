@@ -1,4 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
+import {
+  combineReducers,
+  configureStore,
+  createStore
+} from "@reduxjs/toolkit";
+import storage from 'redux-persist/lib/storage'
 import {
   composeWithDevTools,
   devToolsEnhancer,
@@ -9,14 +24,27 @@ import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
 import messageSlice from "./messageSlice";
 import chatSlice from "./chatSlice";
+import { createStore, combineReducers  } from "redux";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
-export default configureStore({
-  reducer: {
-    user: userSlice,
-    searchUser: searchUser,
-    error: errorSlice,
-    status: statusSlice,
-    message: messageSlice,
-    chat: chatSlice
-  },
+const persistConfig = {
+  key: "root",
+  storage,
+  blacklist: ['chat', 'message', 'searchUser']
+};
+
+const reducer = combineReducers({
+  user: userSlice,
+  searchUser: searchUser,
+  status: statusSlice,
+  message: messageSlice,
+  chat: chatSlice,
 });
+
+const persistedReducer = persistReducer(persistConfig, reducer);
+
+const store = configureStore({ reducer: persistedReducer });
+
+export const persistor = persistStore(store);
+export default store;
