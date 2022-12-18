@@ -5,12 +5,12 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { io } from "socket.io-client";
 import { Provider } from "react-redux";
-import { persistor, store } from "./data/redux/store";
+import { persistor } from "./data/redux/store";
+import store from "./data/redux/store";
 import { AuthProvider } from "./component/Auth";
 import { SocketContext } from "./socketContext";
 import { SnackbarProvider } from "notistack";
 import { PersistGate } from "redux-persist/lib/integration/react";
-import { persistor } from "./data/redux/store";
 import { CircularIndeterminate } from './component/CircularIndeterminate'
 
 const socket = io();

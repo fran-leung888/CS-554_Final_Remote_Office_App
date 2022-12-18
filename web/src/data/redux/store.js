@@ -11,7 +11,6 @@ import {
 import {
   combineReducers,
   configureStore,
-  createStore
 } from "@reduxjs/toolkit";
 import storage from 'redux-persist/lib/storage'
 import {
@@ -24,14 +23,11 @@ import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
 import messageSlice from "./messageSlice";
 import chatSlice from "./chatSlice";
-import { createStore, combineReducers  } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ['chat', 'message', 'searchUser']
+  blacklist: ['chat', 'message', 'searchUser', 'status']
 };
 
 const reducer = combineReducers({

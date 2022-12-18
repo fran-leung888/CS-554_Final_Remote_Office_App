@@ -28,7 +28,7 @@ module.exports = {
   },
 
   async getUser(userId) {
-    const users = await redisClient.get(getChatKey(userId.toString()));
+    const users = await redisClient.get(getUsersKey(userId.toString()));
     return JSON.parse(users);
   },
 
