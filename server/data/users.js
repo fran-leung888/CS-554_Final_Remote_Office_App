@@ -2,6 +2,7 @@ const mongoCollections = require("../config/mongoCollections");
 const bcrypt = require("bcryptjs");
 const users = mongoCollections.users;
 const { ObjectId } = require("mongodb");
+const redisStore = require("./redisStore");
 
 module.exports = {
   async checkId(id) {
@@ -147,28 +148,41 @@ module.exports = {
   },
 
   async getUser(id) {
+    // check cache
+    let user = await redisStore.getUser(id);
+    if (user) {
+      return user;
+    }
     await this.checkId(id);
     const usersCollection = await users();
-    const user = await usersCollection.findOne({ _id: ObjectId(id) });
+    user = await usersCollection.findOne({ _id: ObjectId(id) });
+    // store cache
     if (user === null) throw "No user with that id";
+    await redisStore.storeUser(id, user);
 
     return user;
   },
 
   async getUsers(ids) {
+    // check cache
+    let result = await redisStore.getUser(ids);
+    if (result) {
+      return result;
+    }
     if (ids && ids.length !== 0) {
       const usersCollection = await users();
-      let objectIds = []
-      ids.split(",").forEach(each => {
-        objectIds.push(ObjectId(each))
-      })
-      const cursor = await usersCollection.find({ _id: { $in : objectIds } });
-      if (await cursor.count() === 0) throw "Can not find user.";
+      let objectIds = [];
+      ids.split(",").forEach((each) => {
+        objectIds.push(ObjectId(each));
+      });
+      const cursor = await usersCollection.find({ _id: { $in: objectIds } });
+      if ((await cursor.count()) === 0) throw "Can not find user.";
       else {
-        let result = [];
+        result = [];
         await cursor.forEach((each) => {
           result.push(each);
         });
+        await redisStore.storeUser(ids, result);
         return result;
       }
     } else {

@@ -22,8 +22,12 @@ import noti from "../../data/notification";
 // }
 export default function ChatPre(props) {
   console.log("load chat pre ", props.data);
-  const [userMap, setUserMap] = useState(null);
+  const [init, setInit] = useState(false)
   const currentUser = useSelector((state) => state.user);
+  const userMap = useSelector((state) => state.chat.users);
+  const messages = useSelector(
+    (state) => state.message.messages[props.data._id]
+  );
   const navigate = useNavigate();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -33,16 +37,22 @@ export default function ChatPre(props) {
     try {
       if (!currentUser?._id) navigate("/");
       (async () => {
-        let res = await userData.getUsers(props.data.users);
-        checkRes(res);
-        let users = {};
-        res.data.forEach((user) => {
-          if (!users[user._id]) {
-            users[user._id] = user;
-          }
+        const unknowUsers = [];
+        props.data.users.forEach((user) => {
+          if (!userMap[user]) unknowUsers.push(user);
         });
-        console.log("user data is", users);
-        setUserMap(users);
+        if(unknowUsers.length > 0){
+          let res = await userData.getUsers(unknowUsers);
+          checkRes(res);
+          let users = {};
+          res.data.forEach((user) => {
+            if (!users[user._id]) {
+              users[user._id] = user;
+            }
+          });
+          console.log("unknown user data is", users);
+        }
+        setInit(true)
       })();
     } catch (e) {
       enqueueSnackbar(e, noti.errOpt);
@@ -112,25 +122,39 @@ export default function ChatPre(props) {
     }
   };
 
+  const buildMessage = (chat) => {
+    if (chat && chat._id) {
+      // get last message
+      if (messages) {
+        let lastMessage = "";
+        const me = "";
+        if (messages.length > 0) {
+          lastMessage = messages[messages.length - 1].message;
+          return <div>{lastMessage}</div>;
+        }
+      }
+    } else {
+      return <div></div>;
+    }
+  };
+
   // for individual and group
   // apply different style
-  if (props.data && userMap) {
+  if (props.data && init) {
     return (
-      <Grid container>
-        <Grid item>
+      <Grid container direction={"row"}>
+        <Grid item xs={3}>
           {/* Avatar */}
           {buildAvatar(props.data)}
         </Grid>
-        <Grid item container>
+        <Grid item container xs={9}>
           {/* username */}
           <Grid item xs={12}>
             {buildName(props.data)}
           </Grid>
           <Grid item xc={12} container>
             {/* message */}
-            <Grid item></Grid>
-            {/* time */}
-            <Grid item></Grid>
+            <Grid item>{buildMessage(props.data)}</Grid>
           </Grid>
         </Grid>
       </Grid>

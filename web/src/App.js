@@ -25,18 +25,6 @@ import PrivateRoute from "./component/PrivateRoute";
 import { useSnackbar } from "notistack";
 import noti from "./data/notification";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
