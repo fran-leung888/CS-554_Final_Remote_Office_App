@@ -1,32 +1,20 @@
 import {
   persistStore,
   persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
 } from 'redux-persist'
 import {
   combineReducers,
   configureStore,
-  createStore
 } from "@reduxjs/toolkit";
 import storage from 'redux-persist/lib/storage'
-import {
-  composeWithDevTools,
-  devToolsEnhancer,
-} from "redux-devtools-extension";
+
 import userSlice from "./userSlice";
-import errorSlice from "./errorSlice";
+
 import searchUser from "./searchUser";
 import statusSlice from "./statusSlice";
 import messageSlice from "./messageSlice";
 import chatSlice from "./chatSlice";
-import { createStore, combineReducers  } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+
 
 const persistConfig = {
   key: "root",
@@ -44,7 +32,7 @@ const reducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, reducer);
 
-const store = configureStore({ reducer: persistedReducer });
+export const store = configureStore({ reducer: persistedReducer });
 
 export const persistor = persistStore(store);
 export default store;
