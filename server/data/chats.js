@@ -47,7 +47,7 @@ module.exports = {
     const messages = await messagesCollection();
     const chat = await chats.findOne({ _id: new ObjectId(chatId) });
     if (chat) {
-      let mesageToInsert = constructMessage(chatId, userId, message);
+      let mesageToInsert = constructMessage(chatId, userId, message, type);
       let result = await messages.insertOne(mesageToInsert);
       result = {
         ...result,
