@@ -75,7 +75,7 @@ export default function ChatList() {
     }
     (async () => {
       if (!user?._id) {
-        navigate("/");
+        // navigate("/");
       } else {
         if (!messageInit || !chatInit) {
           let res = await chatData.getChats(user._id);
