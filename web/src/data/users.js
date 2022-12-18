@@ -1,11 +1,11 @@
 import axios from "../config/axios";
 
-const addUser = async (name, username, passwd, isFirebaseAuth=false) => {
+const addUser = async (name, username, passwd, isFirebaseAuth = false) => {
   let response = await axios.post("/user", {
     name,
     username,
     passwd,
-    isFirebaseAuth
+    isFirebaseAuth,
   });
   return response;
 };
@@ -36,6 +36,19 @@ const getUsers = async (ids) => {
       id: ids + "",
     },
   });
+  return response;
+};
+
+const setNewName = async (newName) => {
+  let response = await axios.post("/changename", {
+    newName,
+  });
+
+  return response;
+};
+
+const setNewPswd = async (newPassword) => {
+  let response = await axios.post("/changepswd", { newPassword });
   return response;
 };
 
@@ -97,6 +110,8 @@ export default {
   searchUser,
   getUser,
   getUsers,
+  setNewName,
+  setNewPswd,
   addFriend,
   deleteFriend,
   addOffFri,

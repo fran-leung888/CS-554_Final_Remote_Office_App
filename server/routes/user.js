@@ -77,6 +77,44 @@ router.post("/add", async (req, res) => {
   }
 });
 
+router.post("/changename", async (req, res) => {
+  if (!req.body.newName) {
+    return res.status(400).json({ message: "Please input the new name" });
+  }
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  console.log("curUser data:");
+  console.log(curUser);
+
+  const updatedInfo = await users.changeName(curUser, req.body.newName);
+  console.log(updatedInfo);
+
+  const newCurUser = await users.getUser(curUser._id, true);
+  console.log("already change name, newCurUser:");
+  console.log(newCurUser);
+
+  res.send(new response(newCurUser).success(res));
+});
+
+router.post("/changepswd", async (req, res) => {
+  if (!req.body.newPassword) {
+    return res.status(400).json({ message: "Please input the new password" });
+  }
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  console.log("curUser data:");
+  console.log(curUser);
+
+  const updatedInfo = await users.changePswd(curUser, req.body.newPassword);
+  console.log(updatedInfo);
+
+  const newCurUser = await users.getUser(curUser._id, true);
+  console.log("already change password, newCurUser:");
+  console.log(newCurUser);
+
+  res.send(new response(newCurUser).success(res));
+});
+
 router.post("/delete", async (req, res) => {
   try {
     if (!req.body.friendId) {
