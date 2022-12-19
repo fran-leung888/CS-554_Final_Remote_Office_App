@@ -1,9 +1,14 @@
 const router = require("express").Router();
 const groups = require("../data/groups");
+const chats = require("../data/chats");
 const users = require("../data/users");
 const store = require("../store/dataStore");
 const response = require("../response/response");
 const { ObjectID } = require("bson");
+const chatSocket = require("../socket/chatSocket");
+const constant = require("../data/constant");
+const { io } = require("../config/socket");
+const redisStore = require("../data/redisStore");
 
 router.post("/create", async (req, res) => {
   console.log(req.body);
@@ -26,9 +31,14 @@ router.post("/create", async (req, res) => {
     const grouperId = curId;
     const grouperUsername = curUser.username;
     const group = await groups.addGroup(groupName, grouperId, grouperUsername);
+    // TODO add chat
+    const newChat = chats.addGroupChat(curUser._id, groupId);
+    chatSocket.notifyEvent(constant.event.newChat, curId, {
+      chatId: newChat.insertedId,
+      type: constant.chatType.group,
+    });
     console.log("create a group, and success store in group database");
     console.log(group);
-
     // add the group to user
     const ifGrouper = true;
     const groupId = group._id.toString();
@@ -40,6 +50,7 @@ router.post("/create", async (req, res) => {
     );
     console.log("success update the group data in user database:");
     console.log(newUser);
+    newUser.newChat = newChat;
     res.send(new response(newUser).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));
@@ -91,7 +102,13 @@ router.post("/addToGroup", async (req, res) => {
       groupName,
       ifGrouper
     );
-
+    // Find chat by group Id
+    let groupChat = await chats.getChatByGroupId(groupId);
+    await redisStore.removeUser(curUser._id.toString());
+    chatSocket.notifyEvent(constant.event.newChat, {
+      _id: groupChat._id.toString(),
+      type: constant.chatType.group,
+    });
     console.log("update the user database(add the group info)");
     console.log(newUser);
 
