@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import React, { createRef, useEffect, useState } from "react";
 import { Grid, CircularProgress, Avatar, Fade, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -7,17 +7,13 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-import { TransitionProps } from "@mui/material/transitions";
 import constant from "../../data/constant";
-import IconButton from "@mui/material/IconButton";
 import DownloadIcon from "@mui/icons-material/Download";
-import { downloadFile } from "../../data/file";
-import chatSlice, { burnMessage } from "../../data/redux/chatSlice";
-import ImagePre from "./imagePre";
 import chats from "../../data/chats";
 import { checkRes } from "../../utils/verificationUtils";
 import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
+import { downloadFile, getFileObjectUrl } from "../../data/file";
 
 export default function MessageItem(props) {
   const message = props.data;
@@ -82,7 +78,8 @@ export default function MessageItem(props) {
         <Grid item>{message.loading && <CircularProgress size={14} />}</Grid>
         <Grid item>{message.fail && <PriorityHighIcon size={14} />}</Grid>
         <Grid item>{message.name}</Grid>
-        <Grid item>{buildMessage(message)}</Grid>
+        {/* <Grid item>{buildMessage(message)}</Grid> */}
+        <Grid item><MessageContent message={message} /></Grid>
         <Grid item>{message.time}</Grid>
       </Grid>
     );
@@ -118,5 +115,25 @@ function DownloadFileButton({ fileMessage }) {
       {file.originalname}
       <DownloadIcon />
     </Button>
-  );
+  )
+}
+
+function MessageContent({ message }) {
+
+  const [imgUrl, setImgUrl] = useState(null);
+
+  switch (message.type) {
+    case constant.messageType.text:
+      return <div>message.message</div>
+    case constant.messageType.file:
+      const file = JSON.parse(message.message);
+      console.debug("file mimetype", file.mimetype)
+      if (/image*/.test(file.mimetype)) {
+        useEffect(() => {getFileObjectUrl(file._id).then(setImgUrl)}, [])
+        return imgUrl ? <img width={"100%"} src={imgUrl} /> : <div>loading...</div>
+      }
+      return <DownloadFileButton fileMessage={message.message} />;
+    default:
+      return <>{message.message}</>
+  }
 }
