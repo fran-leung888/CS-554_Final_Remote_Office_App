@@ -44,7 +44,7 @@ function App({ socket }) {
   }, []);
 
   return (
-    <div>
+    <div className="App">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />

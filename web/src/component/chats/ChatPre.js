@@ -17,6 +17,8 @@ import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
 import constant from "../../data/constant";
 import { addUsers } from "../../data/redux/chatSlice";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+
 // {
 //     users:[]
 //     messages:[]
@@ -124,22 +126,35 @@ export default function ChatPre(props) {
       // get last message
       if (messages) {
         let lastMessage = "";
-        const me = "";
         if (messages.length > 0) {
           lastMessage = messages[messages.length - 1].message;
           const type = messages[messages.length - 1].type;
           console.debug("lastMessage", lastMessage);
-          return lastMessage.type === constant.messageType.burn ? (
-            <div>
-              <LocalFireDepartmentIcon color="warning" /> Burn After Reading
-            </div>
-          ) : (
-            <div>
-              {type === constant.messageType.file
-                ? `📂 ${JSON.parse(lastMessage).originalname}`
-                : lastMessage}
-            </div>
-          );
+          if (type === constant.messageType.burn) {
+            return (
+              <div className="Wrap">
+                <div className="Wrap-Text">
+                sssssssssssssssssssssssssssssssssssssssssssssssss
+                </div>
+              </div>
+            );
+          } else if (type === constant.messageType.file) {
+            const fileInfo = JSON.parse(lastMessage);
+            return (
+              <div>
+                {/image*/.test(fileInfo.mimetype)
+                  ? `[image]`
+                  : `📂 ${fileInfo.originalname}`}
+              </div>
+            );
+          } else
+            return (
+              <div>
+                {type === constant.messageType.file
+                  ? `📂 ${JSON.parse(lastMessage).originalname}`
+                  : lastMessage}
+              </div>
+            );
         }
       }
     } else {
