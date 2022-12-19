@@ -16,6 +16,7 @@ import Constant from "../../data/constant";
 import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
 import constant from "../../data/constant";
+import { addUsers } from "../../data/redux/chatSlice";
 // {
 //     users:[]
 //     messages:[]
@@ -23,13 +24,13 @@ import constant from "../../data/constant";
 // }
 export default function ChatPre(props) {
   console.log("load chat pre ", props.data);
-  const [init, setInit] = useState(false)
+  const [init, setInit] = useState(false);
   const currentUser = useSelector((state) => state.user);
   const userMap = useSelector((state) => state.chat.users);
   const messages = useSelector(
     (state) => state.message.messages[props.data._id]
   );
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   // Get data at start.
@@ -42,26 +43,21 @@ export default function ChatPre(props) {
         props.data.users.forEach((user) => {
           if (!userMap[user]) unknowUsers.push(user);
         });
-        if(unknowUsers.length > 0){
+        if (unknowUsers.length > 0) {
           let res = await userData.getUsers(unknowUsers);
           checkRes(res);
-          let users = {};
-          res.data.forEach((user) => {
-            if (!users[user._id]) {
-              users[user._id] = user;
-            }
-          });
-          console.log("unknown user data is", users);
+          dispatch(addUsers(res.data));
+          console.log("unknown user data is", res.data);
         }
-        setInit(true)
+        setInit(true);
       })();
     } catch (e) {
-      enqueueSnackbar(e, noti.errOpt);
+      enqueueSnackbar(e.toString(), noti.errOpt);
     }
   }, []);
 
-  const filterUser = (users) => {
-    const filteredOtherUser = users.filter((user) => user != currentUser._id);
+  const filterUserId = (users) => {
+    const filteredOtherUser = users.filter((user) => user !== currentUser._id);
     if (filteredOtherUser.length !== 1) throw "Chat is wrong!";
     return filteredOtherUser;
   };
@@ -89,7 +85,7 @@ export default function ChatPre(props) {
       }
     } else if (chat?.type === Constant.chatType.individual) {
       if (chat.users) {
-        const filteredOtherUser = filterUser(chat.users);
+        const filteredOtherUser = filterUserId(chat.users);
         return (
           <Grid item>
             <Avatar></Avatar>
@@ -115,7 +111,7 @@ export default function ChatPre(props) {
       }
     } else if (chat?.type === Constant.chatType.individual) {
       if (chat.users) {
-        const filteredOtherUser = filterUser(chat.users);
+        const filteredOtherUser = filterUserId(chat.users);
         return userMap[filteredOtherUser].name;
       } else {
         return;
@@ -131,9 +127,19 @@ export default function ChatPre(props) {
         const me = "";
         if (messages.length > 0) {
           lastMessage = messages[messages.length - 1].message;
-          const type = messages[messages.length - 1].type
-          console.debug("lastMessage", lastMessage)
-          return <div>{type === constant.messageType.file ? `[file] ${JSON.parse(lastMessage).originalname}` : lastMessage}</div>;
+          const type = messages[messages.length - 1].type;
+          console.debug("lastMessage", lastMessage);
+          return lastMessage.type === constant.messageType.burn ? (
+            <div>
+              <LocalFireDepartmentIcon color="warning" /> Burn After Reading
+            </div>
+          ) : (
+            <div>
+              {type === constant.messageType.file
+                ? `📂 ${JSON.parse(lastMessage).originalname}`
+                : lastMessage}
+            </div>
+          );
         }
       }
     } else {

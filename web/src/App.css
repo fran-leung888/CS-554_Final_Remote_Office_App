@@ -40,3 +40,7 @@
 .Focus {
   background-color: #ECECEC;
 }
+
+.Wrap {
+  overflow: hidden;
+}

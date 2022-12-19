@@ -18,6 +18,7 @@ import {
   setInitialized as chatInitialize,
   addChat,
   showChat,
+  setBurned,
 } from "../../data/redux/chatSlice";
 import {
   verifyString,
@@ -99,15 +100,24 @@ export default function ChatList() {
           res.data.chats.forEach((chat) => {
             chat.users.forEach((user) => userSet.add(user));
           });
-          userSet = Array.from(userSet);
-          console.log("Find users ", userSet);
-          res = await userData.getUsers(userSet);
+          if (userSet.length > 0) {
+            userSet = Array.from(userSet);
+            console.log("Find users ", userSet);
+            res = await userData.getUsers(userSet);
+            checkRes(res);
+            let users = [];
+            res.data.forEach((user) => {
+              users.push(user);
+            });
+            dispatch(setUsers(users));
+          }
+
+          // get readed
+          res = await chatData.getBurnedMsgs(user._id);
           checkRes(res);
-          let users = [];
-          res.data.forEach((user) => {
-            users.push(user);
-          });
-          dispatch(setUsers(users));
+          if (res.data?.length > 0) {
+            dispatch(setBurned(res.data));
+          }
           dispatch(msgInitialize(true));
           dispatch(chatInitialize(true));
         }
@@ -128,12 +138,15 @@ export default function ChatList() {
             color: "blue",
           };
           console.log("build chat ", chat);
-          return chat.show || chatDiagramMessages[chat._id]?.length > 0 ? (
+
+          return chat.type === constant.chatType.group ||
+            chat.show ||
+            chatDiagramMessages[chat._id]?.length > 0 ? (
             <div
               className={
                 currentChatId !== -1 && currentChatId === chat._id
-                  ? "Focus"
-                  : ""
+                  ? "Focus Wrap"
+                  : "Wrap"
               }
               id={chat._id}
               onClick={() => {

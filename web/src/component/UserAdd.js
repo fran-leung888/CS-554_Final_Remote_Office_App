@@ -180,7 +180,7 @@ const UserAdd = ({ socket }) => {
       single.inviteUserId
     );
     dispatch(setUser(newCurUser.data));
-
+      
     // if (newCurUser.data) {
     //   let temp = [];
     //   for (let i = 0; i < offlineInvite.length; i++) {

@@ -6,10 +6,12 @@ import { Grid } from "@mui/material";
 export default function ChatDiagram() {
   // No message show no list
   const chatData = useSelector((state) => state.message);
+  const enabled = useSelector((state) => state.message.enabled);
+  const chatId = useSelector((state) => state.message.chatId);
   console.log("chatDiagram redux is ", chatData);
-  if (!chatData.enabled || !chatData._id) {
+  if (!enabled || chatId === -1) {
     console.log("no message, no diagram.");
-    return <div></div>;
+    return <div>no message</div>;
   } else {
     return (
       <Grid

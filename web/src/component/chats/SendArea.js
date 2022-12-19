@@ -12,24 +12,29 @@ import {
 import {
   addLoadingMessage,
   resetLoadingMessage,
-  failMessage,
+  setMessageToFail,
 } from "../../data/redux/messageSlice";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import ActionBar from "./ActionBar";
 
-import TextareaAutosize from "@mui/base/TextareaAutosize";
 import { useSnackbar } from "notistack";
 import noti from "../../data/notification";
 import constant from "../../data/constant";
 import { UploadButton } from "../UploadButton";
 export default function SendArea(props) {
-  const [messageToSend, setMessageToSend] = useState("");
+  const [textMessage, setTextMessage] = useState("");
   const currentUser = useSelector((state) => state.user);
   const chatId = useSelector((state) => state.message.chatId);
   const dispatch = useDispatch();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
-  const handleSend = async () => {
-    let tempMessageId, tempChatId;
+  const handleSend = async (messageType, messageToSend) => {
+    if (messageType === constant.messageType.burn)
+      messageToSend = JSON.stringify(messageToSend);
+    let tempMessageId;
     try {
       // add message to redux and set it as loading
       if (!verifyString(messageToSend).valid) throw "Message can not be empty.";
@@ -40,10 +45,15 @@ export default function SendArea(props) {
           randomId: tempMessageId,
           message: messageToSend,
           userId: currentUser._id,
-          type: constant.messageType.text,
+          type: messageType,
         })
       );
-      let res = await chatData.sendMessage(chatId, messageToSend, currentUser, constant.messageType.text);
+      let res = await chatData.sendMessage(
+        chatId,
+        messageToSend,
+        currentUser,
+        messageType
+      );
       checkRes(res);
       dispatch(
         resetLoadingMessage({
@@ -53,11 +63,11 @@ export default function SendArea(props) {
           time: res.data.time,
         })
       );
-      setMessageToSend("");
+      setTextMessage("");
     } catch (e) {
-      enqueueSnackbar(e, noti.errOpt);
+      enqueueSnackbar(e.toString(), noti.errOpt);
       dispatch(
-        failMessage({
+        setMessageToFail({
           chatId,
           randomId: tempMessageId,
         })
@@ -68,7 +78,9 @@ export default function SendArea(props) {
   return (
     <div>
       <Grid container>
-        <Grid item ><ActionBar></ActionBar></Grid>
+        <Grid item>
+          <ActionBar chatId={chatId} handleSend={handleSend}></ActionBar>
+        </Grid>
         <Grid item xs={12}>
           <FormControl>
             <TextField
@@ -77,15 +89,20 @@ export default function SendArea(props) {
               multiline
               rows={2}
               maxRows={4}
-              value={messageToSend}
+              value={textMessage}
               onChange={(e) => {
-                setMessageToSend(e.target.value);
+                setTextMessage(e.target.value);
               }}
             ></TextField>
           </FormControl>
         </Grid>
         <Grid item>
-          <Button sx={{ textTransform: "none" }} onClick={handleSend}>
+          <Button
+            sx={{ textTransform: "none" }}
+            onClick={() => {
+              handleSend(constant.messageType.text, textMessage);
+            }}
+          >
             Send(S)
           </Button>
         </Grid>
