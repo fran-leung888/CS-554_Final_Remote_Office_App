@@ -5,17 +5,22 @@ import { Avatar, Button } from "@mui/material";
 import users from "../data/users";
 import { setUser } from "../data/redux/userSlice";
 // import { io } from "socket.io-client";
-// import Card from "react-bootstrap/Card";
+import Card from "react-bootstrap/Card";
+import Modal from "react-bootstrap/Modal";
+import { useNavigate } from "react-router-dom";
 
 const UserDetail = ({ socket }) => {
   // console.log(`socket: ${socket}`);
   // const [showAdd, setShowAdd] = useState(true);
   const [addSuccess, setAddSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
   // const [reject, setReject] = useState(false);
   // const [rejectData, setRejectData] = useState(undefined);
   const [isFriend, setIsFriend] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const curUser = useSelector((state) => state.user);
   console.log(`curUser: ${JSON.stringify(curUser)}`);
@@ -108,37 +113,133 @@ const UserDetail = ({ socket }) => {
     //   console.log("add unsuccessful");
     // }
     let newCurUser = await users.getUser(curUser._id);
-    console.log("after add friend, update the curUser");
-    console.log(newCurUser.data);
-    dispatch(setUser(newCurUser.data));
+    if (!newCurUser.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      console.log("after add friend, update the curUser");
+      console.log(newCurUser.data);
+      dispatch(setUser(newCurUser.data));
+      setShowSuccess(true);
+    }
   };
 
   const deleteFriend = async () => {
     console.log("delete search user");
     console.log(searchUser._id);
     let deleteF = await users.deleteFriend(searchUser._id);
-    // setShowAdd(true);
-    setIsFriend(false);
-    setAddSuccess(false);
+    if (!deleteF.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
 
-    console.log(deleteF.data);
+      // setShowAdd(true);
+      setIsFriend(false);
+      setAddSuccess(false);
+
+      console.log(deleteF.data);
+    }
 
     let newCurUser = await users.getUser(curUser._id);
-    console.log("after add friend, update the curUser");
-    console.log(newCurUser.data);
-    dispatch(setUser(newCurUser.data));
-  };
+    if (!newCurUser.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
 
+      console.log("after add friend, update the curUser");
+      console.log(newCurUser.data);
+      dispatch(setUser(newCurUser.data));
+    }
+  };
+  const closeModal = () => {
+    setShowSuccess(false);
+  };
+  const backHome = () => {
+    navigate("/home");
+  };
   return (
     <div>
-      <Avatar></Avatar>
-      {isFriend ? (
-        <Button onClick={deleteFriend}>Delete</Button>
+      {showError ? (
+        <Error />
       ) : (
-        <Button onClick={addFriend}>Add</Button>
-      )}
+        <div
+          style={{
+            fontFamily: "Verdana, Arial, Helvetica, sans-serif",
+          }}
+        >
+          <Card
+            style={{
+              width: "20rem",
+              height: "400px",
+              left: "100px",
+              top: "100px",
+              backgroundColor: "lightblue",
+            }}
+          >
+            <Card.Body>
+              <Card.Title style={{ padding: "3rem" }}>
+                Username: {curUser.username}
+              </Card.Title>
+              <Card.Subtitle
+                className="mb-2 text-muted"
+                style={{
+                  paddingLeft: "3rem",
+                  paddingBottom: "7rem",
+                  paddingTop: "1rem",
+                }}
+              >
+                Name: {curUser.name}
+              </Card.Subtitle>
+              <Card.Text style={{ paddingLeft: "3rem" }}>
+                {isFriend ? (
+                  <Button onClick={deleteFriend}>Delete</Button>
+                ) : (
+                  <Button onClick={addFriend}>Add</Button>
+                )}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+          {showSuccess ? (
+            <div
+              className="modal show"
+              style={{
+                display: "block",
+                position: "initial",
+              }}
+            >
+              <Modal.Dialog>
+                <Modal.Body
+                  style={{
+                    backgroundImage:
+                      "linear-gradient( 135deg, #C2FFD8 10%, #465EFB 100%)",
+                  }}
+                >
+                  <p>
+                    Send success, when he/she agree the invite, you can watch in
+                    your friends list!
+                  </p>
+                </Modal.Body>
 
-      {/* {reject ? (
+                <Modal.Footer
+                  style={{
+                    backgroundImage:
+                      "linear-gradient( 135deg, #C2FFD8 10%, #465EFB 100%)",
+                  }}
+                >
+                  <Button variant="secondary" onClick={closeModal}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal.Dialog>
+            </div>
+          ) : (
+            ""
+          )}
+          <div style={{ padding: "7rem" }}>
+            <Button onClick={backHome}>Back to home</Button>
+          </div>
+
+          {/* {reject ? (
         <Card className="text-center">
           <Card.Body>
             <Card.Text>{`${rejectData.friendUsername}reject your invite`}</Card.Text>
@@ -147,6 +248,8 @@ const UserDetail = ({ socket }) => {
       ) : (
         <div></div>
       )} */}
+        </div>
+      )}
     </div>
   );
 };

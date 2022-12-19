@@ -6,8 +6,6 @@
 // const router = express.Router();
 // console.log(process.cwd())
 
-
-
 // // var mongoose = require('mongoose');
 // // mongoose.Promise = global.Promise;
 
@@ -23,7 +21,6 @@
 // //   next();
 // // });
 
-
 // // // CONECTION
 // // mongoose.connect('mongodb://127.0.0.1:27017/CS554-Project');
 // // /*model*/
@@ -35,13 +32,12 @@
 
 // // var ImageModel = mongoose.model('Image', ImageSchema);
 
-
 // // 上传并保存图片到数据库
 // router.post('/upload-img', async (req, res) => {
 //   try{
 //     console.log(req.body)
 //     res.header('Access-Control-Allow-Origin','*')
-   
+
 //     const img = await new ImageModel({
 //       content : req.body.imgUrl,
 //       type    : req.body.type,
@@ -51,7 +47,6 @@
 //   }catch(e){
 //     res.send({code:500,data:{} ,msg:"internal server error"});
 //   }
-	
 
 // });
 
@@ -60,7 +55,7 @@
 //     try{
 //         console.log(req.query)
 //         res.header('Access-Control-Allow-Origin','*')
-//         let img = await  ImageModel.find({_id : req.query.imgId})    
+//         let img = await  ImageModel.find({_id : req.query.imgId})
 //         res.send(img[0])
 
 //     }catch(e){

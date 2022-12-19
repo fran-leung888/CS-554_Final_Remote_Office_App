@@ -24,6 +24,7 @@ import { useContext, useEffect } from "react";
 import PrivateRoute from "./component/PrivateRoute";
 import { useSnackbar } from "notistack";
 import noti from "./data/notification";
+import MyAccount from "./component/MyAccount";
 
 function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
@@ -67,7 +68,12 @@ function App({ socket }) {
           {PrivateRoute({
             loggedIn: !!currentUser._id,
             path: "/friends",
-            element: <Friends socket={socket}/>,
+            element: <Friends socket={socket} />,
+          })}
+          {PrivateRoute({
+            loggedIn: !!currentUser._id,
+            path: "/myaccount",
+            element: <MyAccount />,
           })}
         </Routes>
       </Router>

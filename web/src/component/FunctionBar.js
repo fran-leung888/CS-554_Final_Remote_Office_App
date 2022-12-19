@@ -5,12 +5,20 @@ import SearchIcon from "@mui/icons-material/Search";
 import PermContactCalendarIcon from "@mui/icons-material/PermContactCalendar";
 import SearchUser from "./SearchUser";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setContentStatus } from "../data/redux/statusSlice";
 import ChatIcon from "@mui/icons-material/Chat";
-import { disableDiagram,enableDiagram } from "../data/redux/messageSlice";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import { disableDiagram, enableDiagram } from "../data/redux/messageSlice";
 export default () => {
   const [open, setOpen] = React.useState(false);
+  const curUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -19,10 +27,42 @@ export default () => {
     setOpen(false);
   };
 
+  const myaccount = () => {
+    navigate("/myaccount");
+  };
+
+  console.log(curUser);
+
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      <Card
+        style={{
+          backgroundColor: "black",
+          color: "white",
+          padding: "1rem",
+        }}
+      >
+        <Card.Text>Username: {curUser.username}</Card.Text>
+        <Card.Text>name: {curUser.name}</Card.Text>
+      </Card>
+      <div style={{ padding: "1rem" }}>
+        <Button variant="info" onClick={myaccount}>
+          My account
+        </Button>
+      </div>
+    </Tooltip>
+  );
+
   return (
     <Grid container direction="column">
       <Grid item>
-        <Avatar></Avatar>
+        <OverlayTrigger
+          placement="right"
+          delay={{ show: 250, hide: 400 }}
+          overlay={renderTooltip}
+        >
+          <Avatar></Avatar>
+        </OverlayTrigger>
       </Grid>
       <Grid>
         <IconButton
