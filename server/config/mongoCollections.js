@@ -23,4 +23,5 @@ module.exports = {
   messages: getCollectionFn("messages"),
   groups: getCollectionFn("groups"),
   files: getCollectionFn("files"),
+  burned: getCollectionFn("burned"),
 };

@@ -12,7 +12,7 @@ import {
   verifyObj,
 } from "../utils/verificationUtils";
 import { addChat, showChat } from "../data/redux/chatSlice";
-import { setData } from "../data/redux/messageSlice";
+import { enableDiagram, setData } from "../data/redux/messageSlice";
 import constant from "../data/constant";
 import { SocketContext } from "../socketContext";
 import { useSnackbar } from "notistack";
@@ -68,6 +68,7 @@ export default (props) => {
         );
       }
       dispatch(setContentStatus(constant.status.content));
+      dispatch(setData({ chatId }));
     } catch (e) {
       enqueueSnackbar(e, noti.errOpt);
     }
