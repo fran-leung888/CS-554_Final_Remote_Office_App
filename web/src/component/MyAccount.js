@@ -6,12 +6,7 @@ import { doSignOut } from "../firebase/FirebaseFunctions";
 
 import users from "../data/users";
 import { setUser } from "../data/redux/userSlice";
-import {
-  verifyString,
-  checkResult,
-  checkRes,
-  verifyObj,
-} from "../utils/verificationUtils";
+import { verifyString, checkResult } from "../utils/verificationUtils";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -65,23 +60,26 @@ export default function MyAccount() {
       dispatch(setUser({}));
       doSignOut();
       localStorage.clear();
-      setShowChangePswd(false);
-      return <div>Success change, please re-login!</div>;
     }
   };
 
-  // const closeChangeName = () => {
-  //   setShowChangeName(false);
-  // };
-
-  const closeChangePswd = () => {
-    setShowChangePswd(false);
+  const myFriends = () => {
+    navigate("/friends");
+  };
+  const backHome = () => {
+    navigate("/home");
   };
 
   return (
-    <div>
+    <div variant="Light">
       <Card
-        style={{ width: "20rem", height: "400px", left: "100px", top: "100px" }}
+        style={{
+          width: "20rem",
+          height: "400px",
+          left: "100px",
+          top: "100px",
+          backgroundColor: "lightblue",
+        }}
       >
         <Card.Body>
           <Card.Title style={{ padding: "3rem" }}>
@@ -162,7 +160,7 @@ export default function MyAccount() {
 
             <Modal.Footer>
               <Button variant="primary" onClick={changePassword}>
-                Save changes
+                Reset
               </Button>
             </Modal.Footer>
           </Modal.Dialog>
@@ -170,6 +168,33 @@ export default function MyAccount() {
       ) : (
         ""
       )}
+
+      <div style={{ paddingTop: "10rem", paddingLeft: "6rem" }}>
+        <Button
+          onClick={myFriends}
+          variant="info"
+          style={{
+            paddingLeft: "2rem",
+            paddingRight: "2rem",
+            backgroundImage:
+              "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+          }}
+        >
+          My Friends
+        </Button>{" "}
+        <Button
+          onClick={backHome}
+          variant="info"
+          style={{
+            paddingLeft: "2rem",
+            paddingRight: "2rem",
+            backgroundImage:
+              "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+          }}
+        >
+          Back to home
+        </Button>
+      </div>
     </div>
   );
 }

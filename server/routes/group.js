@@ -32,15 +32,16 @@ router.post("/create", async (req, res) => {
     // add the group to user
     const ifGrouper = true;
     const groupId = group._id.toString();
-    const newUser = await users.userUpdateGroup(
+    const updatedInfo = await users.userUpdateGroup(
       curId,
       groupId,
       groupName,
       ifGrouper
     );
     console.log("success update the group data in user database:");
-    console.log(newUser);
-    res.send(new response(newUser).success(res));
+    const newCurUser = await users.getUser(curId, true);
+    console.log(newCurUser);
+    res.send(new response(newCurUser).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));
   }
@@ -58,7 +59,7 @@ router.post("/addToGroup", async (req, res) => {
           "Please input the person you want to add and input the groupName you want to add",
       });
     // const memberUsername = req.body.memberUsername
-    const member = await users.getUser(memberId);
+    const member = await users.getUser(memberId, true);
     const group = await groups.getGroupByname(groupName);
     // console.log(`group.groupMembers.length: ${group.groupMembers.length}`);
     // console.log(`member._id.toString(): ${member._id.toString()}`);
@@ -85,7 +86,7 @@ router.post("/addToGroup", async (req, res) => {
     const curId = memberId;
     const groupId = group._id.toString();
     const ifGrouper = false;
-    const newUser = await users.userUpdateGroup(
+    const updatedInfo = await users.userUpdateGroup(
       curId,
       groupId,
       groupName,
@@ -93,6 +94,8 @@ router.post("/addToGroup", async (req, res) => {
     );
 
     console.log("update the user database(add the group info)");
+
+    const newUser = await users.getUser(curId, true);
     console.log(newUser);
 
     res.send(new response(newUser).success(res));
@@ -176,7 +179,7 @@ router.post("/delete", async (req, res) => {
   let members = group.groupMembers;
 
   // delete group from groups database
-  const ifDeleted = await groups.deleteGroup(group);
+  const ifDeleted = await groups.deleteGroup(curUser, group);
 
   console.log("already delete this group: ");
   console.log(ifDeleted);
@@ -192,8 +195,10 @@ router.post("/delete", async (req, res) => {
       console.log(temp);
     }
   }
-  const newUser = await users.userDeleteGroup(curUser, group);
+  const updatedInfo = await users.userDeleteGroup(curUser, group);
   console.log("already delete the group info from this user:");
+
+  const newUser = await users.getUser(curId, true);
   console.log(newUser);
 
   res.send(new response(newUser).success(res));
@@ -212,9 +217,9 @@ router.post("/exit", async (req, res) => {
     return res
       .status(400)
       .json({ message: "Please input the groupId you want to exit" });
-  // let session = req.cookies[store.SESSION_KEY];
-  // let curUser = await users.getUser(session);
-  // const curId = curUser._id.toString();
+  let session = req.cookies[store.SESSION_KEY];
+  let curUser = await users.getUser(session);
+  const curId = curUser._id.toString();
 
   // if (!curId) return res.status(400).json({ message: "Please login frist" });
 
@@ -247,7 +252,7 @@ router.post("/exit", async (req, res) => {
       .json({ message: "You are not in this group, cannot exit" });
 
   // delete the user info from group data
-  const newExitUser = await users.getUser(exitUserId);
+  const newExitUser = await users.getUser(exitUserId, true);
   console.log("the exit user data:");
   console.log(newExitUser);
   const newGroup = await groups.deleteMember(newExitUser, group);
@@ -255,8 +260,10 @@ router.post("/exit", async (req, res) => {
   console.log("already delete the user info in group");
   console.log(newGroup);
   // call function to update user data
-  const newUser = await users.userDeleteGroup(newExitUser, group);
+  const updatedInfo = await users.userDeleteGroup(newExitUser, group);
   console.log("success delete this group in user data");
+
+  const newUser = await users.getUser(curId, true);
   console.log(newUser);
 
   res.send(new response(newUser).success(res));

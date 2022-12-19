@@ -35,11 +35,21 @@ export default () => {
 
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      <Card.Text>Username: {curUser.username}</Card.Text>
-      <Card.Text>name: {curUser.name}</Card.Text>
-      <Button variant="primary" onClick={myaccount}>
-        My account
-      </Button>
+      <Card
+        style={{
+          backgroundColor: "black",
+          color: "white",
+          padding: "1rem",
+        }}
+      >
+        <Card.Text>Username: {curUser.username}</Card.Text>
+        <Card.Text>name: {curUser.name}</Card.Text>
+      </Card>
+      <div style={{ padding: "1rem" }}>
+        <Button variant="info" onClick={myaccount}>
+          My account
+        </Button>
+      </div>
     </Tooltip>
   );
 
