@@ -18,6 +18,7 @@ import IconButton from "@mui/material/IconButton";
 import AttachFile from "@mui/icons-material/AttachFile";
 import constant from "../../data/constant";
 import { useSelector } from "react-redux";
+import { UploadButton } from "../UploadButton";
 
 export default function ActionBar(props) {
   const [open, setOpen] = React.useState(false);
@@ -35,7 +36,7 @@ export default function ActionBar(props) {
     props.handleSend(constant.messageType.burn, file);
     setOpen(false);
     setTime("");
-    setFile(null)
+    setFile(null);
   };
   const handleSetFile = async (event) => {
     const file = event.target.files[0];
@@ -50,57 +51,69 @@ export default function ActionBar(props) {
   };
 
   return (
-    <Grid container item>
-      <Grid item>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="dialog-title"
-          aria-describedby="dialog-description"
-        >
-          <DialogTitle id="dialog-title">Set:</DialogTitle>
-          <DialogContent>
-            <Button variant="contained" sx={{ marginBottom: "5em" }}>
-              Choose file
-            </Button>
-            <IconButton
-              color="primary"
-              aria-label="upload file"
-              component="label"
+    <div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-description"
+      >
+        <DialogTitle id="dialog-title">Set:</DialogTitle>
+        <DialogContent>
+          <Button variant="contained" sx={{ marginBottom: "5em" }}>
+            Choose file
+          </Button>
+          <IconButton
+            color="primary"
+            aria-label="upload file"
+            component="label"
+          >
+            <input hidden type="file" onChange={handleSetFile} />
+            <AttachFile />
+          </IconButton>
+          <FormControl fullWidth variant="filled">
+            <InputLabel id="set-expire">Expire Time</InputLabel>
+            <Select
+              sx={{ minWidth: "1em" }}
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={time}
+              label="Time"
+              onChange={handleChange}
             >
-              <input hidden type="file" onChange={handleSetFile} />
-              <AttachFile />
-            </IconButton>
-            <FormControl fullWidth variant="filled">
-              <InputLabel id="set-expire">Expire Time</InputLabel>
-              <Select
-                sx={{ minWidth: "1em" }}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={time}
-                label="Time"
-                onChange={handleChange}
-              >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-            </FormControl>{" "}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="contained"
-              onClick={handleSend}
-              sx={{ textTransform: "none" }}
-            >
-              Send
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Tooltip title="Burn after reading">
-          <LocalFireDepartmentIcon color="warning" onClick={handleClickOpen} />
-        </Tooltip>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl>{" "}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            onClick={handleSend}
+            sx={{ textTransform: "none" }}
+          >
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Grid container item textAlign={"center"} justifyContent={"center"}>
+        <Grid item>
+          <Tooltip title="Burn after reading">
+            <LocalFireDepartmentIcon
+              color="warning"
+              onClick={handleClickOpen}
+            />
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Send file">
+            <div>
+              <UploadButton chatId={props.chatId} />
+            </div>
+          </Tooltip>
+        </Grid>
       </Grid>
-    </Grid>
+    </div>
   );
 }

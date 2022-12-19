@@ -423,7 +423,7 @@ export default function Friends({ socket }) {
                         </Modal.Header>
                         <Modal.Body>
                           <ListGroup.Item>
-                            {friendsData.map((friend) => (
+                            {friendsData && friendsData.map((friend) => (
                               <Form.Label>
                                 {friend.username}
                                 {curGroup &&

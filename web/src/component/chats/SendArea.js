@@ -106,9 +106,6 @@ export default function SendArea(props) {
             Send(S)
           </Button>
         </Grid>
-        <Grid>
-          <UploadButton chatId={chatId} />
-        </Grid>
       </Grid>
     </div>
   );

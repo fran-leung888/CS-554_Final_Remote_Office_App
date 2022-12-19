@@ -24,18 +24,26 @@ router.post("/create", async (req, res) => {
     // return res
     //   .status(400)
     //   .json({ message: "you have not login, please login and try again" });
-    res.send(new response(null).fail(res));
+    res.send(new response(null, "Please login in.").fail(res));
   }
   try {
     // create a group
     const grouperId = curId;
     const grouperUsername = curUser.username;
     const group = await groups.addGroup(groupName, grouperId, grouperUsername);
-    // TODO add chat
-    const newChat = chats.addGroupChat(curUser._id, groupId);
-    chatSocket.notifyEvent(constant.event.newChat, curId, {
-      chatId: newChat.insertedId,
+    // add chat
+    await redisStore.removeUserChat(curUser._id.toString())
+    const newChat = await chats.addGroupChat(
+      curUser._id.toString(),
+      group._id.toString(),
+      groupName
+    );
+
+    chatSocket.notifyEvent(constant.event.newChat, curUser._id.toString(), {
+      _id: newChat.insertedId,
       type: constant.chatType.group,
+      users: [curUser._id.toString()],
+      groupName,
     });
     console.log("create a group, and success store in group database");
     console.log(group);
@@ -103,12 +111,26 @@ router.post("/addToGroup", async (req, res) => {
       ifGrouper
     );
     // Find chat by group Id
+    // notify all user in group
     let groupChat = await chats.getChatByGroupId(groupId);
-    await redisStore.removeUser(curUser._id.toString());
-    chatSocket.notifyEvent(constant.event.newChat, {
+     await chats.addUserInGroupChat(groupId, memberId);
+    await redisStore.removeUser(curId.toString());
+    await redisStore.removeUserChat(curId.toString());
+    chatSocket.notifyEvent(constant.event.newChat, curId.toString(), {
       _id: groupChat._id.toString(),
       type: constant.chatType.group,
+      users: [...groupChat.users, curId.toString()],
+      groupName,
+      groupId
     });
+    chatSocket.notifyEvent(
+      constant.event.newGroupUser,
+      groupChat._id.toString(),
+      {
+        newUser: member,
+      }
+    );
+
     console.log("update the user database(add the group info)");
 
     const newUser = await users.getUser(curId, true);
