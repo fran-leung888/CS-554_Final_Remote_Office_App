@@ -2,6 +2,9 @@ const router = require("express").Router();
 const users = require("../data/users");
 const store = require("../store/dataStore");
 const response = require("../response/response");
+const chatSocket = require("../socket/chatSocket");
+const constant = require("../data/constant");
+const redisStore = require("../data/redisStore");
 
 router.post("/user", async (req, res) => {
   // const name = res.body.name;
@@ -71,6 +74,14 @@ router.post("/add", async (req, res) => {
     const updatedInfo = await users.updateFriend(curId, otherId);
     // const newUser = await users.getUser(curId);
     console.log(`updatedInfo: ${updatedInfo}`);
+    // notify user on adding friend by socket
+    redisStore.removeUser(curId);
+    chatSocket.notifyEvent(constant.event.newFriend, curId, {
+      friendId,
+    });
+    chatSocket.notifyEvent(constant.event.newFriend, curId, {
+      friendId,
+    });
     res.send(new response(updatedInfo).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));

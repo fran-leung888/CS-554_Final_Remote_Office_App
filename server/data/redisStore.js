@@ -1,7 +1,7 @@
 const redisClient = require("../config/redisConfig");
 const { ObjectId } = require("mongodb");
 
-function getChatKey(chatId) {
+function getUserChatKey(chatId) {
   return "chat-" + chatId.toString();
 }
 
@@ -13,23 +13,37 @@ function getUsersKey(userId) {
   return "user-" + userId.toString();
 }
 
+function convertUserIds(userIds) {
+  if (Array.isArray(userIds)) {
+    if (userIds.length === 0) return true;
+    let idStr = [];
+    userIds.forEach((id) => idStr.push(id.toString()));
+    userIds = idStr + ",";
+  } else {
+    userIds = userIds.toString();
+  }
+  return userIds;
+}
+
 module.exports = {
   async storeUser(userId, user) {
-    if (Array.isArray(userId)) {
-      if (userId.length === 0) return true;
-      let idStr = [];
-      userId.forEach((id) => idStr.push(id.toString()));
-      userId = idStr + "";
-    } else {
-      userId = userId.toString();
-    }
+    userId = convertUserIds(userId);
     await redisClient.set(getUsersKey(userId), JSON.stringify(user));
     return true;
   },
 
   async getUser(userId) {
+    userId = convertUserIds(userId);
+
     const users = await redisClient.get(getUsersKey(userId.toString()));
     return JSON.parse(users);
+  },
+
+  async removeUser(userId) {
+    userId = convertUserIds(userId);
+
+    await redisClient.del(getUsersKey(userId.toString()));
+    return true;
   },
 
   //   async storeMessage(chatId, messages) {
@@ -58,17 +72,20 @@ module.exports = {
   //     return JSON.parse(messages);
   //   },
 
-  async storeChat(userId, chats) {
-    await redisClient.set(getChatKey(userId.toString()), JSON.stringify(chats));
+  async storeUserChat(userId, chats) {
+    await redisClient.set(
+      getUserChatKey(userId.toString()),
+      JSON.stringify(chats)
+    );
     return true;
   },
 
-  async getChat(userId) {
-    const chats = await redisClient.get(getChatKey(userId.toString()));
+  async getUserChat(userId) {
+    const chats = await redisClient.get(getUserChatKey(userId.toString()));
     return JSON.parse(chats);
   },
 
-  async removeChat(userId){
-    return await redisClient.del(getChatKey(userId))
-  }
+  async removeUserChat(userId) {
+    return await redisClient.del(getUserChatKey(userId));
+  },
 };

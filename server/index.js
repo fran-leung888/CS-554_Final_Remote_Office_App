@@ -1,5 +1,5 @@
-const { io, app, express, server } = require('./config/socket')
-const chatSocket = require('./socket/chatSocket')
+const { io, app, express, server } = require("./config/socket");
+const chatSocket = require("./socket/chatSocket");
 const store = require("./store/dataStore");
 const configRoutes = require("./routes/router");
 
@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 const usersCollection = require("./data/users");
 const users = require("./data/users");
 const groups = require("./data/groups");
+const constant = require("./data/constant");
+const redisStore = require("./data/redisStore");
 
 app.use(cookieParser());
 
@@ -82,7 +84,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("agree", (data) => {
+  socket.on("agree", async (data) => {
     console.log(`agreeFriend:`);
     console.log(data);
     let sendToUser = "";
@@ -94,6 +96,11 @@ io.on("connection", (socket) => {
     if (sendToUser) {
       // const sendToUser = onlineUsers.get(data.applyId);
       io.to(sendToUser).emit("agreeResponse", data);
+      // notify both users
+      await redisStore.removeUser(data.friendId)
+      await redisStore.removeUser(data.applyId)
+      chatSocket.notifyEvent(constant.event.newFriend, data.friendId, {});
+      chatSocket.notifyEvent(constant.event.newFriend, data.applyId, {});
     }
   });
 

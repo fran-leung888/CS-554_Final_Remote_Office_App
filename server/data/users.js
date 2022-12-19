@@ -355,16 +355,23 @@ module.exports = {
 
   async getUsers(ids) {
     // check cache
+    let convertedIds = []
+    ids.split(",").forEach((each) => {
+      convertedIds.push(each);
+    });
+    ids = convertedIds;
     let result = await redisStore.getUser(ids);
+    console.log('Get users by ids from cache, result', ids, result)
     if (result) {
       return result;
     }
     if (ids && ids.length !== 0) {
       const usersCollection = await users();
       let objectIds = [];
-      ids.split(",").forEach((each) => {
+      ids.forEach((each) => {
         objectIds.push(ObjectId(each));
       });
+      console.log('Get users by ids,', objectIds)
       const cursor = await usersCollection.find({ _id: { $in: objectIds } });
       if ((await cursor.count()) === 0) throw "Can not find user.";
       else {
