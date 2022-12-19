@@ -5,19 +5,18 @@ import groups from "../data/groups";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
-// import Container from "react-bootstrap/Container";
-// import Modal from "react-bootstrap/Modal";
-// import Form from "react-bootstrap/Form";
-// import Row from "react-bootstrap/Row";
-// import Col from "react-bootstrap/Col";
+import "../App.css";
 import { setUser } from "../data/redux/userSlice";
+import Error from "./Error";
 
 const UserAdd = ({ socket }) => {
   const [offlineInvite, setOfflineInvite] = useState([]);
   const [offlineGroupInvite, setOfflineGroupInvite] = useState([]);
+  const [hasError, setHasError] = useState(false);
   // const [showInvite, setShowInvite] = useState(false);
   // const [showGroupInvite, setShowGroupInvite] = useState(false);
   // const [groupData, setGroupData] = useState(undefined);
@@ -25,6 +24,7 @@ const UserAdd = ({ socket }) => {
   // const [reject, setReject] = useState(false);
   // const [rejectData, setRejectData] = useState(undefined);
   // const [applyUser, setApplyuser] = useState(undefined);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const curUser = useSelector((state) => state.user);
   console.log(curUser);
@@ -179,7 +179,12 @@ const UserAdd = ({ socket }) => {
       curUser._id,
       single.inviteUserId
     );
-    dispatch(setUser(newCurUser.data));
+    if (!newCurUser.data) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+      dispatch(setUser(newCurUser.data));
+    }
 
     // if (newCurUser.data) {
     //   let temp = [];
@@ -206,7 +211,12 @@ const UserAdd = ({ socket }) => {
       curUser._id,
       single.inviteUserId
     );
-    dispatch(setUser(newCurUser.data));
+    if (!newCurUser.data) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+      dispatch(setUser(newCurUser.data));
+    }
     return <div>Success disagree</div>;
   };
 
@@ -221,7 +231,12 @@ const UserAdd = ({ socket }) => {
       curUser._id,
       single.inviteUserId
     );
-    dispatch(setUser(newCurUser.data));
+    if (!newCurUser.data) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+      dispatch(setUser(newCurUser.data));
+    }
 
     // if (newCurUser.data) {
     //   let temp = [];
@@ -251,44 +266,96 @@ const UserAdd = ({ socket }) => {
       single.inviteUserId
     );
     console.log(newCurUser.data);
-    dispatch(setUser(newCurUser.data));
+    if (!newCurUser.data) {
+      setHasError(true);
+    } else {
+      setHasError(false);
+      dispatch(setUser(newCurUser.data));
+    }
 
     return <div>Success disagree</div>;
   };
 
-  console.log(curUser);
-  console.log(offlineInvite);
-  console.log(offlineGroupInvite);
+  // console.log(curUser);
+  // console.log(offlineInvite);
+  // console.log(offlineGroupInvite);
+
+  const backHome = () => {
+    navigate("/home");
+  };
   return (
     <div>
-      <ListGroup>
-        {offlineInvite.length ? (
-          offlineInvite.map((single) => (
-            <ListGroup.Item>
-              {single.inviteUsername} want to become your friend
-              <Button onClick={(e) => agree(single, e)}>Agree</Button>
-              <Button onClick={(e) => disagree(single, e)}>Disagree</Button>
-            </ListGroup.Item>
-          ))
-        ) : (
-          <ListGroup.Item>No friend invite message</ListGroup.Item>
-        )}
-      </ListGroup>
+      {hasError ? (
+        <Error />
+      ) : (
+        <div>
+          <ListGroup style={{ padding: "2rem" }}>
+            {offlineInvite.length ? (
+              offlineInvite.map((single) => (
+                <ListGroup.Item
+                  style={{
+                    padding: "1rem",
+                  }}
+                  className="listS"
+                >
+                  {single.inviteUsername} want to become your friend
+                  <Button onClick={(e) => agree(single, e)}>Agree</Button>
+                  <Button onClick={(e) => disagree(single, e)}>Disagree</Button>
+                </ListGroup.Item>
+              ))
+            ) : (
+              <ListGroup.Item
+                style={{
+                  padding: "1rem",
+                }}
+                className="listS"
+              >
+                No friend invite message
+              </ListGroup.Item>
+            )}
+          </ListGroup>
 
-      <ListGroup>
-        {offlineGroupInvite.length ? (
-          offlineGroupInvite.map((single) => (
-            <ListGroup.Item>
-              {single.inviteUsername} want to invite you add in{" "}
-              {single.attendGroupName}
-              <Button onClick={(e) => agreeGroup(single, e)}>Agree</Button>
-              <Button onClick={(e) => disagreeGroup(single)}>Disagree</Button>
-            </ListGroup.Item>
-          ))
-        ) : (
-          <ListGroup.Item>No group invite message</ListGroup.Item>
-        )}
-      </ListGroup>
+          <ListGroup style={{ padding: "2rem" }}>
+            {offlineGroupInvite.length ? (
+              offlineGroupInvite.map((single) => (
+                <ListGroup.Item
+                  style={{
+                    padding: "1rem",
+                  }}
+                  className="listS"
+                >
+                  {single.inviteUsername} want to invite you add in{" "}
+                  {single.attendGroupName}
+                  <Button onClick={(e) => agreeGroup(single, e)}>Agree</Button>
+                  <Button onClick={(e) => disagreeGroup(single)}>
+                    Disagree
+                  </Button>
+                </ListGroup.Item>
+              ))
+            ) : (
+              <ListGroup.Item
+                style={{
+                  padding: "1rem",
+                }}
+                className="listS"
+              >
+                No group invite message
+              </ListGroup.Item>
+            )}
+          </ListGroup>
+          <div style={{ padding: "2rem" }}>
+            <Button
+              onClick={backHome}
+              style={{
+                backgroundImage:
+                  "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+              }}
+            >
+              Back to home
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
     //</div>{showInvite ? (
     //     <div

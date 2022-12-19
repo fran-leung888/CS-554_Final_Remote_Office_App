@@ -11,10 +11,13 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import "../App.css";
 
 import users from "../data/users";
 import groups from "../data/groups";
 import { setUser } from "../data/redux/userSlice";
+import { useNavigate } from "react-router-dom";
+import Error from "./Error";
 
 export default function Friends({ socket }) {
   const [hasFriend, setHasFriend] = useState(false);
@@ -27,6 +30,7 @@ export default function Friends({ socket }) {
   const [inviteShow, setInviteShow] = useState(false);
   const [agreeAdd, setAgreeAdd] = useState(false);
   const [showRespond, setShowRespond] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [responseData, setResponseData] = useState(undefined);
   const [respondShow, setRespondShow] = useState(false);
 
@@ -36,6 +40,7 @@ export default function Friends({ socket }) {
   console.log(`curUser: ${JSON.stringify(curUser)}`);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (curUser && curUser.friends) {
@@ -73,7 +78,7 @@ export default function Friends({ socket }) {
         console.log("in  groupsData[i].groupName");
         console.log(groupsData[i].groupName);
         let tempGroup = await groups.getByName(groupsData[i].groupName);
-        console.log(tempGroup.data.groupMembers);
+        console.log(tempGroup);
 
         if (tempGroup.data.groupMembers.length) {
           for (let j = 0; j < tempGroup.data.groupMembers.length; j++) {
@@ -141,29 +146,56 @@ export default function Friends({ socket }) {
     if (friend._id) {
       let deleteF = await users.deleteFriend(friend._id);
       let newUser = await users.getUser(curUser._id);
-      dispatch(setUser(newUser.data));
-      setGroupsData(curUser.groups);
-      console.log(deleteF);
+
+      if (!newUser.data) {
+        setShowError(true);
+      } else {
+        setShowError(false);
+        dispatch(setUser(newUser.data));
+        setGroupsData(curUser.groups);
+        console.log(deleteF);
+      }
     }
   };
 
   const deleteGro = async (group, e) => {
     console.log(group);
     if (group.groupId) {
-      let exitG = await groups.exit(curUser._id, group.groupId);
-      console.log(exitG.data);
-      dispatch(setUser(exitG.data));
-      setGroupsData(curUser.groups);
-      // navigate("/home");
+      if (group.ifGrouper) {
+        let exitG = await groups.deleteGroup(group.groupId);
+        console.log(exitG.data);
+        if (!exitG.data) {
+          setShowError(true);
+        } else {
+          setShowError(false);
+          dispatch(setUser(exitG.data));
+          setGroupsData(curUser.groups);
+        }
+      } else {
+        let exitG = await groups.exit(curUser._id, group.groupId);
+        console.log(exitG.data);
+        if (!exitG.data) {
+          setShowError(true);
+        } else {
+          setShowError(false);
+          dispatch(setUser(exitG.data));
+          setGroupsData(curUser.groups);
+        }
+      }
     }
   };
 
   const createGroup = async () => {
     checkResult(verifyString(groupName));
     let newUser = await groups.createGroups(groupName);
-    console.log(newUser.data);
-    dispatch(setUser(newUser.data));
-    setShow(false);
+    if (!newUser.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      console.log(newUser.data);
+      dispatch(setUser(newUser.data));
+      setShow(false);
+    }
   };
 
   const kick = async (friend) => {
@@ -179,15 +211,22 @@ export default function Friends({ socket }) {
       let newGroup = await groups.getByName(curGroup.groupName);
       setCurGroup(newGroup.data);
       let newCurUser = await users.getUser(curUser._id);
-      console.log("curUser data:");
-      console.log(newCurUser.data);
-      dispatch(setUser(newCurUser.data));
-      setGroupsData(newCurUser.data.groups);
-      tryGroup(groupsData);
+
+      if (!newCurUser) {
+        setShowError(true);
+      } else {
+        setShowError(false);
+
+        console.log("curUser data:");
+        console.log(newCurUser.data);
+        dispatch(setUser(newCurUser.data));
+        setGroupsData(newCurUser.data.groups);
+        tryGroup(groupsData);
+      }
     }
 
-    console.log(curGroup);
-    console.log(groupsData);
+    // console.log(curGroup);
+    // console.log(groupsData);
   };
 
   const invite = async (friend, e) => {
@@ -208,7 +247,12 @@ export default function Friends({ socket }) {
   const updateGroup = async () => {
     console.log("update group data after add a pople in");
     const newGroup = await groups.getByName(curGroup.groupName);
-    setCurGroup(newGroup.data);
+    if (!newGroup.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      setCurGroup(newGroup.data);
+    }
   };
 
   socket.on("addGroupRespond", (data) => {
@@ -225,10 +269,15 @@ export default function Friends({ socket }) {
 
   async function resetCurUser() {
     let newUser = await users.getUser(curUser._id);
-    console.log("after agree add in group, fresh the curUser data:");
-    console.log(newUser.data);
-    dispatch(setUser(newUser.data));
-    setGroupsData(curUser.groups);
+    if (!newUser.data) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      console.log("after agree add in group, fresh the curUser data:");
+      console.log(newUser.data);
+      dispatch(setUser(newUser.data));
+      setGroupsData(curUser.groups);
+    }
   }
   useEffect(() => {
     if (agreeAdd) {
@@ -253,6 +302,10 @@ export default function Friends({ socket }) {
     console.log(groupsSet[curGroup.groupName].length);
   }
 
+  const backHome = () => {
+    navigate("/home");
+  };
+
   // useEffect(() => {
   //   if (curGroup && groupsSet) {
   //     console.log("curGroup, groupsSet[curGroup.groupName]");
@@ -265,202 +318,239 @@ export default function Friends({ socket }) {
 
   return (
     <div>
-      <Container>
-        <Row>
-          <Col>
-            <h2>My Friends</h2>
-            {hasFriend ? (
-              <ListGroup>
-                {friendsData.map((friend) => (
-                  <ListGroup.Item action href="">
-                    {friend.username}
+      {showError ? (
+        <Error />
+      ) : (
+        <Container>
+          <Row
+            style={{
+              paddingBottom: "3rem",
+              fontFamily: "Verdana, Arial, Helvetica, sans-serif",
+            }}
+          >
+            <Col>
+              <h2
+                style={{
+                  padding: "2rem",
+                }}
+              >
+                My Friends
+              </h2>
+              {hasFriend ? (
+                <ListGroup>
+                  {friendsData.map((friend) => (
+                    <ListGroup.Item
+                      action
+                      href=""
+                      style={{
+                        width: "500px",
+                        height: "75px",
+                        padding: "1rem",
+                      }}
+                      className="listS"
+                    >
+                      UserName: {friend.username}{" "}
+                      <Button
+                        onClick={(e) => {
+                          console.log(e);
+                          deleteFri(friend, e);
+                        }}
+                        style={{
+                          backgroundImage:
+                            "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <ListGroup>Empty Friends</ListGroup>
+              )}
+            </Col>
+            <Col>
+              <h2 style={{ padding: "2rem" }}>My Groups</h2>
 
-                    <Button
-                      onClick={(e) => {
-                        console.log(e);
-                        deleteFri(friend, e);
+              {hasGroups ? (
+                <ListGroup>
+                  {groupsData.map((group) => (
+                    <ListGroup.Item
+                      action
+                      href=""
+                      className="listS"
+                      style={{
+                        width: "500px",
+                        height: "75px",
+                        paddingRight: "3rem",
                       }}
                     >
-                      Delete
-                    </Button>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            ) : (
-              <ListGroup>Empty Friends</ListGroup>
-            )}
-          </Col>
-          <Col>
-            <h2>My Groups</h2>
-
-            {hasGroups ? (
-              <ListGroup>
-                {groupsData.map((group) => (
-                  <ListGroup.Item action href="">
-                    {group.groupName}
-                    <Button
-                      onClick={(e) => {
-                        console.log(e);
-                        deleteGro(group, e);
-                      }}
-                    >
-                      {group.ifGrouper ? "Dismiss" : "Exit"}
-                    </Button>
-                    {group.ifGrouper ? (
-                      <div>
+                      {group.groupName}{" "}
+                      <Button
+                        onClick={(e) => {
+                          console.log(e);
+                          deleteGro(group, e);
+                        }}
+                        style={{
+                          border: "30px",
+                          backgroundImage:
+                            "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                        }}
+                      >
+                        {group.ifGrouper ? "Dismiss" : "Exit"}
+                      </Button>{" "}
+                      {group.ifGrouper ? (
                         <Button
                           onClick={() => {
                             handleInviteShow(group);
                           }}
+                          style={{
+                            border: "30px",
+                            backgroundImage:
+                              "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                          }}
                         >
                           Invite
                         </Button>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                    {/* {showRespond ? (
-                      <div>
-                        {agreeAdd ? (
-                          <div>
-                            {responseData.friendUsername} agree attend in{" "}
-                            {responseData.group.groupName}
-                            <Button
-                              variant="primary"
-                              onClick={handleInviteClose}
-                            >
-                              Close
-                            </Button>
-                          </div>
-                        ) : (
-                          <div>
-                            {responseData.friendUsername} disagree attend in{" "}
-                            {responseData.group.groupName}
-                            <Button
-                              variant="primary"
-                              onClick={handleInviteClose}
-                            >
-                              Close
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div></div>
-                    )} */}
-                    <Modal show={inviteShow} onHide={handleInviteClose}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>
-                          invite people add in your group
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <ListGroup.Item>
-                          {friendsData.map((friend) => (
-                            <Form.Label>
-                              {friend.username}
-                              {curGroup &&
-                              groupsSet &&
-                              curGroup.groupName &&
-                              groupsSet[curGroup.groupName].has(
-                                friend.username
-                              ) ? (
-                                <Button
-                                  variant="primary"
-                                  onClick={(e) => {
-                                    kick(friend, e);
-                                  }}
-                                >
-                                  Kick
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="primary"
-                                  onClick={(e) => {
-                                    invite(friend, e);
-                                  }}
-                                >
-                                  Add
-                                </Button>
-                              )}
-                            </Form.Label>
-                          ))}
-                        </ListGroup.Item>
-                      </Modal.Body>
-                    </Modal>
-                    {responseData ? (
-                      <Modal show={respondShow} onHide={handleRespondClose}>
+                      ) : (
+                        ""
+                      )}
+                      <Modal show={inviteShow} onHide={handleInviteClose}>
                         <Modal.Header closeButton>
                           <Modal.Title>
-                            {agreeAdd ? (
-                              <div>
-                                {responseData.friendUsername} agree attend in{" "}
-                                {responseData.group.groupName}
-                                <Button
-                                  variant="primary"
-                                  onClick={handleRespondClose}
-                                >
-                                  Close
-                                </Button>
-                              </div>
-                            ) : (
-                              <div>
-                                {responseData.friendUsername} disagree attend in{" "}
-                                {responseData.group.groupName}
-                                <Button
-                                  variant="primary"
-                                  onClick={handleRespondClose}
-                                >
-                                  Close
-                                </Button>
-                              </div>
-                            )}
+                            invite people add in your group
                           </Modal.Title>
                         </Modal.Header>
-                        <Modal.Footer>
-                          <Button
-                            variant="primary"
-                            onClick={handleRespondClose}
-                          >
-                            Close
-                          </Button>
-                        </Modal.Footer>
+                        <Modal.Body>
+                          <ListGroup.Item>
+                            {friendsData.map((friend) => (
+                              <Form.Label>
+                                {friend.username}
+                                {curGroup &&
+                                groupsSet &&
+                                curGroup.groupName &&
+                                groupsSet[curGroup.groupName].has(
+                                  friend.username
+                                ) ? (
+                                  <Button
+                                    variant="primary"
+                                    onClick={(e) => {
+                                      kick(friend, e);
+                                    }}
+                                  >
+                                    Kick
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="primary"
+                                    onClick={(e) => {
+                                      invite(friend, e);
+                                    }}
+                                  >
+                                    Add
+                                  </Button>
+                                )}
+                              </Form.Label>
+                            ))}
+                          </ListGroup.Item>
+                        </Modal.Body>
                       </Modal>
-                    ) : (
-                      <div></div>
-                    )}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            ) : (
-              <ListGroup>Empty Groups</ListGroup>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Button variant="primary" onClick={handleShow}>
-            Create Group
-          </Button>
-          <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Create a group</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form.Label>Group name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter a group name"
-                onChange={(e) => setGroupName(e.target.value)}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="primary" type="submit" onClick={createGroup}>
-                Create
+                      {responseData ? (
+                        <Modal show={respondShow} onHide={handleRespondClose}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>
+                              {agreeAdd ? (
+                                <div>
+                                  {responseData.friendUsername} agree attend in{" "}
+                                  {responseData.group.groupName}
+                                  <Button
+                                    variant="primary"
+                                    onClick={handleRespondClose}
+                                  >
+                                    Close
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div>
+                                  {responseData.friendUsername} disagree attend
+                                  in {responseData.group.groupName}
+                                  <Button
+                                    variant="primary"
+                                    onClick={handleRespondClose}
+                                  >
+                                    Close
+                                  </Button>
+                                </div>
+                              )}
+                            </Modal.Title>
+                          </Modal.Header>
+                          <Modal.Footer>
+                            <Button
+                              variant="primary"
+                              onClick={handleRespondClose}
+                            >
+                              Close
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      ) : (
+                        <div></div>
+                      )}
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <ListGroup>Empty Groups</ListGroup>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <div style={{ paddingTop: "2rem", paddingBottom: "3REM" }}>
+              <Button
+                onClick={handleShow}
+                style={{
+                  height: "3rem",
+
+                  backgroundImage:
+                    "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                }}
+              >
+                Create Group
+              </Button>{" "}
+              <Button
+                onClick={backHome}
+                style={{
+                  height: "3rem",
+
+                  backgroundImage:
+                    "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                }}
+              >
+                Back to home
               </Button>
-            </Modal.Footer>
-          </Modal>
-        </Row>
-      </Container>
+            </div>
+
+            <Modal show={show} onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Create a group</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form.Label>Group name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter a group name"
+                  onChange={(e) => setGroupName(e.target.value)}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="primary" type="submit" onClick={createGroup}>
+                  Create
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </Row>
+        </Container>
+      )}
     </div>
   );
 }

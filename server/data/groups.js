@@ -90,15 +90,28 @@ module.exports = {
     return group;
   },
 
-  async deleteGroup(group) {
+  async deleteGroup(curUser, group) {
     console.log("the group data you want to delete: ");
     console.log(group);
-    if (!group) {
-      throw Error("Please input a group you want to delete");
+    if (!group || !curUser) {
+      throw Error("Please login and input a group you want to delete");
     }
 
     const groupsCollection = await groups();
     const deletedGroup = await groupsCollection.remove({ _id: group._id });
+
+    const usersCollectiuon = await users();
+    const userDeletedGroup = await usersCollectiuon.update(
+      { _id: ObjectId(curUser._id) },
+      {
+        $pull: {
+          groups: { groupId: group._id.toString() },
+        },
+      }
+    );
+    if (userDeletedGroup.deletedCount === 0) {
+      throw `Could not delete`;
+    }
     return true;
   },
 
@@ -106,6 +119,7 @@ module.exports = {
     if (!curUser || !group)
       throw Error("Please input curUser and group information");
 
+    console.log("in delete member function");
     const groupsCollection = await groups();
     const updatedInfo = await groupsCollection.update(
       { _id: group._id },

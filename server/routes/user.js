@@ -248,7 +248,7 @@ router.get("/user", async (req, res) => {
   try {
     if (!name && !id) throw "Bad request.";
     let user = null;
-    if (id) user = await users.getUser(id);
+    if (id) user = await users.getUser(id, true);
     else if (name) user = await users.getUserByname(name);
     console.log(`user: ${user}`);
     res.send(new response(user).success(res));

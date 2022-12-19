@@ -166,10 +166,10 @@ export default ({ socket }) => {
             </Modal.Header>
             {/* <Card.Body> */}
             <Modal.Body>
-              <Button variant="primary" onClick={agree}>
+              <Button variant="info" onClick={agree}>
                 Agree
               </Button>
-              <Button variant="primary" onClick={disagree}>
+              <Button variant="info" onClick={disagree}>
                 Disagree
               </Button>
               {/* </Card.Body> */}
