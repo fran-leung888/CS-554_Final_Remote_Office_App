@@ -58,7 +58,7 @@ export default () => {
       <Grid item>
         <OverlayTrigger
           placement="right"
-          delay={{ show: 250, hide: 400 }}
+          delay={{ show: 250, hide: 400, hide: 1500 }}
           overlay={renderTooltip}
         >
           <Avatar></Avatar>
