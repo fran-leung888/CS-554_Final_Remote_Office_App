@@ -13,7 +13,7 @@ module.exports = {
     if (room) {
       console.log("notify message to ", room);
       io.to(room).emit(event, data);
-      console.log("sids are ", io.of("/").adapter.sids);
+      console.log("Map<SocketId, Set<Room>> are ", io.of("/").adapter.sids);
     } else {
       throw "Chat invalid.";
     }
@@ -23,6 +23,8 @@ module.exports = {
     socket.on("joinRoom", (id) => {
       console.log(`socket ${socket.id} join room ${id}`);
       socket.join(id);
+      // console.log("Map<SocketId, Set<Room>> are ", io.of("/").adapter.sids);
+
     });
   },
 };

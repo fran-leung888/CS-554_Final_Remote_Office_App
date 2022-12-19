@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 function constructMessage(
   id,
   message,
-  user,
+  userId,
   time,
   type,
   loading = false,
@@ -13,7 +13,7 @@ function constructMessage(
   return {
     _id: id,
     message,
-    user,
+    userId,
     loading,
     fail,
     time,

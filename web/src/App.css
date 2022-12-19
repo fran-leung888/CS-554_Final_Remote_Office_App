@@ -22,3 +22,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
 }
+
+.Function-Bar{
+  background-color: cadetblue;
+}

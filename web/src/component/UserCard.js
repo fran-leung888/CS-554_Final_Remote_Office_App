@@ -26,51 +26,66 @@ export default (props) => {
   const socket = useContext(SocketContext);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const ChatWithUser = async () => {
-    console.log(
-      `Add chat from ${currentUser.username} to ${props.user?.username}`
-    );
-    // send server add chat request and jump to chat diagram.
-    try {
-      // check if there is a chat between users at local but no message in it
-      let chatExist = false,
-        chatId;
+  const ChatWithUserOrGroup = async () => {
+    if (props.user.groupId) {
+      let chatId;
       userChats.forEach((chat) => {
-        if (
-          chat.type === constant.chatType.individual &&
-          chat.users.includes(currentUser._id) &&
-          chat.users.includes(props.user._id)
-        ) {
-          chatExist = true;
-          chatId = chat._id;
-          dispatch(showChat(chatId));
-        }
+        if (chat.groupId === props.user.groupId) chatId = chat._id;
       });
-      if (!chatExist) {
-        let res = await chats.addIndividualChat(currentUser, props.user, "");
-        checkRes(res);
-        socket.emit("joinRoom", res.data.insertedId);
-        dispatch(
-          setData({
-            chatId: res.data.insertedId,
-            type: 0,
-            users: [currentUser._id, props.user._id],
-            enabled: true,
-          })
-        );
-        dispatch(
-          addChat({
-            _id: res.data.insertedId,
-            type: constant.chatType.individual,
-            users: [currentUser._id, props.user._id],
-            show: true,
-          })
-        );
-      }
+      dispatch(
+        setData({
+          chatId,
+          type: constant.chatType.group,
+          enabled: true,
+        })
+      );
       dispatch(setContentStatus(constant.status.content));
-      dispatch(setData({ chatId }));
-    } catch (e) {
-      enqueueSnackbar(e, noti.errOpt);
+    } else {
+      console.log(
+        `Add chat from ${currentUser.username} to ${props.user?.username}`
+      );
+      // send server add chat request and jump to chat diagram.
+      try {
+        // check if there is a chat between users at local but no message in it
+        let chatExist = false,
+          chatId;
+        userChats.forEach((chat) => {
+          if (
+            chat.type === constant.chatType.individual &&
+            chat.users.includes(currentUser._id) &&
+            chat.users.includes(props.user._id)
+          ) {
+            chatExist = true;
+            chatId = chat._id;
+            dispatch(showChat(chatId));
+            dispatch(setData({ chatId }));
+          }
+        });
+        if (!chatExist) {
+          let res = await chats.addIndividualChat(currentUser, props.user, "");
+          checkRes(res);
+          socket.emit("joinRoom", res.data.insertedId);
+          dispatch(
+            setData({
+              chatId: res.data.insertedId,
+              type: constant.chatType.individual,
+              users: [currentUser._id, props.user._id],
+              enabled: true,
+            })
+          );
+          dispatch(
+            addChat({
+              _id: res.data.insertedId,
+              type: constant.chatType.individual,
+              users: [currentUser._id, props.user._id],
+              show: true,
+            })
+          );
+        }
+        dispatch(setContentStatus(constant.status.content));
+      } catch (e) {
+        enqueueSnackbar(e, noti.errOpt);
+      }
     }
   };
 
@@ -78,7 +93,16 @@ export default (props) => {
     return (
       <Card>
         <Avatar></Avatar>
-        <SmsIcon onClick={ChatWithUser}></SmsIcon>
+        <div>{props.user.name}</div>
+        <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
+      </Card>
+    );
+  } else if (props.user.groupId) {
+    return (
+      <Card>
+        <Avatar></Avatar>
+        <div>{props.user.groupName}</div>
+        <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
       </Card>
     );
   } else {

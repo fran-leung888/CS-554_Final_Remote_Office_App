@@ -46,7 +46,7 @@ export default () => {
       dispatch(setUser(res.data));
       navigate("/home");
     } catch (e) {
-      enqueueSnackbar(e, noti.errOpt);
+      enqueueSnackbar(e.toString(), noti.errOpt);
     }
   };
 

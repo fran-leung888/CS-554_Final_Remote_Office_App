@@ -24,17 +24,17 @@ function constructMessage(chatId, userId, message, type = 0, enabled = false) {
   return result;
 }
 
-function constructChat(users, type = constant.chatType.individual, groupId) {
-  let userIds = [];
-  if (users) {
-    users.forEach((user) => {
-      userIds.push(user._id);
-    });
-  }
+function constructChat(
+  users,
+  type = constant.chatType.individual,
+  groupId,
+  groupName
+) {
   return {
-    users: userIds,
+    users,
     type,
     groupId,
+    groupName,
   };
 }
 
@@ -108,7 +108,10 @@ module.exports = {
         // add message to chat
         console.log("add new chat");
         const newChat = await chats.insertOne(
-          constructChat([from, to], constant.chatType.individual)
+          constructChat(
+            [from._id.toString(), to._id.toString()],
+            constant.chatType.individual
+          )
         );
         // notify new Chat
         await redisStore.removeUserChat(from._id);
@@ -159,7 +162,7 @@ module.exports = {
       if (!chats) {
         chats = [];
         //   console.log({ users: userId });
-        cursor = await chatCollection.find({ users: userId });
+        cursor = await chatCollection.find({ users: { $in: [userId] } });
         await cursor.forEach((chat) => {
           chats.push(chat);
           chatIds.push(chat._id.toString());
@@ -193,6 +196,7 @@ module.exports = {
   },
 
   async getChatByGroupId(groupId) {
+    console.log("Get group chat by group Id", groupId);
     verification.checkResult(verification.checkId(groupId));
     const chatCollection = await chatsCollection();
 
@@ -208,10 +212,30 @@ module.exports = {
     }
   },
 
-  async addGroupChat(userId, groupId) {
+  async addUserInGroupChat(groupId, userId) {
+    console.log("add User to group chat by group id", groupId);
+    verification.checkResult(verification.checkId(groupId));
+    const chatCollection = await chatsCollection();
+
+    const chat = await chatCollection.update(
+      {
+        groupId,
+      },
+      { $push: { users: userId } }
+    );
+    if (chat) {
+      //   console.log({ users: userId });
+      return chat;
+    } else {
+      throw "Chat does not exist.";
+    }
+  },
+
+  async addGroupChat(userId, groupId, groupName) {
+    console.log("Add group chat, ", userId, groupId);
     const chatCollection = await chatsCollection();
     const newChat = await chatCollection.insertOne(
-      constructChat([userId], constant.chatType.group, groupId)
+      constructChat([userId], constant.chatType.group, groupId, groupName)
     );
     return newChat;
   },
