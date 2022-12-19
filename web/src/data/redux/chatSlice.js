@@ -21,6 +21,7 @@ export const chatSlice = createSlice({
     // }
     users: {},
     chats: [],
+    readed: [],
   },
   reducers: {
     setInitialized: (state, action) => {
@@ -76,6 +77,28 @@ export const chatSlice = createSlice({
         state.users[user._id] = user;
       });
     },
+    reset: (state, action) => {
+      return {
+        initialized: false,
+        users: {},
+        chats: [],
+        readed: [],
+      };
+    },
+    setBurned: (state, action) => {
+      //
+      let readed = [];
+      action.payload.forEach((each) => {
+        readed.push(each.messageId);
+      });
+      return {
+        ...state,
+        readed,
+      };
+    },
+    burnMessage: (state, action) => {
+      state.readed = [...state.readed, action.payload.messageId];
+    },
   },
 });
 
@@ -88,6 +111,10 @@ export const {
   addChat,
   resetTemporary,
   showChat,
+  addUsers,
+  reset,
+  setBurned,
+  burnMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

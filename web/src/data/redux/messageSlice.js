@@ -79,7 +79,7 @@ export const messageSlice = createSlice({
               action.payload.message,
               action.payload.userId,
               action.payload.time,
-              action.payload.type,
+              action.payload.type
             ),
           ];
         }
@@ -90,7 +90,7 @@ export const messageSlice = createSlice({
             action.payload.message,
             action.payload.userId,
             action.payload.time,
-            action.payload.type,
+            action.payload.type
           ),
         ];
       }
@@ -123,7 +123,7 @@ export const messageSlice = createSlice({
         });
       }
     },
-    failMessage(state, action) {
+    setMessageToFail(state, action) {
       if (state.messages[action.payload.chatId]) {
         state.messages[action.payload.chatId].forEach((message) => {
           if (message._id === action.payload.randomId) {
@@ -136,9 +136,21 @@ export const messageSlice = createSlice({
     disableDiagram(state, action) {
       state.enabled = false;
     },
-    enableDiagram(state, action){
+    enableDiagram(state, action) {
       state.enabled = true;
-    }
+    },
+    reset: (state, action) => {
+      return {
+        initialized: false,
+        // all messages
+        messages: {},
+        enabled: false,
+        // current chat
+        chatId: -1,
+        type: 0,
+        users: [],
+      };
+    },
   },
 });
 
@@ -152,10 +164,10 @@ export const {
   addMessage,
   addLoadingMessage,
   resetLoadingMessage,
-  failMessage,
+  setMessageToFail,
   disableDiagram,
   enableDiagram,
-
+  reset,
 } = messageSlice.actions;
 
 export default messageSlice.reducer;

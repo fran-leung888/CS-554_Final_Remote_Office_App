@@ -9,7 +9,7 @@ function getClientChatSocket(id) {
 }
 
 module.exports = {
-  async notifyMessage(event, room, data) {
+  async notifyEvent(event, room, data) {
     if (room) {
       console.log("notify message to ", room);
       io.to(room).emit(event, data);

@@ -47,4 +47,28 @@ router.get("/messages", async (req, res) => {
   }
 })
 
+router.get("/message/burn", async (req, res) => {
+  const userId = req.query.userId
+  try {
+    const messages = await chats.getBurn(userId);
+    res.send(new response(messages).success(res));
+  } catch (e) {
+    console.log(e);
+    res.send(new response(null, e.toString()).fail(res));
+  }
+})
+
+router.post("/message/burn", async (req, res) => {
+  const messageId = req.query.messageId
+  const userId = req.query.userId
+  try {
+    const messages = await chats.addBurnRecord(userId, messageId);
+    res.send(new response(messages).success(res));
+  } catch (e) {
+    console.log(e);
+    res.send(new response(null, e.toString()).fail(res));
+  }
+})
+
+
 module.exports = router;

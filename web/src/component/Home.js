@@ -10,7 +10,7 @@ import Content from "./Content";
 import ChatDiagram from "./chats/ChatDiagram";
 import SignOutButton from "./SignOut";
 import constant from "../data/constant";
-import { addChat } from "../data/redux/chatSlice";
+import { addChat, burnMessage } from "../data/redux/chatSlice";
 import UserAdd from "./UserAdd";
 
 import groups from "../data/groups";
@@ -19,6 +19,9 @@ import { useDispatch } from "react-redux";
 import Modal from "react-bootstrap/Modal";
 import Card from "react-bootstrap/Card";
 import { setUser } from "../data/redux/userSlice";
+import { checkRes } from "../utils/verificationUtils";
+import { useSnackbar } from "notistack";
+import noti from "../data/notification";
 
 export default ({ socket }) => {
   const [showInvite, setShowInvite] = useState(false);
@@ -29,6 +32,7 @@ export default ({ socket }) => {
   const [reject, setReject] = useState(false);
   const [rejectData, setRejectData] = useState(undefined);
   const dispatch = useDispatch();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const curUser = useSelector((state) => state.user);
   console.log(curUser);
@@ -42,11 +46,36 @@ export default ({ socket }) => {
     if (curUser._id) {
       socket.emit("joinRoom", curUser._id);
     }
-    socket.on(constant.event.newChat, (data) => {
+    socket.on(constant.event.newChat, async (data) => {
       console.log("receive chat on newChat event.", data);
-      if(data._id){
+      if (data._id) {
         socket.emit("joinRoom", data._id);
         dispatch(addChat(data));
+      }
+      // refresh user infomation
+      if (data.type === constant.chatType.group) {
+        try {
+          let res = await users.getUser(curUser._id);
+          checkRes(res);
+          if (res.data) {
+            dispatch(setUser(res.data));
+          }
+        } catch (e) {
+          enqueueSnackbar(e.toString(), noti.errOpt);
+        }
+      }
+    });
+    socket.on(constant.event.newFriend, async (data) => {
+      console.log("receive chat on newFriend event.", data);
+      // refresh user.
+      try {
+        let res = await users.getUser(curUser._id);
+        checkRes(res);
+        if (res.data) {
+          dispatch(setUser(res.data));
+        }
+      } catch (e) {
+        enqueueSnackbar(e.toString(), noti.errOpt);
       }
     });
   });

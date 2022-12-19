@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const chatsCollection = mongoCollections.chats;
 const usersCollection = mongoCollections.users;
 const messagesCollection = mongoCollections.messages;
+const burnedCollection = mongoCollections.burned;
 const { ObjectId } = require("mongodb");
 const verification = require("../utils/verificationUtils");
 const chatSocket = require("../socket/chatSocket");
@@ -23,7 +24,7 @@ function constructMessage(chatId, userId, message, type = 0, enabled = false) {
   return result;
 }
 
-function constructChat(users, type = 0) {
+function constructChat(users, type = constant.chatType.individual, groupId) {
   let userIds = [];
   if (users) {
     users.forEach((user) => {
@@ -33,6 +34,14 @@ function constructChat(users, type = 0) {
   return {
     users: userIds,
     type,
+    groupId,
+  };
+}
+
+function conBurnningRecord(userId, messageId) {
+  return {
+    userId,
+    messageId,
   };
 }
 
@@ -54,13 +63,13 @@ module.exports = {
         ...mesageToInsert,
       };
       if (notify) {
-        chatSocket.notifyMessage(constant.event.message, chatId, {
+        chatSocket.notifyEvent(constant.event.message, chatId, {
           chatId,
           messageId: result.insertedId,
           message,
           userId,
           time: result.time,
-          type
+          type,
         });
       }
       return result;
@@ -99,15 +108,15 @@ module.exports = {
         // add message to chat
         console.log("add new chat");
         const newChat = await chats.insertOne(
-          constructChat([from, to], constant.chatType.individual, true)
+          constructChat([from, to], constant.chatType.individual)
         );
         // notify new Chat
-        chatSocket.notifyMessage(constant.event.newChat, to._id, {
+        await redisStore.removeUserChat(from._id);
+        chatSocket.notifyEvent(constant.event.newChat, to._id, {
           _id: newChat.insertedId,
           users: [from._id, to._id],
           type,
         });
-        await redisStore.removeChat(from._id);
         return newChat;
       }
     } else {
@@ -137,7 +146,7 @@ module.exports = {
   async getChatsByUser(userId) {
     verification.checkResult(verification.checkId(userId));
     // check redis cache
-    let chats = await redisStore.getChat(userId);
+    let chats = await redisStore.getUserChat(userId);
     const users = await usersCollection();
     const chatCollection = await chatsCollection();
     const messageCollection = await messagesCollection();
@@ -148,14 +157,14 @@ module.exports = {
         chatIds = [],
         messages = [];
       if (!chats) {
-        chats = []
+        chats = [];
         //   console.log({ users: userId });
         cursor = await chatCollection.find({ users: userId });
         await cursor.forEach((chat) => {
           chats.push(chat);
           chatIds.push(chat._id.toString());
         });
-        await redisStore.storeChat(userId, chats);
+        await redisStore.storeUserChat(userId, chats);
       } else {
         chats.forEach((chat) => chatIds.push(chat._id.toString()));
       }
@@ -181,5 +190,47 @@ module.exports = {
     } else {
       throw "Chat does not exist.";
     }
+  },
+
+  async getChatByGroupId(groupId) {
+    verification.checkResult(verification.checkId(groupId));
+    const chatCollection = await chatsCollection();
+
+    const chat = await chatCollection.findOne({
+      groupId,
+      type: constant.chatType.group,
+    });
+    if (chat) {
+      //   console.log({ users: userId });
+      return chat;
+    } else {
+      throw "Chat does not exist.";
+    }
+  },
+
+  async addGroupChat(userId, groupId) {
+    const chatCollection = await chatsCollection();
+    const newChat = await chatCollection.insertOne(
+      constructChat([userId], constant.chatType.group, groupId)
+    );
+    return newChat;
+  },
+
+  async addBurnRecord(userId, messageId) {
+    const readed = await burnedCollection();
+    const newChat = await readed.insertOne(
+      conBurnningRecord(userId, messageId)
+    );
+    return { newChat, userId, messageId };
+  },
+
+  async getBurn(userId) {
+    const burned = await burnedCollection();
+    const cursor = await burned.find({ userId });
+    let burnedMsgs = [];
+    await cursor.forEach((msg) => {
+      burnedMsgs.push(msg);
+    });
+    return burnedMsgs;
   },
 };
