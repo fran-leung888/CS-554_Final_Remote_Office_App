@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     console.log(`addUser: ${userId}`);
     console.log(`socket.id:${socket.id}`);
     if (userId) onlineName.push({ socketId: socket.id, id: userId });
-    console.log(onlineName);
+    // console.log(onlineName);
     // onlineUsers.set(userId, socket.id);
   });
 

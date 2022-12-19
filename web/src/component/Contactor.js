@@ -5,6 +5,7 @@ import Popover from "@mui/material/Popover";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import UserCard from "./UserCard";
+import { Avatar } from "@mui/material";
 
 export default function Friends() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -38,7 +39,16 @@ export default function Friends() {
           <List>
             {curUser.friends.map((friend) => (
               <ListItem action onClick={(e) => handleUserClick(e, friend)}>
+                <Avatar></Avatar>
                 {friend.name}
+              </ListItem>
+            ))}
+          </List>
+          <List>
+            {curUser.groups.map((group) => (
+              <ListItem action onClick={(e) => handleUserClick(e, group)}>
+                <Avatar></Avatar>
+                {group.groupName}
               </ListItem>
             ))}
           </List>

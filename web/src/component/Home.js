@@ -78,6 +78,19 @@ export default ({ socket }) => {
         enqueueSnackbar(e.toString(), noti.errOpt);
       }
     });
+    socket.on(constant.event.newGroupUser, async (data) => {
+      console.log("receive newGroupUser event.", data);
+      // refresh user.
+      try {
+        let res = await users.getUser(curUser._id);
+        checkRes(res);
+        if (res.data) {
+          dispatch(setUser(res.data));
+        }
+      } catch (e) {
+        enqueueSnackbar(e.toString(), noti.errOpt);
+      }
+    });
   });
 
   const navigate = useNavigate();
@@ -250,10 +263,10 @@ export default ({ socket }) => {
       <Grid item xs={1}>
         <FunctionBar></FunctionBar>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={2}>
         <Content></Content>
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={9}>
         <ChatDiagram></ChatDiagram>
       </Grid>
       <Grid item xs={4}>

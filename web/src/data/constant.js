@@ -18,6 +18,7 @@ export default {
     message: "message",
     newChat: "newChat",
     newFriend: "newFriend",
+    newGroupUser: "newGroupUser",
     disconnect: "disconnect",
     burn: "burn",
   },

@@ -77,6 +77,7 @@ export default function ChatPre(props) {
               </Grid>
             );
           }
+          return groupAvatars
         };
         return (
           // Build avators for the first 9 people
@@ -103,10 +104,10 @@ export default function ChatPre(props) {
 
   const buildName = (chat) => {
     if (chat?.type === Constant.chatType.group) {
-      if (chat.name) {
+      if (chat.groupName) {
         return (
           // Build avators for the first 9 people
-          chat.name
+          chat.groupName
         );
       } else {
         return <div>No group name.</div>;
@@ -132,11 +133,12 @@ export default function ChatPre(props) {
           console.debug("lastMessage", lastMessage);
           if (type === constant.messageType.burn) {
             return (
-              <div className="Wrap">
-                <div className="Wrap-Text">
-                sssssssssssssssssssssssssssssssssssssssssssssssss
-                </div>
-              </div>
+              <Grid container item>
+                <Grid item>
+                  <LocalFireDepartmentIcon color="warning" />{" "}
+                </Grid>
+                <Grid item>Burn After Reading</Grid>
+              </Grid>
             );
           } else if (type === constant.messageType.file) {
             const fileInfo = JSON.parse(lastMessage);
