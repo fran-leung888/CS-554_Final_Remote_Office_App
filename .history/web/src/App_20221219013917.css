@@ -11,14 +11,3 @@ body {
 .listS {
   background-image: linear-gradient(135deg, #ffd26f 10%, #3677ff 100%);
 }
-
-.Wrap {
-  overflow: hidden;
-}
-
-.Wrap-Text {
-  width: 30px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}

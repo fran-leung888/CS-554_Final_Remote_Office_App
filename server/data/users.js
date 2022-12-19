@@ -57,6 +57,65 @@ module.exports = {
     return await this.getUser(userId);
   },
 
+  async changeName(curUser, newName) {
+    if (!curUser || !newName) throw "Please input curUser and the newName.";
+
+    console.log(curUser);
+    console.log(typeof curUser._id);
+    console.log(`new name: ${newName}`);
+    console.log("in change name function");
+    const usersCollection = await users();
+    const updatedInfo = await usersCollection.updateOne(
+      { _id: ObjectId(curUser._id) },
+      {
+        $set: {
+          name: newName,
+        },
+      }
+    );
+
+    console.log(updatedInfo);
+    if (updatedInfo.modifiedCount === 0) {
+      throw "Could not be updated";
+    }
+
+    const newCurUser = await this.getUser(curUser._id.toString());
+    console.log("success update the name");
+    console.log(newCurUser);
+
+    return newCurUser;
+  },
+
+  async changePswd(curUser, newPswd, isFirebaseAuth = false) {
+    if (!curUser || !newPswd)
+      throw "Please input curUser and the new password.";
+
+    console.log("in change password function");
+    console.log(`new pswd: ${newPswd}`);
+    let hash = isFirebaseAuth ? "" : await this.hashPassword(newPswd);
+
+    const usersCollection = await users();
+    const updatedInfo = await usersCollection.updateOne(
+      { _id: ObjectId(curUser._id) },
+      {
+        $set: {
+          password: hash,
+        },
+      }
+    );
+
+    console.log(updatedInfo);
+    if (updatedInfo.modifiedCount === 0) {
+      throw "Could not be updated";
+    }
+
+    const newCurUser = await this.getUser(curUser._id.toString());
+    console.log("success update the password");
+    console.log(newCurUser);
+
+    return newCurUser;
+  },
+
   async updateFriend(curId, friendId) {
     try {
       if (!curId || !friendId) {
@@ -278,10 +337,10 @@ module.exports = {
     }
   },
 
-  async getUser(id) {
+  async getUser(id, changeInfo = false) {
     // check cache
     let user = await redisStore.getUser(id);
-    if (user) {
+    if (user && !changeInfo) {
       return user;
     }
     await this.checkId(id);
