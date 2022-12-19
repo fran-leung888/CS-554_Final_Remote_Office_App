@@ -17,6 +17,8 @@ export default {
   event: {
     message: "message",
     newChat: "newChat",
+    newFriend: "newFriend",
     disconnect: "disconnect",
+    burn: "burn",
   },
 };

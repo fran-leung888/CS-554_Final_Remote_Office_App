@@ -16,12 +16,12 @@ async function getChats(id) {
   return response;
 }
 
-async function sendMessage(chatId, message, user, type=0) {
+async function sendMessage(chatId, message, user, type = 0) {
   let response = await axios.post("/chat", {
     id: chatId,
     message,
     user,
-    type
+    type,
   });
   return response;
 }
@@ -31,11 +31,17 @@ async function getMessages(chatId) {
   return response;
 }
 
-async function burnMessage(messageId){
-  let response = await axios.get("/chat/message/burn?id=" + messageId);
+async function getBurnedMsgs(userId) {
+  let response = await axios.get("/chat/message/burn?userId=" + userId);
   return response;
 }
 
+async function burnMessage(userId, messageId) {
+  let response = await axios.post(
+    `/chat/message/burn?userId=${userId}&messageId=${messageId}`
+  );
+  return response;
+}
 
 function getServerChatSocket(id) {
   return "server-chat-" + id;
@@ -50,5 +56,6 @@ export default {
   sendMessage,
   getChats,
   getMessages,
-
+  burnMessage,
+  getBurnedMsgs
 };

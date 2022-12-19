@@ -14,5 +14,7 @@ module.exports = {
   event: {
     message: "message",
     newChat: "newChat",
+    newFriend: "newFriend",
+    burn: "burn"
   },
 };
