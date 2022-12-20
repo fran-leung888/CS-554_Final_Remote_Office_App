@@ -41,11 +41,11 @@ export default () => {
     navigate("/myaccount");
   };
 
-  const invite = () => {
+  const inviteFri = () => {
     navigate("/invite");
   };
 
-  const friends = () => {
+  const myFriends = () => {
     navigate("/friends");
   };
 
@@ -106,7 +106,7 @@ export default () => {
         style={{ paddingBottom: "2rem" }}
       >
         <IconButton>
-          <Diversity1Icon onClick={friends} />
+          <Diversity1Icon onClick={myFriends} />
         </IconButton>
       </Grid>
       <Grid
@@ -117,7 +117,7 @@ export default () => {
         style={{ paddingBottom: "2rem" }}
       >
         <IconButton>
-          <GroupAddIcon onClick={invite} />
+          <GroupAddIcon onClick={inviteFri} />
         </IconButton>
       </Grid>
       <Grid
