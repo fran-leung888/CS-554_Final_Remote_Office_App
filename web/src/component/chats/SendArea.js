@@ -34,6 +34,7 @@ export default function SendArea(props) {
   const handleSend = async (messageType, messageToSend) => {
     if (messageType === constant.messageType.burn)
       messageToSend = JSON.stringify(messageToSend);
+    console.log("Send message by handleSend", messageToSend);
     let tempMessageId;
     try {
       // add message to redux and set it as loading
@@ -76,37 +77,34 @@ export default function SendArea(props) {
   };
 
   return (
-    <div>
-      <Grid container>
-        <Grid item>
-          <ActionBar chatId={chatId} handleSend={handleSend}></ActionBar>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl>
-            <TextField
-              sx={{ overflow: "auto" }}
-              placeholder="Type your message here."
-              multiline
-              rows={2}
-              maxRows={4}
-              value={textMessage}
-              onChange={(e) => {
-                setTextMessage(e.target.value);
-              }}
-            ></TextField>
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <Button
-            sx={{ textTransform: "none" }}
-            onClick={() => {
-              handleSend(constant.messageType.text, textMessage);
-            }}
-          >
-            Send(S)
-          </Button>
-        </Grid>
+    <Grid container>
+      <Grid container item xs={12} justifyContent="flex-start">
+        <ActionBar chatId={chatId} handleSend={handleSend}></ActionBar>
       </Grid>
-    </div>
+      <Grid item xs={12}>
+        <FormControl sx={{ width: "100%" }}>
+          <TextField
+            sx={{ overflow: "auto" }}
+            placeholder="Type your message here."
+            multiline
+            rows={2}
+            value={textMessage}
+            onChange={(e) => {
+              setTextMessage(e.target.value);
+            }}
+          ></TextField>
+        </FormControl>
+      </Grid>
+      <Grid container item xs={12} justifyContent="flex-end">
+        <Button
+          sx={{ textTransform: "none" }}
+          onClick={() => {
+            handleSend(constant.messageType.text, textMessage);
+          }}
+        >
+          Send(S)
+        </Button>
+      </Grid>
+    </Grid>
   );
 }

@@ -194,7 +194,7 @@ export default ({ socket }) => {
   console.log(showGroupInvite);
   console.log(socket);
   return (
-    <Grid container>
+    <Grid container sx={{ height: "100%" }}>
       {showInvite ? (
         <div
           className="modal show"
@@ -259,21 +259,26 @@ export default ({ socket }) => {
       ) : (
         ""
       )}
-      <Grid item xs={1}>
+      <Grid item className="Function-Bar">
         <FunctionBar></FunctionBar>
       </Grid>
       <Grid item xs={2}>
         <Content></Content>
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs sx={{ height: "100%" }}>
         <ChatDiagram></ChatDiagram>
       </Grid>
-      <Grid item xs={4}>
+      {/* <Grid item xs={12}>
         <Button onClick={friends}>My friends</Button>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         <Button onClick={invite}>My invites</Button>
       </Grid>
+
+      <Grid item xs={12}>
+        <SignOutButton />
+      </Grid> */}
+
     </Grid>
   );
 };

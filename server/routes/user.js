@@ -278,4 +278,15 @@ router.get("/user/list", async (req, res) => {
   }
 });
 
+router.post("/user/avatar", async (req, res) => {
+  const avatar = req.body.avatar;
+  const userId = req.body.userId
+  try {
+    const user = await users.setAvatar(userId, avatar);
+    res.send(new response(user).success(res));
+  } catch (e) {
+    res.send(new response(null, e).fail(res));
+  }
+});
+
 module.exports = router;

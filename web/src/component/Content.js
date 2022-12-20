@@ -1,5 +1,4 @@
 import React from "react";
-import { Avatar, Grid } from "@mui/material";
 
 import Contactor from "./Contactor";
 import ChatList from "./chats/ChatList";
@@ -12,7 +11,7 @@ export default () => {
     case 0:
       return <ChatList></ChatList>;
     case 1:
-      return <Contactor></Contactor>;
+      return <Contactor ></Contactor>;
     default:
       return <div></div>;
   }

@@ -17,7 +17,7 @@ function constructMessage(chatId, userId, message, type = 0, enabled = false) {
     userId,
     // 0 - text
     type,
-    time: new Date().toJSON(),
+    time: new Date().toLocaleString(),
     enabled,
   };
   console.log("construct Message ", result);

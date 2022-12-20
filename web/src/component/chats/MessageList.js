@@ -24,8 +24,11 @@ export default function MessageList() {
 
   useEffect(() => {
     console.log("scorll");
-    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    }, 100);
   }, [messages]);
+
   const buildMessages = (messages) => {
     return (
       messages &&
@@ -45,8 +48,8 @@ export default function MessageList() {
 
   // get all messages and render each
   return (
-    <div>
-      <Box sx={{ maxHeight: "500px", width: "100%", overflow: "auto" }}>
+    <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
+      <Box>
         <Stack spacing={0}>{buildMessages(messages)}</Stack>
         <div ref={messagesEndRef}></div>
       </Box>
