@@ -92,8 +92,6 @@ export default ({ socket }) => {
     });
   });
 
-  const navigate = useNavigate();
-
   socket.on("addFriendResponse", (data) => {
     console.log(`data`);
     console.log(data);
