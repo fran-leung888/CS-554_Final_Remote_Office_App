@@ -195,8 +195,8 @@ const UserDetail = ({ socket }) => {
         >
           <Card
             style={{
-              width: "20rem",
-              height: "400px",
+              width: "500px",
+              height: "600px",
               left: "100px",
               top: "100px",
               backgroundColor: "lightblue",
@@ -211,12 +211,12 @@ const UserDetail = ({ socket }) => {
                 style={{
                   paddingLeft: "3rem",
                   paddingBottom: "7rem",
-                  paddingTop: "1rem",
+                  paddingTop: "2rem",
                 }}
               >
                 Name: {searchUser.name}
               </Card.Subtitle>
-              <Card.Text style={{ paddingLeft: "3rem" }}>
+              <Card.Text style={{ paddingLeft: "3rem", paddingTop: "150px" }}>
                 {isFriend ? (
                   <Button onClick={deleteFriend}>Delete</Button>
                 ) : (

@@ -118,7 +118,8 @@ export default ({ socket }) => {
 
   socket.on("agreeResponse", (data) => {
     setRejectData(data);
-    console.log(`Agree response: ${data}`);
+    console.log(`Agree response:`);
+    console.log(data);
     if (data && data.applyId && data.applyId === curUser._id) {
       setReject(!data.agree);
     } else {
