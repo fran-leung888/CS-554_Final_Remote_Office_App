@@ -60,8 +60,13 @@ export default () => {
           padding: "1rem",
         }}
       >
-        <Card.Text>Username: {curUser.username}</Card.Text>
-        <Card.Text>name: {curUser.name}</Card.Text>
+
+        <Card.Text>
+          {
+            curUser.isFirebaseAuth ? `` : `Username: ${curUser.username}`
+          }
+        </Card.Text>
+        <Card.Text>Name: {curUser.name}</Card.Text>
       </Card>
       <div style={{ padding: "1rem" }}>
         <Button variant="info" onClick={myaccount}>
