@@ -8,9 +8,9 @@ const { getGroup } = require("./groups");
 module.exports = {
   async checkId(id) {
     if (!id) throw "id can not be empty.";
-    if (typeof id !== "string") throw "Id must be a string";
-    id = id.trim();
-    if (id.length === 0) throw "Id cannot be an empty string or just spaces";
+    //if (typeof id !== "string") throw "Id must be a string";
+    //id = id.trim();
+    //if (id.length === 0) throw "Id cannot be an empty string or just spaces";
     if (!ObjectId.isValid(id)) throw "invalid object ID";
   },
 

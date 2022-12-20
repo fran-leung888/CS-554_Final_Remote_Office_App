@@ -42,8 +42,8 @@ module.exports = {
   },
 
   async addMember(member, group) {
-    if (!member || !group)
-      throw "please input a member who want to add and input a group which someone want to add in";
+    //if (!member || !group)
+      //throw "please input a member who want to add and input a group which someone want to add in";
 
     const attendTime = Date.parse(new Date());
     const groupsCollection = await groups();
