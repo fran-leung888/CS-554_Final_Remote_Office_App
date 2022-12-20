@@ -24,7 +24,13 @@ export default () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const invite = () => {
+    navigate("/invite");
+  };
 
+  const friends = () => {
+    navigate("/friends");
+  };
   const handleClose = () => {
     setOpen(false);
   };
@@ -56,8 +62,8 @@ export default () => {
   );
 
   return (
-    <Grid container  >
-      <Grid container item xs={12} justifyContent="center" >
+    <Grid container>
+      <Grid container item xs={12} justifyContent="center">
         <OverlayTrigger
           placement="right"
           delay={{ show: 250, hide: 400, hide: 1500 }}
@@ -66,7 +72,7 @@ export default () => {
           <Avatar src={curUser.avatar}></Avatar>
         </OverlayTrigger>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid container item xs={12} justifyContent="center">
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(0));
@@ -76,7 +82,7 @@ export default () => {
           <ChatIcon />
         </IconButton>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid container item xs={12} justifyContent="center">
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(1));
@@ -86,7 +92,7 @@ export default () => {
           <PermContactCalendarIcon />
         </IconButton>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid container item xs={12} justifyContent="center">
         <IconButton onClick={handleClickOpen}>
           <SearchIcon />
         </IconButton>
@@ -94,10 +100,28 @@ export default () => {
       <Grid>
         <SearchUser open={open} handleClose={handleClose} />
       </Grid>
-      <Grid>
+      <Grid container item xs={12} justifyContent="center">
         <SignOutButton />
       </Grid>
-      <Grid item xs={4}></Grid>
+
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        sx={{ paddingTop: "20px" }}
+      >
+        <Button onClick={friends}>My friends</Button>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        sx={{ paddingTop: "20px" }}
+      >
+        <Button onClick={invite}>My invites</Button>
+      </Grid>
     </Grid>
   );
 };

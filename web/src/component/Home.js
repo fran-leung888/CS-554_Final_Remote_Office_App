@@ -92,14 +92,7 @@ export default ({ socket }) => {
     });
   });
 
-  const navigate = useNavigate();
-  const invite = () => {
-    navigate("/invite");
-  };
 
-  const friends = () => {
-    navigate("/friends");
-  };
 
   socket.on("addFriendResponse", (data) => {
     console.log(`data`);
@@ -268,17 +261,7 @@ export default ({ socket }) => {
       <Grid item xs sx={{ height: "100%" }}>
         <ChatDiagram></ChatDiagram>
       </Grid>
-      {/* <Grid item xs={12}>
-        <Button onClick={friends}>My friends</Button>
-      </Grid>
-      <Grid item xs={12}>
-        <Button onClick={invite}>My invites</Button>
-      </Grid>
-
-      <Grid item xs={12}>
-        <SignOutButton />
-      </Grid> */}
-
+ 
     </Grid>
   );
 };
