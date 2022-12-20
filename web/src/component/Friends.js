@@ -33,7 +33,9 @@ export default function Friends({ socket }) {
   const [showError, setShowError] = useState(false);
   const [responseData, setResponseData] = useState(undefined);
   const [respondShow, setRespondShow] = useState(false);
-  const [doubleCheck, setDoubleCheck] = useState(false);
+  const [doubleCheckDelFri, setDoubleCheckDelFri] = useState(false);
+  const [doubleCheckExitG, setDoubleCheckExitG] = useState(false);
+  const [doubleCheckMov, setDoubleCheckMov] = useState(false);
   const [checkData, setCheckData] = useState(undefined);
 
   const [groupsSet, setGroupsSet] = useState([]);
@@ -153,6 +155,7 @@ export default function Friends({ socket }) {
       let newUser = await users.getUser(curUser._id);
 
       if (!newUser.data) {
+        console.log("wrong");
         setShowError(true);
       } else {
         setShowError(false);
@@ -177,9 +180,10 @@ export default function Friends({ socket }) {
         } else {
           setShowError(false);
           dispatch(setUser(exitG.data));
-          setGroupsData(curUser.groups);
+          setGroupsData(exitG.groups);
         }
       } else {
+        console.log(curUser._id, group.groupId, curUser?._id?.toString());
         let exitG = await groups.exit(
           curUser._id,
           group.groupId,
@@ -187,11 +191,12 @@ export default function Friends({ socket }) {
         );
         console.log(exitG.data);
         if (!exitG.data) {
+          console.log("wrong");
           setShowError(true);
         } else {
           setShowError(false);
           dispatch(setUser(exitG.data));
-          setGroupsData(curUser.groups);
+          setGroupsData(exitG.groups);
         }
       }
     }
@@ -201,6 +206,7 @@ export default function Friends({ socket }) {
     checkResult(verifyString(groupName));
     let newUser = await groups.createGroups(groupName, curUser._id.toString());
     if (!newUser.data) {
+      console.log("wrong");
       setShowError(true);
     } else {
       setShowError(false);
@@ -228,7 +234,8 @@ export default function Friends({ socket }) {
       setCurGroup(newGroup.data);
       let newCurUser = await users.getUser(curUser._id);
 
-      if (!newCurUser) {
+      if (!newCurUser.data) {
+        console.log("wrong");
         setShowError(true);
       } else {
         setShowError(false);
@@ -264,6 +271,7 @@ export default function Friends({ socket }) {
     console.log("update group data after add a pople in");
     const newGroup = await groups.getByName(curGroup.groupName);
     if (!newGroup.data) {
+      console.log("wrong");
       setShowError(true);
     } else {
       setShowError(false);
@@ -286,6 +294,7 @@ export default function Friends({ socket }) {
   async function resetCurUser() {
     let newUser = await users.getUser(curUser._id);
     if (!newUser.data) {
+      console.log("wrong");
       setShowError(true);
     } else {
       setShowError(false);
@@ -369,7 +378,7 @@ export default function Friends({ socket }) {
                       <Button
                         onClick={(e) => {
                           console.log(e);
-                          setDoubleCheck(true);
+                          setDoubleCheckDelFri(true);
                           setCheckData(friend);
                         }}
                         style={{
@@ -381,7 +390,7 @@ export default function Friends({ socket }) {
                       </Button>
                     </ListGroup.Item>
                   ))}
-                  {doubleCheck && checkData ? (
+                  {doubleCheckDelFri && checkData ? (
                     <div
                       className="modal show"
                       style={{ display: "block", position: "initial" }}
@@ -393,8 +402,14 @@ export default function Friends({ socket }) {
 
                         <Modal.Footer>
                           <Button
+                            style={{
+                              border: "30px",
+                              backgroundImage:
+                                "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                            }}
                             onClick={() => {
-                              setCheckData(undefined), setDoubleCheck(false);
+                              setCheckData(undefined);
+                              setDoubleCheckDelFri(false);
                             }}
                           >
                             Close
@@ -406,7 +421,9 @@ export default function Friends({ socket }) {
                                 "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
                             }}
                             onClick={() => {
-                              deleteFri(checkData), setDoubleCheck(false);
+                              setDoubleCheckDelFri(false);
+                              deleteFri(checkData);
+                              setCheckData(undefined);
                             }}
                           >
                             Delete
@@ -442,7 +459,7 @@ export default function Friends({ socket }) {
                       <Button
                         onClick={(e) => {
                           console.log(e);
-                          setDoubleCheck(true);
+                          setDoubleCheckExitG(true);
                           setCheckData(group);
                         }}
                         style={{
@@ -490,7 +507,8 @@ export default function Friends({ socket }) {
                                     <Button
                                       variant="primary"
                                       onClick={(e) => {
-                                        kick(friend, e);
+                                        setDoubleCheckMov(true);
+                                        setCheckData(friend);
                                       }}
                                     >
                                       Kick
@@ -508,6 +526,53 @@ export default function Friends({ socket }) {
                                 </Form.Label>
                               ))}
                           </ListGroup.Item>
+                          {doubleCheckMov && checkData ? (
+                            <div
+                              className="modal show"
+                              style={{ display: "block", position: "initial" }}
+                            >
+                              <Modal.Dialog>
+                                <Modal.Body>
+                                  <p>
+                                    Make sure you will move {checkData.username}{" "}
+                                    out
+                                  </p>
+                                </Modal.Body>
+
+                                <Modal.Footer>
+                                  <Button
+                                    style={{
+                                      border: "30px",
+                                      backgroundImage:
+                                        "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                                    }}
+                                    onClick={() => {
+                                      setCheckData(undefined);
+                                      setDoubleCheckMov(false);
+                                    }}
+                                  >
+                                    Close
+                                  </Button>
+                                  <Button
+                                    style={{
+                                      border: "30px",
+                                      backgroundImage:
+                                        "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                                    }}
+                                    onClick={() => {
+                                      setDoubleCheckMov(false);
+                                      kick(checkData);
+                                      setCheckData(undefined);
+                                    }}
+                                  >
+                                    Kick
+                                  </Button>
+                                </Modal.Footer>
+                              </Modal.Dialog>
+                            </div>
+                          ) : (
+                            ""
+                          )}
                         </Modal.Body>
                       </Modal>
                       {responseData ? (
@@ -553,7 +618,7 @@ export default function Friends({ socket }) {
                       )}
                     </ListGroup.Item>
                   ))}
-                  {doubleCheck && checkData ? (
+                  {doubleCheckExitG && checkData ? (
                     <div
                       className="modal show"
                       style={{ display: "block", position: "initial" }}
@@ -573,7 +638,8 @@ export default function Friends({ socket }) {
                                 "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
                             }}
                             onClick={() => {
-                              setCheckData(undefined), setDoubleCheck(false);
+                              setCheckData(undefined);
+                              setDoubleCheckExitG(false);
                             }}
                           >
                             Close
@@ -585,7 +651,9 @@ export default function Friends({ socket }) {
                                 "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
                             }}
                             onClick={() => {
-                              deleteGro(checkData), setDoubleCheck(false);
+                              setDoubleCheckExitG(false);
+                              deleteGro(checkData);
+                              setCheckData(undefined);
                             }}
                           >
                             {checkData.ifGrouper ? "Dismiss" : "Exit"}
