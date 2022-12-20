@@ -15,13 +15,15 @@ const SocialSignIn = () => {
     const socialSignOn = async (provider) => {
 
         let user = null;
+        let username = null;
         try {
             await doSocialSignIn(provider)
 
             user = await getCurrentUser();
             console.debug("Got social signin user", user);
 
-            const data = await users.addUser(user.displayName, user.uid, null, true);
+            username = user.email ?? user.uid;
+            const data = await users.addUser(user.displayName, username, null, true);
 
             if (data.code != 200) {
                 throw data
@@ -46,7 +48,7 @@ const SocialSignIn = () => {
         }
 
         if (user) {
-            const loginRes = await users.login(user.uid);
+            const loginRes = await users.login(username);
             console.debug("Social Account Signed In")
             dispatch(setUser(loginRes.data));
             return <Navigate to='/home' />;
