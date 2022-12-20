@@ -22,7 +22,6 @@ import { setError } from "../data/redux/errorSlice";
 import { useSnackbar } from "notistack";
 import noti from "../data/notification";
 
-
 export default function FormDialog(props) {
   const [name, setName] = useState("");
   const [openUsers, setOpenUsers] = useState(false);
@@ -32,6 +31,7 @@ export default function FormDialog(props) {
 
   const searchUser = async () => {
     try {
+      console.log(name);
       checkResult(verifyString(name));
       let res = await users.searchUser(name);
       console.log(res);

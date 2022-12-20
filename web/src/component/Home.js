@@ -10,7 +10,7 @@ import Content from "./Content";
 import ChatDiagram from "./chats/ChatDiagram";
 import constant from "../data/constant";
 import { addChat, burnMessage } from "../data/redux/chatSlice";
-import UserAdd from "./UserAdd";
+import "../App.css";
 
 import groups from "../data/groups";
 import users from "../data/users";
@@ -91,8 +91,6 @@ export default ({ socket }) => {
       }
     });
   });
-
-
 
   socket.on("addFriendResponse", (data) => {
     console.log(`data`);
@@ -261,7 +259,6 @@ export default ({ socket }) => {
       <Grid item xs sx={{ height: "100%" }}>
         <ChatDiagram></ChatDiagram>
       </Grid>
- 
     </Grid>
   );
 };

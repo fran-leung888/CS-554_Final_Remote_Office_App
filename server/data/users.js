@@ -42,7 +42,6 @@ module.exports = {
       name,
       username,
       password: hash,
-      isFirebaseAuth,
       friends,
       groups,
       offlineInvite: offlineInvite,
@@ -356,13 +355,13 @@ module.exports = {
 
   async getUsers(ids) {
     // check cache
-    let convertedIds = []
+    let convertedIds = [];
     ids.split(",").forEach((each) => {
       convertedIds.push(each);
     });
     ids = convertedIds;
     let result = await redisStore.getUser(ids);
-    console.log('Get users by ids from cache, result', ids, result)
+    console.log("Get users by ids from cache, result", ids, result);
     if (result) {
       return result;
     }
@@ -372,7 +371,7 @@ module.exports = {
       ids.forEach((each) => {
         objectIds.push(ObjectId(each));
       });
-      console.log('Get users by ids,', objectIds)
+      console.log("Get users by ids,", objectIds);
       const cursor = await usersCollection.find({ _id: { $in: objectIds } });
       if ((await cursor.count()) === 0) throw "Can not find user.";
       else {
@@ -405,7 +404,10 @@ module.exports = {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ username: username });
     if (user == null) throw "User does not exist.";
-    if (user.isFirebaseAuth || await this.comparePassword(password, user.password)) {
+    if (
+      user.isFirebaseAuth ||
+      (await this.comparePassword(password, user.password))
+    ) {
       return user;
     } else {
       throw "Please check username and password.";

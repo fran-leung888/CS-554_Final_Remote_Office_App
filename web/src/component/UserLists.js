@@ -12,9 +12,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import users from "../data/users";
 import { setSearchUser } from "../data/redux/searchUser";
+import UserCard from "./UserCard";
 
 export default function BasicList(props) {
-  //   console.log(props);
+  console.log(props);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const curUser = useSelector((state) => state.user);
@@ -24,8 +25,9 @@ export default function BasicList(props) {
     return <div>Please Login to Search</div>;
   }
 
-  const searchUser = async (user) => {
+  const searchUser = (user) => {
     dispatch(setSearchUser(user));
+    // <UserCard props={user} />;
     navigate(`/search`);
   };
   const buidlUsers = () => {

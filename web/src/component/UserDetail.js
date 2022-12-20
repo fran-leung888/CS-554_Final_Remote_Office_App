@@ -57,11 +57,37 @@ const UserDetail = ({ socket }) => {
     console.log(isFriend);
   }, []);
 
-  if (!curUser.name) {
-    return <div>Please login!</div>;
-  }
+  const myAccount = () => {
+    navigate("/myaccount");
+  };
+
+  // if (!curUser.name) {
+  //   return <div>Please login!</div>;
+  // }
   if (curUser._id === searchUser._id) {
-    return <div>You cannot choose yourself~</div>;
+    return (
+      <div style={{ padding: "100px" }}>
+        <Card
+          style={{
+            width: "500px",
+            height: "500px",
+            padding: "100px",
+          }}
+        >
+          You cannot choose yourself, please see your detail in "My Account"
+          page
+          <Button
+            onClick={myAccount}
+            style={{
+              paddingTop: "200px",
+              fontFamily: "Verdana, Arial, Helvetica, sans-serif",
+            }}
+          >
+            My Accounting
+          </Button>
+        </Card>
+      </div>
+    );
   }
 
   const addFriend = async () => {
@@ -178,7 +204,7 @@ const UserDetail = ({ socket }) => {
           >
             <Card.Body>
               <Card.Title style={{ padding: "3rem" }}>
-                Username: {curUser.username}
+                Username: {searchUser.username}
               </Card.Title>
               <Card.Subtitle
                 className="mb-2 text-muted"
@@ -188,7 +214,7 @@ const UserDetail = ({ socket }) => {
                   paddingTop: "1rem",
                 }}
               >
-                Name: {curUser.name}
+                Name: {searchUser.name}
               </Card.Subtitle>
               <Card.Text style={{ paddingLeft: "3rem" }}>
                 {isFriend ? (

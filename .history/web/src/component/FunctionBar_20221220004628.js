@@ -73,13 +73,7 @@ export default () => {
 
   return (
     <Grid container>
-      <Grid
-        container
-        item
-        xs={12}
-        justifyContent="center"
-        style={{ paddingBottom: "5rem", paddingTop: "5rem" }}
-      >
+      <Grid container item xs={12} justifyContent="center">
         <OverlayTrigger
           placement="right"
           delay={{ show: 250, hide: 400, hide: 1500 }}
