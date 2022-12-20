@@ -14,6 +14,8 @@ import Card from "react-bootstrap/Card";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { disableDiagram, enableDiagram } from "../data/redux/messageSlice";
+import SignOutButton from "./SignOut";
+
 export default () => {
   const [open, setOpen] = React.useState(false);
   const curUser = useSelector((state) => state.user);
@@ -58,7 +60,7 @@ export default () => {
       <Grid container item xs={12} justifyContent="center" >
         <OverlayTrigger
           placement="right"
-          delay={{ show: 250, hide: 400 }}
+          delay={{ show: 250, hide: 400, hide: 1500 }}
           overlay={renderTooltip}
         >
           <Avatar src={curUser.avatar}></Avatar>
@@ -92,6 +94,10 @@ export default () => {
       <Grid>
         <SearchUser open={open} handleClose={handleClose} />
       </Grid>
+      <Grid>
+        <SignOutButton />
+      </Grid>
+      <Grid item xs={4}></Grid>
     </Grid>
   );
 };

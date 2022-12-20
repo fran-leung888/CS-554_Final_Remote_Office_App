@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import FunctionBar from "./FunctionBar";
 import Content from "./Content";
 import ChatDiagram from "./chats/ChatDiagram";
-import SignOutButton from "./SignOut";
 import constant from "../data/constant";
 import { addChat, burnMessage } from "../data/redux/chatSlice";
 import UserAdd from "./UserAdd";
@@ -275,9 +274,11 @@ export default ({ socket }) => {
       <Grid item xs={12}>
         <Button onClick={invite}>My invites</Button>
       </Grid>
+
       <Grid item xs={12}>
         <SignOutButton />
       </Grid> */}
+
     </Grid>
   );
 };

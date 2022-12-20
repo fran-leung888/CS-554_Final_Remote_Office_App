@@ -8,6 +8,10 @@ import { reset as chatReset } from "../data/redux/chatSlice";
 import { reset as messageReset } from "../data/redux/messageSlice";
 import { reset as statusReset } from "../data/redux/statusSlice";
 import { reset as userReset } from "../data/redux/userSlice";
+import LogoutIcon from '@mui/icons-material/Logout';
+import IconButton from "@mui/material/IconButton";
+
+
 const SignOutButton = () => {
   const dispatch = useDispatch();
   const { currentUser } = useContext(AuthContext);
@@ -20,7 +24,13 @@ const SignOutButton = () => {
     localStorage.clear();
   };
   return currentUser ? (
-    <Button onClick={handleSignOut}>Sign Out {currentUser.name}</Button>
+    <IconButton onClick={handleSignOut}>
+      <LogoutIcon />
+    </IconButton>
+    
+    // <Button onClick={handleSignOut}>
+    //   {/* Sign Out {currentUser.name} */}
+    // </Button>
   ) : (
     ""
   );
