@@ -78,7 +78,7 @@ export default () => {
         item
         xs={12}
         justifyContent="center"
-        style={{ paddingBottom: "5rem", paddingTop: "5rem" }}
+        style={{ paddingBottom: "5rem" }}
       >
         <OverlayTrigger
           placement="right"
