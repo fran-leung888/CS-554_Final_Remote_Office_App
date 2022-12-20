@@ -33,6 +33,8 @@ export default function Friends({ socket }) {
   const [showError, setShowError] = useState(false);
   const [responseData, setResponseData] = useState(undefined);
   const [respondShow, setRespondShow] = useState(false);
+  const [doubleCheck, setDoubleCheck] = useState(false);
+  const [checkData, setCheckData] = useState(undefined);
 
   const [groupsSet, setGroupsSet] = useState([]);
   //   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -367,7 +369,8 @@ export default function Friends({ socket }) {
                       <Button
                         onClick={(e) => {
                           console.log(e);
-                          deleteFri(friend, e);
+                          setDoubleCheck(true);
+                          setCheckData(friend);
                         }}
                         style={{
                           backgroundImage:
@@ -378,6 +381,42 @@ export default function Friends({ socket }) {
                       </Button>
                     </ListGroup.Item>
                   ))}
+                  {doubleCheck && checkData ? (
+                    <div
+                      className="modal show"
+                      style={{ display: "block", position: "initial" }}
+                    >
+                      <Modal.Dialog>
+                        <Modal.Body>
+                          <p>Make sure you will delete {checkData.username}</p>
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                          <Button
+                            onClick={() => {
+                              setCheckData(undefined), setDoubleCheck(false);
+                            }}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            style={{
+                              border: "30px",
+                              backgroundImage:
+                                "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                            }}
+                            onClick={() => {
+                              deleteFri(checkData), setDoubleCheck(false);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </Modal.Footer>
+                      </Modal.Dialog>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </ListGroup>
               ) : (
                 <ListGroup>Empty Friends</ListGroup>
@@ -403,7 +442,8 @@ export default function Friends({ socket }) {
                       <Button
                         onClick={(e) => {
                           console.log(e);
-                          deleteGro(group, e);
+                          setDoubleCheck(true);
+                          setCheckData(group);
                         }}
                         style={{
                           border: "30px",
@@ -513,6 +553,49 @@ export default function Friends({ socket }) {
                       )}
                     </ListGroup.Item>
                   ))}
+                  {doubleCheck && checkData ? (
+                    <div
+                      className="modal show"
+                      style={{ display: "block", position: "initial" }}
+                    >
+                      <Modal.Dialog>
+                        <Modal.Body>
+                          Make sure your will{" "}
+                          {checkData.ifGrouper ? "Dismiss" : "Exit"}{" "}
+                          {checkData.groupName}!
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                          <Button
+                            style={{
+                              border: "30px",
+                              backgroundImage:
+                                "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                            }}
+                            onClick={() => {
+                              setCheckData(undefined), setDoubleCheck(false);
+                            }}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            style={{
+                              border: "30px",
+                              backgroundImage:
+                                "linear-gradient( 135deg, #FFA6B7 10%, #1E2AD2 100%)",
+                            }}
+                            onClick={() => {
+                              deleteGro(checkData), setDoubleCheck(false);
+                            }}
+                          >
+                            {checkData.ifGrouper ? "Dismiss" : "Exit"}
+                          </Button>
+                        </Modal.Footer>
+                      </Modal.Dialog>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </ListGroup>
               ) : (
                 <ListGroup>Empty Groups</ListGroup>

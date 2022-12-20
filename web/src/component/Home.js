@@ -34,7 +34,7 @@ export default ({ socket }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const curUser = useSelector((state) => state.user);
-  console.log('Home user is', curUser);
+  console.log("Home user is", curUser);
   console.log("socket in home", socket);
   useEffect(() => {
     if (curUser) {
@@ -236,22 +236,6 @@ export default ({ socket }) => {
                 Disagree
               </Button>
             </Modal.Body>
-          </Modal.Dialog>
-        </div>
-      ) : (
-        ""
-      )}
-      {reject ? (
-        <div
-          className="modal show"
-          style={{ display: "block", position: "initial" }}
-        >
-          <Modal.Dialog>
-            <Modal.Header closeButton>
-              <Modal.Body>
-                <Card.Text>{`${rejectData.friendUsername} reject your invite`}</Card.Text>
-              </Modal.Body>
-            </Modal.Header>
           </Modal.Dialog>
         </div>
       ) : (
