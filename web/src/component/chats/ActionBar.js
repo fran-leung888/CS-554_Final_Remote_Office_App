@@ -19,11 +19,14 @@ import AttachFile from "@mui/icons-material/AttachFile";
 import constant from "../../data/constant";
 import { useSelector } from "react-redux";
 import { UploadButton } from "../UploadButton";
+import { useSnackbar } from "notistack";
+import noti from "../../data/notification";
 
 export default function ActionBar(props) {
   const [open, setOpen] = React.useState(false);
   const [time, setTime] = React.useState("");
   const [file, setFile] = React.useState("");
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -32,8 +35,21 @@ export default function ActionBar(props) {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleSend = (event) => {
-    props.handleSend(constant.messageType.burn, file);
+  const handleSend = async (event) => {
+    if (!file || file.length === 0) {
+      enqueueSnackbar("Please select file", noti.errOpt);
+      return;
+    }
+    if (time === "") {
+      enqueueSnackbar("Please select time", noti.errOpt);
+      return;
+    }
+    let res = await uploadFile({
+      file,
+      receiver: props.chatId,
+      duration: time,
+    });
+    props.handleSend(constant.messageType.burn, res.data);
     setOpen(false);
     setTime("");
     setFile(null);
@@ -41,8 +57,7 @@ export default function ActionBar(props) {
   const handleSetFile = async (event) => {
     const file = event.target.files[0];
     event.target.value = "";
-    let res = await uploadFile({ file, receiver: props.chatId });
-    setFile(res.data);
+    setFile(file);
     console.log("Upload file is,", file);
   };
 
@@ -60,17 +75,17 @@ export default function ActionBar(props) {
       >
         <DialogTitle id="dialog-title">Set:</DialogTitle>
         <DialogContent>
-          <Button variant="contained" sx={{ marginBottom: "5em" }}>
-            Choose file
-          </Button>
-          <IconButton
-            color="primary"
-            aria-label="upload file"
-            component="label"
-          >
-            <input hidden type="file" onChange={handleSetFile} />
-            <AttachFile />
-          </IconButton>
+          <Grid container alignItems={"center"}>
+            <Button variant="disabled">Choose file</Button>
+            <IconButton
+              color="primary"
+              aria-label="upload file"
+              component="label"
+            >
+              <input hidden type="file" onChange={handleSetFile} />
+              <AttachFile />
+            </IconButton>
+          </Grid>
           <FormControl fullWidth variant="filled">
             <InputLabel id="set-expire">Expire Time</InputLabel>
             <Select
@@ -81,6 +96,7 @@ export default function ActionBar(props) {
               label="Time"
               onChange={handleChange}
             >
+              <MenuItem value={1}>One</MenuItem>
               <MenuItem value={10}>Ten</MenuItem>
               <MenuItem value={20}>Twenty</MenuItem>
               <MenuItem value={30}>Thirty</MenuItem>
@@ -97,7 +113,7 @@ export default function ActionBar(props) {
           </Button>
         </DialogActions>
       </Dialog>
-      <Grid container item textAlign={"center"} justifyContent={"center"}>
+      <Grid container item alignItems={"center"} justifyContent={"center"}>
         <Grid item>
           <Tooltip title="Burn after reading">
             <LocalFireDepartmentIcon

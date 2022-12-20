@@ -1,5 +1,15 @@
 .App {
-  min-width: 576px;
+  height: 100%;
+  min-width: 1200px;
+}
+
+#root{
+  height: 100%;
+}
+
+html, 
+body {
+    height: 100%;
 }
 
 .Focus {
@@ -17,7 +27,7 @@ body {
 }
 
 .Wrap-Text {
-  width: 30px;
+  width: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -25,4 +35,14 @@ body {
 
 .Function-Bar{
   background-color: cadetblue;
+  padding-top: 20px;
+}
+
+
+.Chat-List{
+  overflow: auto;
+}
+
+.Message-List{
+  background-color:
 }

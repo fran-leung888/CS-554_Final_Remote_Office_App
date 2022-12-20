@@ -11,6 +11,7 @@ export default function Friends() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userCardData, setUserCardData] = useState(null);
   const curUser = useSelector((state) => state.user);
+  const userMap = useSelector((state) => state.chat.users);
   console.log("User friends are ", curUser?.friends);
   const navigate = useNavigate();
 
@@ -39,7 +40,7 @@ export default function Friends() {
           <List>
             {curUser.friends.map((friend) => (
               <ListItem action onClick={(e) => handleUserClick(e, friend)}>
-                <Avatar></Avatar>
+                <Avatar src={userMap[friend._id].avatar}></Avatar>
                 {friend.name}
               </ListItem>
             ))}
@@ -47,7 +48,7 @@ export default function Friends() {
           <List>
             {curUser.groups.map((group) => (
               <ListItem action onClick={(e) => handleUserClick(e, group)}>
-                <Avatar></Avatar>
+                <Avatar>G</Avatar>
                 {group.groupName}
               </ListItem>
             ))}

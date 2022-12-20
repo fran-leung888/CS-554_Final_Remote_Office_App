@@ -143,6 +143,10 @@ export default function ChatList() {
             chat.show ||
             chatDiagramMessages[chat._id]?.length > 0 ? (
             <div
+            style={{
+              padding: '15px',
+              
+            }}
               className={
                 currentChatId !== -1 && currentChatId === chat._id
                   ? "Focus Wrap"
@@ -162,7 +166,7 @@ export default function ChatList() {
       : [];
   };
   if (userChats.length !== 0) {
-    return <div>{buildPreviews(userChats)}</div>;
+    return <div className="Chat-List">{buildPreviews(userChats)}</div>;
   } else {
     // No message show no list
     return <div></div>;

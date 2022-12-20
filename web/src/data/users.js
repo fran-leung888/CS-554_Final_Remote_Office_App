@@ -52,6 +52,11 @@ const setNewPswd = async (newPassword) => {
   return response;
 };
 
+const setAvatar = async (userId, avatar) => {
+  let response = await axios.post("/user/avatar", {userId, avatar });
+  return response;
+};
+
 const addFriend = async (friendId) => {
   console.log("Add friend");
   let response = await axios.post("/add", {
@@ -107,6 +112,7 @@ const delGroupRecord = async (userId, inviteUserId) => {
 export default {
   addUser,
   login,
+  setAvatar,
   searchUser,
   getUser,
   getUsers,

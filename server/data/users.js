@@ -476,4 +476,21 @@ module.exports = {
       throw Error(e.message);
     }
   },
+
+
+  async setAvatar(userId, avatar) {
+
+    const usersCollection = await users();
+    const updatedInfo = await usersCollection.updateOne(
+      { _id: ObjectId(userId) },
+      {
+        $set: {
+          avatar
+        },
+      }
+    );
+    updatedInfo.avatar = avatar
+    redisStore.removeUser(userId)
+    return updatedInfo
+  }
 };

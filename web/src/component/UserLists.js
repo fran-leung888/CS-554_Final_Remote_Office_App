@@ -41,7 +41,7 @@ export default function BasicList(props) {
               }}
             >
               <ListItemAvatar>
-                <Avatar></Avatar>
+                <Avatar src={user.avatar}></Avatar>
               </ListItemAvatar>
               <ListItemText>{user.name}</ListItemText>
             </ListItemButton>
