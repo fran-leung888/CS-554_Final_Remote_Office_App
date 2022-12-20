@@ -343,13 +343,13 @@ export default function Friends({ socket }) {
             }}
           >
             <Col>
-              <h2
+              <h1
                 style={{
                   padding: "2rem",
                 }}
               >
                 My Friends
-              </h2>
+              </h1>
               {hasFriend ? (
                 <ListGroup>
                   {friendsData.map((friend) => (
@@ -384,7 +384,7 @@ export default function Friends({ socket }) {
               )}
             </Col>
             <Col>
-              <h2 style={{ padding: "2rem" }}>My Groups</h2>
+              <h1 style={{ padding: "2rem" }}>My Groups</h1>
 
               {hasGroups ? (
                 <ListGroup>

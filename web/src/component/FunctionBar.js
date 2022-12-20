@@ -64,7 +64,7 @@ export default () => {
         <Card.Text>name: {curUser.name}</Card.Text>
       </Card>
       <div style={{ padding: "1rem" }}>
-        <Button variant="info" onClick={myaccount}>
+        <Button variant="info" onClick={myaccount} id="my-account">
           My account
         </Button>
       </div>
@@ -89,20 +89,24 @@ export default () => {
         </OverlayTrigger>
       </Grid>
       <Grid
+        id="chat"
         container
         item
         xs={12}
         justifyContent="center"
         style={{ paddingBottom: "2rem" }}
       >
-        <IconButton
-          onClick={() => {
-            dispatch(setContentStatus(0));
-            dispatch(enableDiagram());
-          }}
-        >
-          <ChatIcon />
-        </IconButton>
+        <label for="chat">
+          <IconButton
+            id="chat"
+            onClick={() => {
+              dispatch(setContentStatus(0));
+              dispatch(enableDiagram());
+            }}
+          >
+            <ChatIcon />
+          </IconButton>
+        </label>
       </Grid>
       <Grid
         container
@@ -111,9 +115,11 @@ export default () => {
         justifyContent="center"
         style={{ paddingBottom: "2rem" }}
       >
-        <IconButton>
-          <Diversity1Icon onClick={myFriends} />
-        </IconButton>
+        <label for="friends">
+          <IconButton id="friends">
+            <Diversity1Icon onClick={myFriends} />
+          </IconButton>
+        </label>
       </Grid>
       <Grid
         container
@@ -122,9 +128,11 @@ export default () => {
         justifyContent="center"
         style={{ paddingBottom: "2rem" }}
       >
-        <IconButton>
-          <GroupAddIcon onClick={inviteFri} />
-        </IconButton>
+        <label for="invite">
+          <IconButton id="invite">
+            <GroupAddIcon onClick={inviteFri} />
+          </IconButton>
+        </label>
       </Grid>
       <Grid
         container
@@ -133,14 +141,17 @@ export default () => {
         justifyContent="center"
         style={{ paddingBottom: "2rem" }}
       >
-        <IconButton
-          onClick={() => {
-            dispatch(setContentStatus(1));
-            dispatch(disableDiagram());
-          }}
-        >
-          <PermContactCalendarIcon />
-        </IconButton>
+        <label for="contact">
+          <IconButton
+            id="contact"
+            onClick={() => {
+              dispatch(setContentStatus(1));
+              dispatch(disableDiagram());
+            }}
+          >
+            <PermContactCalendarIcon />
+          </IconButton>
+        </label>
       </Grid>
       <Grid
         container
@@ -149,15 +160,19 @@ export default () => {
         justifyContent="center"
         style={{ paddingBottom: "2rem" }}
       >
-        <IconButton onClick={handleClickOpen}>
-          <SearchIcon />
-        </IconButton>
+        <label for="search">
+          <IconButton onClick={handleClickOpen} id="search">
+            <SearchIcon />
+          </IconButton>
+        </label>
       </Grid>
       <Grid>
         <SearchUser open={open} handleClose={handleClose} />
       </Grid>
       <Grid container item xs={12} justifyContent="center">
-        <SignOutButton />
+        <label for="logout">
+          <SignOutButton />
+        </label>
       </Grid>
     </Grid>
   );
