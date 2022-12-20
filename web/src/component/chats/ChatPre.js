@@ -73,11 +73,16 @@ export default function ChatPre(props) {
             if (i > Constant.avatarMax) break;
             groupAvatars.push(
               <Grid item xs={4}>
-                <Avatar></Avatar>
+                <Avatar>G</Avatar>
               </Grid>
             );
           }
-          return groupAvatars
+          return (
+            <Grid item xs={4}>
+              <Avatar>G</Avatar>
+            </Grid>
+          );
+          return groupAvatars;
         };
         return (
           // Build avators for the first 9 people
@@ -89,9 +94,10 @@ export default function ChatPre(props) {
     } else if (chat?.type === Constant.chatType.individual) {
       if (chat.users) {
         const filteredOtherUser = filterUserId(chat.users);
+
         return (
           <Grid item>
-            <Avatar></Avatar>
+            <Avatar src={userMap[filteredOtherUser].avatar}></Avatar>
           </Grid>
         );
       } else {
@@ -168,19 +174,19 @@ export default function ChatPre(props) {
   // apply different style
   if (props.data && init) {
     return (
-      <Grid container direction={"row"}>
+      <Grid container direction={"row"} alignItems="center">
         <Grid item xs={3}>
           {/* Avatar */}
           {buildAvatar(props.data)}
         </Grid>
-        <Grid item container xs={9}>
+        <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
           {/* username */}
           <Grid item xs={12}>
             {buildName(props.data)}
           </Grid>
           <Grid item xc={12} container>
             {/* message */}
-            <Grid item>{buildMessage(props.data)}</Grid>
+            <Grid item  className="Wrap-Text">{buildMessage(props.data)}</Grid>
           </Grid>
         </Grid>
       </Grid>

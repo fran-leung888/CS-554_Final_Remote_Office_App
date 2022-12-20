@@ -54,17 +54,17 @@ export default () => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
+    <Grid container  >
+      <Grid container item xs={12} justifyContent="center" >
         <OverlayTrigger
           placement="right"
           delay={{ show: 250, hide: 400 }}
           overlay={renderTooltip}
         >
-          <Avatar></Avatar>
+          <Avatar src={curUser.avatar}></Avatar>
         </OverlayTrigger>
       </Grid>
-      <Grid>
+      <Grid container item xs={12} justifyContent="center" >
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(0));
@@ -74,7 +74,7 @@ export default () => {
           <ChatIcon />
         </IconButton>
       </Grid>
-      <Grid>
+      <Grid container item xs={12} justifyContent="center" >
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(1));
@@ -84,13 +84,14 @@ export default () => {
           <PermContactCalendarIcon />
         </IconButton>
       </Grid>
-      <Grid>
+      <Grid container item xs={12} justifyContent="center" >
         <IconButton onClick={handleClickOpen}>
           <SearchIcon />
         </IconButton>
+      </Grid>
+      <Grid>
         <SearchUser open={open} handleClose={handleClose} />
       </Grid>
-      <Grid item xs={4}></Grid>
     </Grid>
   );
 };

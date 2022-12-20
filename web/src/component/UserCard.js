@@ -91,18 +91,34 @@ export default (props) => {
 
   if (props.user._id) {
     return (
-      <Card>
-        <Avatar></Avatar>
-        <div>{props.user.name}</div>
-        <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
+      <Card sx={{ height: "200px", width: "200px", paddingTop:'20px' }}>
+        <Grid container alignItems={"stretch"} sx={{ height: "100%" }}>
+          <Grid container item xs={12} justifyContent="center">
+            <Avatar src={currentUser.avatar}></Avatar>
+          </Grid>
+          <Grid container item xs={12} justifyContent="center">
+            <div>name: {props.user.name}</div>
+          </Grid>
+          <Grid container item xs={12} justifyContent="center">
+            <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
+          </Grid>
+        </Grid>
       </Card>
     );
   } else if (props.user.groupId) {
     return (
-      <Card>
-        <Avatar></Avatar>
-        <div>{props.user.groupName}</div>
-        <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
+      <Card sx={{ height: "200px", width: "200px", paddingTop:'20px'}}>
+        <Grid container alignItems={"stretch"} sx={{ height: "100%" }}>
+          <Grid container item xs={12} justifyContent="center">
+            <Avatar>G</Avatar>
+          </Grid>
+          <Grid container item xs={12} justifyContent="center">
+            <div>group name: {props.user.groupName}</div>
+          </Grid>
+          <Grid container item xs={12} justifyContent="center">
+            <SmsIcon onClick={ChatWithUserOrGroup}></SmsIcon>
+          </Grid>
+        </Grid>
       </Card>
     );
   } else {

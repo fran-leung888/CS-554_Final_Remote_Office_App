@@ -17,15 +17,26 @@ export default function ChatDiagram() {
       <Grid
         container
         item
-        direction={"column"}
+        sx={{ width: "100%", height: "100%" }}
         justifyContent="space-around"
         alignItems="stretch"
       >
-        <Grid item>
+        <Grid
+          item
+          xs={12}
+          sx={{ width: "100%", height: "85%"}}
+          className="Message-List"
+        >
           <MessageList></MessageList>
         </Grid>
 
-        <Grid item>
+        <Grid
+          container
+          alignItems="flex-end"
+          item
+          xs={12}
+          sx={{ padding: "10px", height: "15%" }}
+        >
           <SendArea></SendArea>
         </Grid>
       </Grid>
