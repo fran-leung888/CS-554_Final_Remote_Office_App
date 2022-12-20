@@ -97,8 +97,8 @@ io.on("connection", (socket) => {
       // const sendToUser = onlineUsers.get(data.applyId);
       io.to(sendToUser).emit("agreeResponse", data);
       // notify both users
-      await redisStore.removeUser(data.friendId)
-      await redisStore.removeUser(data.applyId)
+      await redisStore.removeUser(data.friendId);
+      await redisStore.removeUser(data.applyId);
       chatSocket.notifyEvent(constant.event.newFriend, data.friendId, {});
       chatSocket.notifyEvent(constant.event.newFriend, data.applyId, {});
     }

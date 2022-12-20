@@ -34,7 +34,7 @@ export default ({ socket }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const curUser = useSelector((state) => state.user);
-  console.log(curUser);
+  console.log('Home user is', curUser);
   console.log("socket in home", socket);
   useEffect(() => {
     if (curUser) {
@@ -68,10 +68,13 @@ export default ({ socket }) => {
       console.log("receive chat on newFriend event.", data);
       // refresh user.
       try {
-        let res = await users.getUser(curUser._id);
-        checkRes(res);
-        if (res.data) {
-          dispatch(setUser(res.data));
+        if (curUser._id) {
+          console.log("newFriend refresh user", curUser._id);
+          let res = await users.getUser(curUser._id);
+          checkRes(res);
+          if (res.data) {
+            dispatch(setUser(res.data));
+          }
         }
       } catch (e) {
         enqueueSnackbar(e.toString(), noti.errOpt);
@@ -128,7 +131,10 @@ export default ({ socket }) => {
   });
 
   const agree = async () => {
-    let add = await users.addFriend(applyUser.applyId);
+    let add = await users.addFriend(
+      applyUser.applyId,
+      curUser?._id?.toString()
+    );
     console.log("add friend:");
     console.log(add);
 

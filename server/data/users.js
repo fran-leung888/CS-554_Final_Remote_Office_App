@@ -338,11 +338,13 @@ module.exports = {
     }
   },
 
-  async getUser(id, changeInfo = false) {
+  async getUser(id, changeInfo = false, useCache = false) {
     // check cache
-    let user = await redisStore.getUser(id);
-    if (user && !changeInfo) {
-      return user;
+    if (useCache) {
+      let user = await redisStore.getUser(id);
+      if (user && !changeInfo) {
+        return user;
+      }
     }
     await this.checkId(id);
     const usersCollection = await users();
@@ -405,7 +407,10 @@ module.exports = {
     const usersCollection = await users();
     const user = await usersCollection.findOne({ username: username });
     if (user == null) throw "User does not exist.";
-    if (user.isFirebaseAuth || await this.comparePassword(password, user.password)) {
+    if (
+      user.isFirebaseAuth ||
+      (await this.comparePassword(password, user.password))
+    ) {
       return user;
     } else {
       throw "Please check username and password.";
@@ -477,20 +482,18 @@ module.exports = {
     }
   },
 
-
   async setAvatar(userId, avatar) {
-
     const usersCollection = await users();
     const updatedInfo = await usersCollection.updateOne(
       { _id: ObjectId(userId) },
       {
         $set: {
-          avatar
+          avatar,
         },
       }
     );
-    updatedInfo.avatar = avatar
-    redisStore.removeUser(userId)
-    return updatedInfo
-  }
+    updatedInfo.avatar = avatar;
+    redisStore.removeUser(userId);
+    return updatedInfo;
+  },
 };

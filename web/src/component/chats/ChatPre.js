@@ -173,24 +173,27 @@ export default function ChatPre(props) {
   // for individual and group
   // apply different style
   if (props.data && init) {
-    return (
-      <Grid container direction={"row"} alignItems="center">
-        <Grid item xs={3}>
-          {/* Avatar */}
-          {buildAvatar(props.data)}
-        </Grid>
-        <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
-          {/* username */}
-          <Grid item xs={12}>
-            {buildName(props.data)}
+      return (
+        <Grid container direction={"row"} alignItems="center">
+          <Grid item xs={3}>
+            {/* Avatar */}
+            {buildAvatar(props.data)}
           </Grid>
-          <Grid item xc={12} container>
-            {/* message */}
-            <Grid item  className="Wrap-Text">{buildMessage(props.data)}</Grid>
+          <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
+            {/* username */}
+            <Grid item xs={12}>
+              {buildName(props.data)}
+            </Grid>
+            <Grid item xc={12} container>
+              {/* message */}
+              <Grid item className="Wrap-Text">
+                {buildMessage(props.data)}
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    );
+      );
+    
   } else {
     return <div></div>;
   }

@@ -11,7 +11,7 @@ function getClientChatSocket(id) {
 module.exports = {
   async notifyEvent(event, room, data) {
     if (room) {
-      console.log("notify message to ", room);
+      console.log("notify ", event, " to ", room);
       io.to(room).emit(event, data);
       console.log("Map<SocketId, Set<Room>> are ", io.of("/").adapter.sids);
     } else {

@@ -144,7 +144,10 @@ export default function Friends({ socket }) {
   const deleteFri = async (friend, e) => {
     console.log(friend);
     if (friend._id) {
-      let deleteF = await users.deleteFriend(friend._id);
+      let deleteF = await users.deleteFriend(
+        friend._id,
+        curUser._id.toString()
+      );
       let newUser = await users.getUser(curUser._id);
 
       if (!newUser.data) {
@@ -162,7 +165,10 @@ export default function Friends({ socket }) {
     console.log(group);
     if (group.groupId) {
       if (group.ifGrouper) {
-        let exitG = await groups.deleteGroup(group.groupId);
+        let exitG = await groups.deleteGroup(
+          group.groupId,
+          curUser?._id?.toString()
+        );
         console.log(exitG.data);
         if (!exitG.data) {
           setShowError(true);
@@ -172,7 +178,11 @@ export default function Friends({ socket }) {
           setGroupsData(curUser.groups);
         }
       } else {
-        let exitG = await groups.exit(curUser._id, group.groupId);
+        let exitG = await groups.exit(
+          curUser._id,
+          group.groupId,
+          curUser?._id?.toString()
+        );
         console.log(exitG.data);
         if (!exitG.data) {
           setShowError(true);
@@ -187,7 +197,7 @@ export default function Friends({ socket }) {
 
   const createGroup = async () => {
     checkResult(verifyString(groupName));
-    let newUser = await groups.createGroups(groupName);
+    let newUser = await groups.createGroups(groupName, curUser._id.toString());
     if (!newUser.data) {
       setShowError(true);
     } else {
@@ -204,7 +214,11 @@ export default function Friends({ socket }) {
     // console.log(groupsSet);
 
     if (groupsSet[curGroup.groupName].has(friend.username)) {
-      let newFriend = await groups.exit(friend._id, curGroup.groupId);
+      let newFriend = await groups.exit(
+        friend._id,
+        curGroup.groupId,
+        curUser?._id?.toString()
+      );
       console.log("after delete this one:");
       console.log(newFriend.data);
       // curGroup
@@ -423,35 +437,36 @@ export default function Friends({ socket }) {
                         </Modal.Header>
                         <Modal.Body>
                           <ListGroup.Item>
-                            {friendsData && friendsData.map((friend) => (
-                              <Form.Label>
-                                {friend.username}
-                                {curGroup &&
-                                groupsSet &&
-                                curGroup.groupName &&
-                                groupsSet[curGroup.groupName].has(
-                                  friend.username
-                                ) ? (
-                                  <Button
-                                    variant="primary"
-                                    onClick={(e) => {
-                                      kick(friend, e);
-                                    }}
-                                  >
-                                    Kick
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="primary"
-                                    onClick={(e) => {
-                                      invite(friend, e);
-                                    }}
-                                  >
-                                    Add
-                                  </Button>
-                                )}
-                              </Form.Label>
-                            ))}
+                            {friendsData &&
+                              friendsData.map((friend) => (
+                                <Form.Label>
+                                  {friend.username}
+                                  {curGroup &&
+                                  groupsSet &&
+                                  curGroup.groupName &&
+                                  groupsSet[curGroup.groupName].has(
+                                    friend.username
+                                  ) ? (
+                                    <Button
+                                      variant="primary"
+                                      onClick={(e) => {
+                                        kick(friend, e);
+                                      }}
+                                    >
+                                      Kick
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="primary"
+                                      onClick={(e) => {
+                                        invite(friend, e);
+                                      }}
+                                    >
+                                      Add
+                                    </Button>
+                                  )}
+                                </Form.Label>
+                              ))}
                           </ListGroup.Item>
                         </Modal.Body>
                       </Modal>

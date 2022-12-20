@@ -54,7 +54,22 @@ module.exports = {
     verification.checkResult(verification.verifyString(message));
     const chats = await chatsCollection();
     const messages = await messagesCollection();
+    const users = await usersCollection();
     const chat = await chats.findOne({ _id: new ObjectId(chatId) });
+    if (chat.users) {
+      const fromUser = await users.findOne({ _id: new ObjectId(chat.users[0]) });
+      const toUser = await users.findOne({ _id: new ObjectId(chat.users[1]) });
+      let friendCount = 0;
+      toUser?.friends?.forEach((friend) => {
+        if (friend._id.toString() == fromUser._id.toString()) friendCount += 1;
+      });
+      fromUser?.friends?.forEach((friend) => {
+        if (friend._id.toString() == toUser._id.toString()) friendCount += 1;
+      });
+      if (friendCount !== 2) {
+        throw "Send message failed.";
+      }
+    }
     if (chat) {
       let mesageToInsert = constructMessage(chatId, userId, message, type);
       let result = await messages.insertOne(mesageToInsert);
@@ -87,10 +102,17 @@ module.exports = {
     const users = await usersCollection();
     const chats = await chatsCollection();
 
-    const fromUser = await users.find({ _id: new ObjectId(from._id) });
-    const toUser = await users.find({ _id: new ObjectId(to._id) });
+    const fromUser = await users.findOne({ _id: new ObjectId(from._id) });
+    const toUser = await users.findOne({ _id: new ObjectId(to._id) });
+    let isFriend = false;
+    toUser?.friends?.forEach((friend) => {
+      if (friend._id.toString() == from._id.toString()) isFriend = true;
+    });
+    if (!isFriend) {
+      throw "Send message failed.";
+    }
     if (fromUser && toUser) {
-      const chat = await chats.find({ users: [from._id, to._id] });
+      const chat = await chats.find({ users: {$in: [from._id, to._id] }});
       if ((await chat.count()) !== 0) {
         console.log("Add message to chat.");
         if (verification.checkResultQuiet(verification.verifyString(message))) {

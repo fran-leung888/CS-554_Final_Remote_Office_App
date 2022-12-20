@@ -39,16 +39,17 @@ const getUsers = async (ids) => {
   return response;
 };
 
-const setNewName = async (newName) => {
+const setNewName = async (newName, curUserId) => {
   let response = await axios.post("/changename", {
     newName,
+    curUserId
   });
 
   return response;
 };
 
-const setNewPswd = async (newPassword) => {
-  let response = await axios.post("/changepswd", { newPassword });
+const setNewPswd = async (newPassword, curUserId) => {
+  let response = await axios.post("/changepswd", { newPassword,curUserId });
   return response;
 };
 
@@ -57,21 +58,23 @@ const setAvatar = async (userId, avatar) => {
   return response;
 };
 
-const addFriend = async (friendId) => {
+const addFriend = async (friendId, curUserId) => {
   console.log("Add friend");
   let response = await axios.post("/add", {
     // curId,
     friendId,
+    curUserId,
   });
   console.log(`response:`);
   console.log(response);
   return response;
 };
 
-const deleteFriend = async (friendId) => {
+const deleteFriend = async (friendId, curUserId) => {
   let response = await axios.post("/delete", {
     // curId,
     friendId,
+    curUserId
   });
   return response;
 };

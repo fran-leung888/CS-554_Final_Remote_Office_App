@@ -1,7 +1,7 @@
 import axios from "../config/axios";
 
-const createGroups = async (groupName) => {
-  const response = await axios.post("/group/create", { groupName });
+const createGroups = async (groupName, curUserId) => {
+  const response = await axios.post("/group/create", { groupName, curUserId});
   return response;
 };
 
@@ -19,18 +19,18 @@ const getByName = async (groupName) => {
   const response = await axios.get("/group/getByName?groupName=" + groupName);
   return response;
 };
-const allGroups = async () => {
-  const response = await axios.get("/group/getAll", {});
+const allGroups = async (curUserId) => {
+  const response = await axios.get("/group/getAll?curUserId=" + curUserId, {});
   return response;
 };
 
-const deleteGroup = async (groupId) => {
-  const response = await axios.post("/group/delete", { groupId });
+const deleteGroup = async (groupId, curUserId) => {
+  const response = await axios.post("/group/delete", { groupId, curUserId });
   return response;
 };
 
-const exit = async (exitUserId, groupId) => {
-  const response = await axios.post("/group/exit", { exitUserId, groupId });
+const exit = async (exitUserId, groupId, curUserId) => {
+  const response = await axios.post("/group/exit", { exitUserId, groupId,curUserId });
   return response;
 };
 

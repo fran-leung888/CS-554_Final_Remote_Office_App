@@ -9,8 +9,11 @@ export const searchUserSlice = createSlice({
       console.log(action);
       return { ...state.value, ...action.payload };
     },
+    reset: (state, action ) => {
+      return {}
+    }
   },
 });
 
-export const { setSearchUser } = searchUserSlice.actions;
+export const { setSearchUser, reset} = searchUserSlice.actions;
 export default searchUserSlice.reducer;

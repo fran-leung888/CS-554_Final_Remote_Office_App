@@ -134,11 +134,7 @@ export default function ChatList() {
   const buildPreviews = (chats) => {
     return chats
       ? chats.map((chat) => {
-          const divStyle = {
-            color: "blue",
-          };
-          console.log("build chat ", chat);
-
+              console.log("build chat ", chat);
           return chat.type === constant.chatType.group ||
             chat.show ||
             chatDiagramMessages[chat._id]?.length > 0 ? (

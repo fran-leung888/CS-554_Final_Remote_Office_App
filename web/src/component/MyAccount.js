@@ -45,7 +45,7 @@ export default function MyAccount() {
     checkResult(verifyString(newName));
     console.log(newName);
 
-    const newCurUser = await users.setNewName(newName);
+    const newCurUser = await users.setNewName(newName, curUser?._id?.toString());
     console.log(newCurUser);
 
     if (!newCurUser.data) {
@@ -61,7 +61,7 @@ export default function MyAccount() {
     checkResult(verifyString(newPassword));
     console.log(newPassword);
 
-    const newCurUser = await users.setNewPswd(newPassword);
+    const newCurUser = await users.setNewPswd(newPassword, curUser?._id?.toString());
     console.log(newCurUser.data);
 
     if (!newCurUser.data) {
@@ -163,7 +163,7 @@ export default function MyAccount() {
                       type="text"
                       fullWidth
                       variant="standard"
-                      onChange={(e) => setNewName(e.target.value)}
+                      onChange={(e) => setNewName(e.target.value, curUser?._id?.toString())}
                     />
                   </Form.Group>
                 </Modal.Body>

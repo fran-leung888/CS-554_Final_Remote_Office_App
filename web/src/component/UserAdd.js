@@ -172,7 +172,7 @@ const UserAdd = ({ socket }) => {
     console.log("agree be friend");
     console.log(single);
 
-    await users.addFriend(single.inviteUserId);
+    await users.addFriend(single.inviteUserId, curUser?._id?.toString());
     // await dispatch(setUser(newCurUser.data));
 
     const newCurUser = await users.delFriRecord(

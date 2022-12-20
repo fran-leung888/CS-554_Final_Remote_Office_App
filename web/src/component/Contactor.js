@@ -47,7 +47,7 @@ export default function Friends() {
               <ListItem action onClick={(e) => handleUserClick(e, friend)}>
                 <Grid container direction={"row"} alignItems="center">
                   <Grid item xs={3}>
-                    <Avatar src={userMap[friend._id].avatar}></Avatar>
+                    <Avatar src={userMap[friend._id]?.avatar}></Avatar>
                   </Grid>
                   <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
                     {/* username */}

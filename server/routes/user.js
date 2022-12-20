@@ -46,15 +46,16 @@ router.post("/add", async (req, res) => {
   // const curUser = req.body.curName;
   console.log(req.body);
   const otherId = req.body.friendId;
+  const curUserId = req.body.curUserId;
   if (!otherId) {
     return res.status(400).json({ message: "Please input your friend id" });
   }
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUser = await users.getUser(curUserId);
   // console.log("\tCurrent user is ", curUser);
   // console.log(JSON.stringify(curUser._id));
+  console.log("Add friend, ", curUser)
   const curId = curUser._id.toString();
-  console.log(curId);
+  console.log(curId, otherId, curId === otherId);
   // const otherName = req.body.otherName;
   if (curId === otherId) {
     return res.status(400).json({ message: "You cannot add yourself" });
@@ -75,13 +76,14 @@ router.post("/add", async (req, res) => {
     // const newUser = await users.getUser(curId);
     console.log(`updatedInfo: ${updatedInfo}`);
     // notify user on adding friend by socket
-    redisStore.removeUser(curId);
-    chatSocket.notifyEvent(constant.event.newFriend, curId, {
-      friendId,
-    });
-    chatSocket.notifyEvent(constant.event.newFriend, curId, {
-      friendId,
-    });
+    // await redisStore.removeUser(curId);
+    // await redisStore.removeUser(otherId);
+    // chatSocket.notifyEvent(constant.event.newFriend, otherId, {
+    //   otherId: curId,
+    // });
+    // chatSocket.notifyEvent(constant.event.newFriend, curId, {
+    //   otherId,
+    // });
     res.send(new response(updatedInfo).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));
@@ -89,11 +91,11 @@ router.post("/add", async (req, res) => {
 });
 
 router.post("/changename", async (req, res) => {
+  let curUserId = req.body.curUserId 
   if (!req.body.newName) {
     return res.status(400).json({ message: "Please input the new name" });
   }
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUser = await users.getUser(curUserId);
   console.log("curUser data:");
   console.log(curUser);
 
@@ -108,11 +110,11 @@ router.post("/changename", async (req, res) => {
 });
 
 router.post("/changepswd", async (req, res) => {
+  let curUserId = req.body.curUserId 
   if (!req.body.newPassword) {
     return res.status(400).json({ message: "Please input the new password" });
   }
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUser = await users.getUser(curUserId);
   console.log("curUser data:");
   console.log(curUser);
 
@@ -127,14 +129,14 @@ router.post("/changepswd", async (req, res) => {
 });
 
 router.post("/delete", async (req, res) => {
+  let curUserId = req.body.curUserId
   try {
     if (!req.body.friendId) {
       return res
         .status(400)
         .json({ message: "please input the friend you want to delete" });
     }
-    let session = req.cookies[store.SESSION_KEY];
-    let curUser = await users.getUser(session);
+    let curUser = await users.getUser(curUserId);
     const curId = curUser._id.toString();
 
     if (curId === req.body.friendId) {
@@ -259,7 +261,7 @@ router.get("/user", async (req, res) => {
   try {
     if (!name && !id) throw "Bad request.";
     let user = null;
-    if (id) user = await users.getUser(id, true);
+    if (id) user = await users.getUser(id, false, true);
     else if (name) user = await users.getUserByname(name);
     console.log(`user: ${user}`);
     res.send(new response(user).success(res));

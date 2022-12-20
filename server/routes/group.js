@@ -14,11 +14,11 @@ router.post("/create", async (req, res) => {
   console.log(req.body);
   // const groupName = res.body.groupName;
   const groupName = req.body.groupName;
+  const curUserId = req.body.curUserId;
   if (!groupName) {
     res.send(new response(null).fail(res));
   }
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUser = await users.getUser(curUserId);
   const curId = curUser._id.toString();
   if (!curId) {
     // return res
@@ -162,8 +162,8 @@ router.get("/getByName", async (req, res) => {
 });
 
 router.get("/getAll", async (req, res) => {
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUserId = req.query.curUserId
+  let curUser = await users.getUser(curUserId);
   const curId = curUser._id.toString();
 
   if (!curId) return res.status(400).json({ message: "Please login frist" });
@@ -190,8 +190,8 @@ router.post("/delete", async (req, res) => {
       .json({ message: "Please input the groupId you want to delete" });
 
   const groupId = req.body.groupId;
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  const curUserId = req.body.curUserId;
+  let curUser = await users.getUser(curUserId);
   // console.log("\tCurrent user is ", curUser);
   // console.log(JSON.stringify(curUser._id));
   const curId = curUser._id.toString();
@@ -250,13 +250,13 @@ router.post("/exit", async (req, res) => {
   console.log(req.body);
   const groupId = req.body.groupId;
   const exitUserId = req.body.exitUserId;
+  const curUserId = req.body.curUserId;
   console.log(`the groupId you want to delete : ${groupId}`);
   if (!groupId || !exitUserId)
     return res
       .status(400)
       .json({ message: "Please input the groupId you want to exit" });
-  let session = req.cookies[store.SESSION_KEY];
-  let curUser = await users.getUser(session);
+  let curUser = await users.getUser(curUserId);
   const curId = curUser._id.toString();
 
   // if (!curId) return res.status(400).json({ message: "Please login frist" });
