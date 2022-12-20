@@ -493,7 +493,7 @@ module.exports = {
       }
     );
     updatedInfo.avatar = avatar;
-    redisStore.removeUser(userId);
+    await redisStore.removeUser(userId);
     return updatedInfo;
   },
 };

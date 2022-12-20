@@ -52,8 +52,8 @@ export default (props) => {
         userChats.forEach((chat) => {
           if (
             chat.type === constant.chatType.individual &&
-            chat.users.includes(currentUser._id) &&
-            chat.users.includes(props.user._id)
+            chat.users?.includes(currentUser._id) &&
+            chat.users?.includes(props.user._id)
           ) {
             chatExist = true;
             chatId = chat._id;
@@ -62,6 +62,7 @@ export default (props) => {
           }
         });
         if (!chatExist) {
+          console.log("This chat do not exist.")
           let res = await chats.addIndividualChat(currentUser, props.user, "");
           checkRes(res);
           socket.emit("joinRoom", res.data.insertedId);

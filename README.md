@@ -26,4 +26,4 @@ docker-compose up
 ```
 
 ## Final Step: Start Chatting
-Visit http://localhost:3000 to start chatting with your colleague.
+Visit http://localhost:3000 to start chatting with your colleagues.

@@ -1,12 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-function constructChat(
-  _id,
-  users,
-  type = 0,
-  show = false,
-  groupName = null,
-) {
+function constructChat(_id, users, type = 0, show = false, groupName = null) {
   return {
     _id,
     users,
@@ -62,7 +56,7 @@ export const chatSlice = createSlice({
             action.payload.users,
             action.payload.type,
             action.payload.show ? action.payload.show : false,
-            action.payload.groupName,
+            action.payload.groupName
           ),
           ...state.chats,
         ];
@@ -84,6 +78,7 @@ export const chatSlice = createSlice({
       action.payload.forEach((user) => {
         state.users[user._id] = user;
       });
+      state.users = { ...state.users };
     },
     reset: (state, action) => {
       return {

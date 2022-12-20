@@ -18,7 +18,7 @@ function convertUserIds(userIds) {
     if (userIds.length === 0) return true;
     let idStr = [];
     userIds.forEach((id) => idStr.push(id.toString()));
-    userIds = idStr + ",";
+    userIds = idStr;
   } else {
     userIds = userIds.toString();
   }

@@ -57,8 +57,11 @@ module.exports = {
     const users = await usersCollection();
     const chat = await chats.findOne({ _id: new ObjectId(chatId) });
     if (chat.users) {
-      const fromUser = await users.findOne({ _id: new ObjectId(chat.users[0]) });
+      const fromUser = await users.findOne({
+        _id: new ObjectId(chat.users[0]),
+      });
       const toUser = await users.findOne({ _id: new ObjectId(chat.users[1]) });
+
       let friendCount = 0;
       toUser?.friends?.forEach((friend) => {
         if (friend._id.toString() == fromUser._id.toString()) friendCount += 1;
@@ -69,6 +72,8 @@ module.exports = {
       if (friendCount !== 2) {
         throw "Send message failed.";
       }
+    } else {
+      throw "Chat information error.";
     }
     if (chat) {
       let mesageToInsert = constructMessage(chatId, userId, message, type);
@@ -100,7 +105,7 @@ module.exports = {
     verification.checkResult(verification.checkId(from?._id));
     verification.checkResult(verification.checkId(to?._id));
     const users = await usersCollection();
-    const chats = await chatsCollection();
+    const chatsColl = await chatsCollection();
 
     const fromUser = await users.findOne({ _id: new ObjectId(from._id) });
     const toUser = await users.findOne({ _id: new ObjectId(to._id) });
@@ -112,8 +117,17 @@ module.exports = {
       throw "Send message failed.";
     }
     if (fromUser && toUser) {
-      const chat = await chats.find({ users: {$in: [from._id, to._id] }});
-      if ((await chat.count()) !== 0) {
+      let chat = null;
+      const chats = await chatsColl.find({
+        users: { $in: [from._id] },
+        type: constant.chatType.individual,
+      });
+      if ((await chats.count()) !== 0) {
+        chats.forEach((c) => {
+          if (c.users.includes(to._id.toString())) chat = c;
+        });
+      }
+      if (chat) {
         console.log("Add message to chat.");
         if (verification.checkResultQuiet(verification.verifyString(message))) {
           let result = await this.addMessageById(
@@ -129,7 +143,7 @@ module.exports = {
         // Add new chat if there is no related chat.
         // add message to chat
         console.log("add new chat");
-        const newChat = await chats.insertOne(
+        const newChat = await chatsColl.insertOne(
           constructChat(
             [from._id.toString(), to._id.toString()],
             constant.chatType.individual
