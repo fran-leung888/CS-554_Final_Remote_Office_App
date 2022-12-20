@@ -92,7 +92,7 @@ async function test(){
     await groups.addMember(user4,group2);
 
     await users.userUpdateGroup(user4._id,group1._id,"Group1","false")
-    await users.updateOfflineGroupInvite(user1._id,user6._id)
+    //await users.updateOfflineGroupInvite(user1._id,user6._id)
 
     console.log("-------- Create Groups Successfully --------");
     
