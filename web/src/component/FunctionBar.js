@@ -2,6 +2,8 @@ import React from "react";
 import { Avatar, Grid } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
+import Diversity1Icon from "@mui/icons-material/Diversity1";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import PermContactCalendarIcon from "@mui/icons-material/PermContactCalendar";
 import SearchUser from "./SearchUser";
 import { useDispatch } from "react-redux";
@@ -33,6 +35,14 @@ export default () => {
     navigate("/myaccount");
   };
 
+  const invite = () => {
+    navigate("/invite");
+  };
+
+  const friends = () => {
+    navigate("/friends");
+  };
+
   console.log(curUser);
 
   const renderTooltip = (props) => (
@@ -56,8 +66,14 @@ export default () => {
   );
 
   return (
-    <Grid container  >
-      <Grid container item xs={12} justifyContent="center" >
+    <Grid container>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "5rem", paddingTop: "4rem" }}
+      >
         <OverlayTrigger
           placement="right"
           delay={{ show: 250, hide: 400, hide: 1500 }}
@@ -66,7 +82,13 @@ export default () => {
           <Avatar src={curUser.avatar}></Avatar>
         </OverlayTrigger>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "2rem" }}
+      >
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(0));
@@ -76,7 +98,35 @@ export default () => {
           <ChatIcon />
         </IconButton>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "2rem" }}
+      >
+        <IconButton>
+          <Diversity1Icon onClick={friends} />
+        </IconButton>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "2rem" }}
+      >
+        <IconButton>
+          <GroupAddIcon onClick={invite} />
+        </IconButton>
+      </Grid>
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "2rem" }}
+      >
         <IconButton
           onClick={() => {
             dispatch(setContentStatus(1));
@@ -86,7 +136,13 @@ export default () => {
           <PermContactCalendarIcon />
         </IconButton>
       </Grid>
-      <Grid container item xs={12} justifyContent="center" >
+      <Grid
+        container
+        item
+        xs={12}
+        justifyContent="center"
+        style={{ paddingBottom: "2rem" }}
+      >
         <IconButton onClick={handleClickOpen}>
           <SearchIcon />
         </IconButton>
@@ -94,7 +150,7 @@ export default () => {
       <Grid>
         <SearchUser open={open} handleClose={handleClose} />
       </Grid>
-      <Grid>
+      <Grid container item xs={12} justifyContent="center">
         <SignOutButton />
       </Grid>
       <Grid item xs={4}></Grid>
