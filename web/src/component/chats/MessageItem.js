@@ -103,7 +103,7 @@ export default function MessageItem(props) {
     <Grid container item justifyContent="flex-start" alignItems="center">
       <Grid item>
         <Avatar
-          src={userMap[message.userId].avatar}
+          src={userMap[message.userId]?.avatar}
           sx={{ width: 24, height: 24 }}
         ></Avatar>
       </Grid>
@@ -114,7 +114,7 @@ export default function MessageItem(props) {
       </Grid>
       {/* <Grid item>{buildMessage(message)}</Grid> */}
       <Grid item sx={{ paddingRight: "1em" }}>
-        {userMap[message.userId].name}
+        {userMap[message.userId]?.name}
       </Grid>
       <Grid item>{message.time}</Grid>
       <Grid

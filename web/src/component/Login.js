@@ -79,9 +79,6 @@ export default () => {
       justifyContent="center"
       autoComplete="off"
     >
-      <Button onClick={() => {
-        
-      }}>Add Image</Button>
       <Stack
         component="form"
         sx={{

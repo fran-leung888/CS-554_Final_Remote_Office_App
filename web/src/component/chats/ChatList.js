@@ -19,6 +19,7 @@ import {
   addChat,
   showChat,
   setBurned,
+  addUsers,
 } from "../../data/redux/chatSlice";
 import {
   verifyString,
@@ -43,6 +44,7 @@ export default function ChatList() {
   const currentChatId = messageSlice.chatId;
   const chatDiagramMessages = messageSlice.messages;
   useEffect(() => {
+    dispatch(addUsers([user]));
     console.log("socket in chat list", socket);
     socket.on(constant.event.message, (data) => {
       console.log("receive message on message event.", data);
@@ -134,15 +136,14 @@ export default function ChatList() {
   const buildPreviews = (chats) => {
     return chats
       ? chats.map((chat) => {
-              console.log("build chat ", chat);
+          console.log("build chat ", chat);
           return chat.type === constant.chatType.group ||
             chat.show ||
             chatDiagramMessages[chat._id]?.length > 0 ? (
             <div
-            style={{
-              padding: '15px',
-              
-            }}
+              style={{
+                padding: "15px",
+              }}
               className={
                 currentChatId !== -1 && currentChatId === chat._id
                   ? "Focus Wrap"

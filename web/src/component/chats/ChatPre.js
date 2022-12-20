@@ -48,7 +48,11 @@ export default function ChatPre(props) {
         if (unknowUsers.length > 0) {
           let res = await userData.getUsers(unknowUsers);
           checkRes(res);
-          dispatch(addUsers(res.data));
+          if (Array.isArray(res.data)) {
+            dispatch(addUsers(res.data));
+          } else {
+            dispatch(addUsers([res.data]));
+          }
           console.log("unknown user data is", res.data);
         }
         setInit(true);
@@ -65,6 +69,7 @@ export default function ChatPre(props) {
   };
 
   const buildAvatar = (chat) => {
+    console.debug("Build chat pre avatar");
     if (chat?.type === Constant.chatType.group) {
       if (chat.users) {
         const buildForGroup = (users) => {
@@ -97,7 +102,11 @@ export default function ChatPre(props) {
 
         return (
           <Grid item>
-            <Avatar src={userMap[filteredOtherUser].avatar}></Avatar>
+            {userMap[filteredOtherUser]?.avatar ? (
+              <Avatar src={userMap[filteredOtherUser].avatar}></Avatar>
+            ) : (
+              <Avatar></Avatar>
+            )}
           </Grid>
         );
       } else {
@@ -121,7 +130,9 @@ export default function ChatPre(props) {
     } else if (chat?.type === Constant.chatType.individual) {
       if (chat.users) {
         const filteredOtherUser = filterUserId(chat.users);
-        return userMap[filteredOtherUser].name;
+        return userMap[filteredOtherUser]?.name
+          ? userMap[filteredOtherUser]?.name
+          : "Unknown name";
       } else {
         return;
       }
@@ -140,10 +151,12 @@ export default function ChatPre(props) {
           if (type === constant.messageType.burn) {
             return (
               <Grid container item>
-                <Grid item>
+                <Grid item xs={2}>
                   <LocalFireDepartmentIcon color="warning" />{" "}
                 </Grid>
-                <Grid item>Burn After Reading</Grid>
+                <Grid item sx={{ width: "70%" }}>
+                  Burn After Reading
+                </Grid>
               </Grid>
             );
           } else if (type === constant.messageType.file) {
@@ -173,27 +186,26 @@ export default function ChatPre(props) {
   // for individual and group
   // apply different style
   if (props.data && init) {
-      return (
-        <Grid container direction={"row"} alignItems="center">
-          <Grid item xs={3}>
-            {/* Avatar */}
-            {buildAvatar(props.data)}
+    return (
+      <Grid container direction={"row"} alignItems="center">
+        <Grid item xs={3}>
+          {/* Avatar */}
+          {buildAvatar(props.data)}
+        </Grid>
+        <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
+          {/* username */}
+          <Grid item xs={12}>
+            {buildName(props.data)}
           </Grid>
-          <Grid item container xs={9} sx={{ paddingLeft: "10px" }}>
-            {/* username */}
-            <Grid item xs={12}>
-              {buildName(props.data)}
-            </Grid>
-            <Grid item xc={12} container>
-              {/* message */}
-              <Grid item className="Wrap-Text">
-                {buildMessage(props.data)}
-              </Grid>
+          <Grid item xc={12} container>
+            {/* message */}
+            <Grid item className="Wrap-Text">
+              {buildMessage(props.data)}
             </Grid>
           </Grid>
         </Grid>
-      );
-    
+      </Grid>
+    );
   } else {
     return <div></div>;
   }

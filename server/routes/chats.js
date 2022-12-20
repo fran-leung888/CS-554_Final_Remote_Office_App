@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
     const chat = await chats.getChatsByUser(id);
     res.send(new response(chat).success(res));
   } catch (e) {
-    console.log(e);
+    console.log(e.stack);
     res.send(new response(null, e.toString()).fail(res));
   }
 });
