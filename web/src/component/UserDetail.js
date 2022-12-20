@@ -56,7 +56,7 @@ const UserDetail = ({ socket }) => {
     }
 
     console.log(isFriend);
-  }, []);
+  }, [curUser]);
 
   const myAccount = () => {
     navigate("/myaccount");
@@ -154,7 +154,10 @@ const UserDetail = ({ socket }) => {
   const deleteFriend = async () => {
     console.log("delete search user");
     console.log(searchUser._id);
-    let deleteF = await users.deleteFriend(searchUser._id, curUser?._id?.toString());
+    let deleteF = await users.deleteFriend(
+      searchUser._id,
+      curUser?._id?.toString()
+    );
     if (!deleteF.data) {
       setShowError(true);
     } else {
