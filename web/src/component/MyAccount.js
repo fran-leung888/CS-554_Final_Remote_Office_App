@@ -124,7 +124,7 @@ export default function MyAccount() {
           >
             <Card.Body>
               <Card.Title style={{ padding: "3rem" }}>
-                { curUser.isFirebaseAuth ? "" : `Username: ${curUser.username}`}
+                Username: {curUser.username}
               </Card.Title>
               <Card.Subtitle
                 className="mb-2 text-muted"
