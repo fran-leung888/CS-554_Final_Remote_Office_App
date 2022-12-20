@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./component/Home";
 import Login from "./component/Login";
 import UserAdd from "./component/UserAdd";
+import "@khanacademy/tota11y";
 // import SearchUser from "./component/SearchUser";
 import {
   Link,

@@ -8,6 +8,7 @@ import { setUser } from "../data/redux/userSlice";
 import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 const UserDetail = ({ socket }) => {
   // console.log(`socket: ${socket}`);
@@ -214,13 +215,15 @@ const UserDetail = ({ socket }) => {
                   paddingTop: "2rem",
                 }}
               >
-                Name: {searchUser.name}
+                <p className="fontChange">Name: {searchUser.name}</p>
               </Card.Subtitle>
               <Card.Text style={{ paddingLeft: "3rem", paddingTop: "150px" }}>
                 {isFriend ? (
                   <Button onClick={deleteFriend}>Delete</Button>
                 ) : (
-                  <Button onClick={addFriend}>Add</Button>
+                  <Button onClick={addFriend} className="linkChange">
+                    Add
+                  </Button>
                 )}
               </Card.Text>
             </Card.Body>

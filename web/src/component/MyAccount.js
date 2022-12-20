@@ -11,6 +11,7 @@ import {
   checkResult,
   checkRes,
 } from "../utils/verificationUtils";
+import "../App.css";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -130,17 +131,19 @@ export default function MyAccount() {
                 className="mb-2 text-muted"
                 style={{
                   paddingLeft: "3rem",
-                  paddingBottom: "7rem",
+                  paddingBottom: "6rem",
                   paddingTop: "1rem",
                 }}
               >
-                Name: {curUser.name}
+                <p className="fontChange">Name: {curUser.name}</p>
               </Card.Subtitle>
               <Card.Text style={{ paddingLeft: "3rem" }}>
-                <Card.Link onClick={openChangeName}>Change name</Card.Link>
+                <Card.Link onClick={openChangeName} className="change">
+                  Change name
+                </Card.Link>
                 <br />
                 <br />
-                <Card.Link onClick={openChangePassword}>
+                <Card.Link onClick={openChangePassword} className="change">
                   Change password
                 </Card.Link>
               </Card.Text>

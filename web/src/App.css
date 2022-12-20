@@ -41,7 +41,19 @@ body {
 .Chat-List {
   overflow: auto;
 }
-
+/* 
 .Message-List {
   background-color: ;
+} */
+
+.fontChange {
+  font-size: 0.9rem;
+  color: rgb(43, 42, 42) !important;
+}
+
+.change {
+  color: #b51100;
+}
+.linkChange {
+  color: #005ba7 !important;
 }
