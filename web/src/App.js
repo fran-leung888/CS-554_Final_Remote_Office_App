@@ -21,18 +21,23 @@ import Modal from "@mui/material/Modal";
 import UserDetail from "./component/UserDetail";
 import Friends from "./component/Friends";
 import { AuthContext, AuthProvider } from "./component/Auth";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import PrivateRoute from "./component/PrivateRoute";
 import { useSnackbar } from "notistack";
 import noti from "./data/notification";
 import MyAccount from "./component/MyAccount";
-
+import constant from "./data/constant";
+import { setUser } from "./data/redux/userSlice";
+import users from "./data/users";
+import { checkRes } from "./utils/verificationUtils";
+import { addChat } from "./data/redux/chatSlice";
 function App({ socket }) {
   const { currentUser } = useContext(AuthContext);
+  const curUser = useSelector((state) => state.user);
   console.debug("current user", currentUser);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   console.log("Socket in app is ", socket);
-
+  const dispatch = useDispatch();
   // config behaviour when socket disconnects.
   useEffect(() => {
     socket.on("connect", () => {
@@ -43,7 +48,94 @@ function App({ socket }) {
       console.log("Socket get disconnected!!!", socket);
       enqueueSnackbar("Connection is unstable", noti.errOpt);
     });
-  }, []);
+    console.log("add listeners.");
+    socket
+      .listeners(constant.event.newChat)
+      .forEach((listener) => socket.off(listener));
+    if (curUser._id) {
+      const newChatListener = async (data) => {
+        console.log("receive chat on newChat event.", data);
+        if (data._id) {
+          socket.emit("joinRoom", data._id);
+          dispatch(addChat(data));
+        }
+        // refresh user infomation
+        if (data.type === constant.chatType.group) {
+          try {
+            let res = await users.getUser(curUser._id);
+            checkRes(res);
+            if (res.data) {
+              dispatch(setUser(res.data));
+            }
+          } catch (e) {
+            enqueueSnackbar(e.toString(), noti.errOpt);
+          }
+        }
+      };
+      socket.on(constant.event.newChat, newChatListener);
+    }
+    socket
+      .listeners(constant.event.newFriend)
+      .forEach((listener) => socket.off(listener));
+    if (curUser._id) {
+      const newFriendListener = async (data) => {
+        console.log("receive chat on newFriend event.", data, curUser);
+        // refresh user.
+        try {
+          if (curUser._id) {
+            console.log("newFriend refresh user", curUser._id);
+            let res = await users.getUser(curUser._id);
+            checkRes(res);
+            if (res.data) {
+              dispatch(setUser(res.data));
+            }
+          }
+        } catch (e) {
+          enqueueSnackbar(e.toString(), noti.errOpt);
+        }
+      };
+      socket.on(constant.event.newFriend, newFriendListener);
+    }
+    socket
+      .listeners(constant.event.newGroupUser)
+      .forEach((listener) => socket.off(listener));
+    if (curUser._id) {
+      const newGroupUserListener = async (data) => {
+        console.log("receive newGroupUser event.", data);
+        // refresh user.
+        try {
+          let res = await users.getUser(curUser._id);
+          checkRes(res);
+          if (res.data) {
+            dispatch(setUser(res.data));
+          }
+        } catch (e) {
+          enqueueSnackbar(e.toString(), noti.errOpt);
+        }
+      };
+      socket.on(constant.event.newGroupUser, newGroupUserListener);
+    }
+    socket
+      .listeners(constant.event.refreshUser)
+      .forEach((listener) => socket.off(listener));
+    if (curUser._id) {
+      const refreshUserListener = async (data) => {
+        console.log("receive refreshUser event.", data);
+        // refresh user.
+        try {
+          let res = await users.getUser(curUser._id);
+          checkRes(res);
+          if (res.data) {
+            dispatch(setUser(res.data));
+          }
+        } catch (e) {
+          enqueueSnackbar(e.toString(), noti.errOpt);
+        }
+      };
+      socket.on(constant.event.refreshUser, refreshUserListener);
+    }
+
+  }, [curUser]);
 
   return (
     <div className="App">

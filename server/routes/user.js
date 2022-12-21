@@ -53,7 +53,7 @@ router.post("/add", async (req, res) => {
   let curUser = await users.getUser(curUserId);
   // console.log("\tCurrent user is ", curUser);
   // console.log(JSON.stringify(curUser._id));
-  console.log("Add friend, ", curUser)
+  console.log("Add friend, ", curUser);
   const curId = curUser._id.toString();
   console.log(curId, otherId, curId === otherId);
   // const otherName = req.body.otherName;
@@ -91,7 +91,7 @@ router.post("/add", async (req, res) => {
 });
 
 router.post("/changename", async (req, res) => {
-  let curUserId = req.body.curUserId 
+  let curUserId = req.body.curUserId;
   if (!req.body.newName) {
     return res.status(400).json({ message: "Please input the new name" });
   }
@@ -110,7 +110,7 @@ router.post("/changename", async (req, res) => {
 });
 
 router.post("/changepswd", async (req, res) => {
-  let curUserId = req.body.curUserId 
+  let curUserId = req.body.curUserId;
   if (!req.body.newPassword) {
     return res.status(400).json({ message: "Please input the new password" });
   }
@@ -129,7 +129,7 @@ router.post("/changepswd", async (req, res) => {
 });
 
 router.post("/delete", async (req, res) => {
-  let curUserId = req.body.curUserId
+  let curUserId = req.body.curUserId;
   try {
     if (!req.body.friendId) {
       return res
@@ -157,6 +157,8 @@ router.post("/delete", async (req, res) => {
     }
 
     const updatedInfo = await users.deleteFriend(curId, req.body.friendId);
+    redisStore.removeUser(curUserId);
+    chatSocket.notifyEvent(constant.event.refreshUser, curUserId, {});
     console.log("after delete, the curUser data is:");
     console.log(updatedInfo);
     res.send(new response(updatedInfo).success(res));
@@ -282,7 +284,7 @@ router.get("/user/list", async (req, res) => {
 
 router.post("/user/avatar", async (req, res) => {
   const avatar = req.body.avatar;
-  const userId = req.body.userId
+  const userId = req.body.userId;
   try {
     const user = await users.setAvatar(userId, avatar);
     res.send(new response(user).success(res));

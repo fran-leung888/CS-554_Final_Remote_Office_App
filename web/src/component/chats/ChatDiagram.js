@@ -8,7 +8,6 @@ export default function ChatDiagram() {
   const chatData = useSelector((state) => state.message);
   const enabled = useSelector((state) => state.message.enabled);
   const chatId = useSelector((state) => state.message.chatId);
-  console.log("chatDiagram redux is ", chatData);
   if (!enabled || chatId === -1) {
     console.log("no message, no diagram.");
     return <div>no message</div>;

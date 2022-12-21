@@ -99,8 +99,12 @@ io.on("connection", (socket) => {
       // notify both users
       await redisStore.removeUser(data.friendId);
       await redisStore.removeUser(data.applyId);
-      chatSocket.notifyEvent(constant.event.newFriend, data.friendId, {});
-      chatSocket.notifyEvent(constant.event.newFriend, data.applyId, {});
+      chatSocket.notifyEvent(constant.event.newFriend, data.friendId, {
+        data: data.friendId,
+      });
+      chatSocket.notifyEvent(constant.event.newFriend, data.applyId, {
+        data: data.applyId,
+      });
     }
   });
 

@@ -19,6 +19,7 @@ export default {
     newChat: "newChat",
     newFriend: "newFriend",
     newGroupUser: "newGroupUser",
+    refreshUser: "refresh",
     disconnect: "disconnect",
     burn: "burn",
   },
