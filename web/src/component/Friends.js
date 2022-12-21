@@ -37,6 +37,7 @@ export default function Friends({ socket }) {
   const [doubleCheckExitG, setDoubleCheckExitG] = useState(false);
   const [doubleCheckMov, setDoubleCheckMov] = useState(false);
   const [checkData, setCheckData] = useState(undefined);
+  const [noFri, setNoFri] = useState(false);
 
   const [groupsSet, setGroupsSet] = useState([]);
   //   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -118,7 +119,7 @@ export default function Friends({ socket }) {
   useEffect(() => {
     console.log("in this effect, call tryGroup");
     if (groupsData) tryGroup(groupsData);
-  }, [groupsData]);
+  }, [curUser, groupsData]);
 
   useEffect(() => {
     // console.log("in this effect, call tryGroup");
@@ -147,6 +148,15 @@ export default function Friends({ socket }) {
 
   const deleteFri = async (friend, e) => {
     console.log(friend);
+    let allFri = curUser.friends;
+    let temp = new Set();
+    for (let i = 0; i < allFri.length; i++) {
+      temp.add(allFri[i]._id);
+    }
+    if (temp && friend._id && !temp.has(friend._id)) {
+      // setNoFri(true);
+      navigate("/friends");
+    }
     if (friend._id) {
       let deleteF = await users.deleteFriend(
         friend._id,
@@ -192,7 +202,9 @@ export default function Friends({ socket }) {
         console.log(exitG.data);
         if (!exitG.data) {
           console.log("wrong");
-          setShowError(true);
+          let newCurUser = await users.getUser(curUser._id);
+          dispatch(setUser(newCurUser.data));
+          navigate("/friends");
         } else {
           setShowError(false);
           dispatch(setUser(exitG.data));
@@ -340,6 +352,28 @@ export default function Friends({ socket }) {
   //     console.log(typeof groupsSet[curGroup.groupName]);
   //   }
   // }, [curGroup]);
+  // const checkFriExit = () => {
+  //   if (noFri) {
+  //     return (
+  //       <div
+  //         className="modal show"
+  //         style={{ display: "block", position: "initial" }}
+  //       >
+  //         <Modal.Dialog>
+  //           <Modal.Body>
+  //             <p>You already lost this friend, please refresh to check!</p>
+  //           </Modal.Body>
+
+  //           <Modal.Footer>
+  //             <Button variant="secondary" onClick={()=>(setNoFri(false), navigate("/friends"))}>Close</Button>
+  //           </Modal.Footer>
+  //         </Modal.Dialog>
+  //       </div>
+  //     );
+  //   } else {
+  //     setDoubleCheckDelFri(true)
+  //   }
+  // }
 
   return (
     <div>

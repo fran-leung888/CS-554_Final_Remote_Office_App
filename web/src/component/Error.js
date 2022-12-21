@@ -1,8 +1,13 @@
 import React from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/esm/Button";
+import { useNavigate } from "react-router-dom";
 
 export default function Error() {
+  const navigate = useNavigate();
+  const toHome = () => {
+    navigate("/home");
+  };
   return (
     <div>
       <Alert key="danger" variant="danger">
@@ -11,6 +16,7 @@ export default function Error() {
 
       <div>
         <Button
+          onClick={toHome}
           style={{
             border: "30px",
             backgroundImage:
