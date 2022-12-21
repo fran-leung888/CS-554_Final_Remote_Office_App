@@ -16,6 +16,7 @@ module.exports = {
     newChat: "newChat",
     newGroupUser: "newGroupUser",
     newFriend: "newFriend",
+    refreshUser: "refresh",
     burn: "burn"
   },
 };

@@ -6,8 +6,7 @@ import {
   combineReducers,
   configureStore,
 } from "@reduxjs/toolkit";
-import storage from 'redux-persist/lib/storage'
-
+import storageSession from 'redux-persist/lib/storage/session'
 
 import userSlice from "./userSlice";
 
@@ -20,7 +19,7 @@ import chatSlice from "./chatSlice";
 
 const persistConfig = {
   key: "root",
-  storage,
+  storage: storageSession,
   blacklist: ['chat', 'message', 'searchUser', 'status']
 };
 

@@ -45,55 +45,8 @@ export default ({ socket }) => {
     if (curUser._id) {
       socket.emit("joinRoom", curUser._id);
     }
-    socket.on(constant.event.newChat, async (data) => {
-      console.log("receive chat on newChat event.", data);
-      if (data._id) {
-        socket.emit("joinRoom", data._id);
-        dispatch(addChat(data));
-      }
-      // refresh user infomation
-      if (data.type === constant.chatType.group) {
-        try {
-          let res = await users.getUser(curUser._id);
-          checkRes(res);
-          if (res.data) {
-            dispatch(setUser(res.data));
-          }
-        } catch (e) {
-          enqueueSnackbar(e.toString(), noti.errOpt);
-        }
-      }
-    });
-    socket.on(constant.event.newFriend, async (data) => {
-      console.log("receive chat on newFriend event.", data);
-      // refresh user.
-      try {
-        if (curUser._id) {
-          console.log("newFriend refresh user", curUser._id);
-          let res = await users.getUser(curUser._id);
-          checkRes(res);
-          if (res.data) {
-            dispatch(setUser(res.data));
-          }
-        }
-      } catch (e) {
-        enqueueSnackbar(e.toString(), noti.errOpt);
-      }
-    });
-    socket.on(constant.event.newGroupUser, async (data) => {
-      console.log("receive newGroupUser event.", data);
-      // refresh user.
-      try {
-        let res = await users.getUser(curUser._id);
-        checkRes(res);
-        if (res.data) {
-          dispatch(setUser(res.data));
-        }
-      } catch (e) {
-        enqueueSnackbar(e.toString(), noti.errOpt);
-      }
-    });
-  });
+    
+  }, []);
 
   socket.on("addFriendResponse", (data) => {
     console.log(`data`);

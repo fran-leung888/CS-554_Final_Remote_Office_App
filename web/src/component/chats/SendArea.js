@@ -84,7 +84,7 @@ export default function SendArea(props) {
       <Grid item xs={12}>
         <FormControl sx={{ width: "100%" }}>
           <TextField
-            sx={{ overflow: "auto" }}
+            sx={{ overflow: "auto", color: "black"}}
             placeholder="Type your message here."
             multiline
             rows={2}
