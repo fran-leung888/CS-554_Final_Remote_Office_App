@@ -76,7 +76,9 @@ export default function ActionBar(props) {
         <DialogTitle id="dialog-title">Set:</DialogTitle>
         <DialogContent>
           <Grid container alignItems={"center"}>
-            <Button variant="disabled">Choose file</Button>
+            <Button variant="disabled">
+              {file.name ? file.name : "Choose file"}
+            </Button>
             <IconButton
               color="primary"
               aria-label="upload file"

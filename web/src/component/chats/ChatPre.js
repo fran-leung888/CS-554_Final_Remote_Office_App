@@ -63,7 +63,10 @@ export default function ChatPre(props) {
   }, []);
 
   const filterUserId = (users) => {
-    const filteredOtherUser = users.filter((user) => user !== currentUser._id);
+    const filteredOtherUser = users.filter(
+      (user) => user !== currentUser._id.toString()
+    );
+    console.log("Filtered users are ", filteredOtherUser, currentUser);
     if (filteredOtherUser.length !== 1) throw "Chat is wrong!";
     return filteredOtherUser;
   };

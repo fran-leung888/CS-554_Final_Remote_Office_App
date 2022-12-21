@@ -32,7 +32,7 @@ router.post("/create", async (req, res) => {
     const grouperUsername = curUser.username;
     const group = await groups.addGroup(groupName, grouperId, grouperUsername);
     // add chat
-    await redisStore.removeUserChat(curUser._id.toString())
+    await redisStore.removeUserChat(curUser._id.toString());
     const newChat = await chats.addGroupChat(
       curUser._id.toString(),
       group._id.toString(),
@@ -113,7 +113,7 @@ router.post("/addToGroup", async (req, res) => {
     // Find chat by group Id
     // notify all user in group
     let groupChat = await chats.getChatByGroupId(groupId);
-     await chats.addUserInGroupChat(groupId, memberId);
+    await chats.addUserInGroupChat(groupId, memberId);
     await redisStore.removeUser(curId.toString());
     await redisStore.removeUserChat(curId.toString());
     chatSocket.notifyEvent(constant.event.newChat, curId.toString(), {
@@ -121,7 +121,7 @@ router.post("/addToGroup", async (req, res) => {
       type: constant.chatType.group,
       users: [...groupChat.users, curId.toString()],
       groupName,
-      groupId
+      groupId,
     });
     chatSocket.notifyEvent(
       constant.event.newGroupUser,
@@ -162,7 +162,7 @@ router.get("/getByName", async (req, res) => {
 });
 
 router.get("/getAll", async (req, res) => {
-  let curUserId = req.query.curUserId
+  let curUserId = req.query.curUserId;
   let curUser = await users.getUser(curUserId);
   const curId = curUser._id.toString();
 
@@ -303,7 +303,12 @@ router.post("/exit", async (req, res) => {
 
   const newUser = await users.getUser(curId, true);
   console.log(newUser);
-
+  redisStore.removeUser(curId);
+  chatSocket.notifyEvent(
+    constant.event.refreshUser,
+    newExitUser._id.toString(),
+    {}
+  );
   res.send(new response(newUser).success(res));
 });
 

@@ -46,6 +46,9 @@ export default function ChatList() {
   useEffect(() => {
     dispatch(addUsers([user]));
     console.log("socket in chat list", socket);
+    socket
+      .listeners(constant.event.message)
+      .forEach((listener) => socket.off(constant.event.message, listener));
     socket.on(constant.event.message, (data) => {
       console.log("receive message on message event.", data);
       userChats.forEach((chat) => {

@@ -42,7 +42,7 @@ function App({ socket }) {
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Socket get connected!!!", socket);
-      enqueueSnackbar("Connection has built", noti.successOpt);
+      // enqueueSnackbar("Connection has built", noti.successOpt);
     });
     socket.on("disconnect", () => {
       console.log("Socket get disconnected!!!", socket);
@@ -51,7 +51,7 @@ function App({ socket }) {
     console.log("add listeners.");
     socket
       .listeners(constant.event.newChat)
-      .forEach((listener) => socket.off(listener));
+      .forEach((listener) => socket.off(constant.event.newChat, listener));
     if (curUser._id) {
       const newChatListener = async (data) => {
         console.log("receive chat on newChat event.", data);
@@ -76,7 +76,7 @@ function App({ socket }) {
     }
     socket
       .listeners(constant.event.newFriend)
-      .forEach((listener) => socket.off(listener));
+      .forEach((listener) => socket.off(constant.event.newFriend, listener));
     if (curUser._id) {
       const newFriendListener = async (data) => {
         console.log("receive chat on newFriend event.", data, curUser);
@@ -98,7 +98,7 @@ function App({ socket }) {
     }
     socket
       .listeners(constant.event.newGroupUser)
-      .forEach((listener) => socket.off(listener));
+      .forEach((listener) => socket.off(constant.event.newGroupUser, listener));
     if (curUser._id) {
       const newGroupUserListener = async (data) => {
         console.log("receive newGroupUser event.", data);
@@ -117,16 +117,19 @@ function App({ socket }) {
     }
     socket
       .listeners(constant.event.refreshUser)
-      .forEach((listener) => socket.off(listener));
+      .forEach((listener) => socket.off(constant.event.refreshUser, listener));
     if (curUser._id) {
       const refreshUserListener = async (data) => {
         console.log("receive refreshUser event.", data);
         // refresh user.
         try {
           let res = await users.getUser(curUser._id);
+          console.log("refreshUser res.", res);
+
           checkRes(res);
           if (res.data) {
             dispatch(setUser(res.data));
+            console.log("refreshUser set user.", res.data);
           }
         } catch (e) {
           enqueueSnackbar(e.toString(), noti.errOpt);
@@ -134,7 +137,6 @@ function App({ socket }) {
       };
       socket.on(constant.event.refreshUser, refreshUserListener);
     }
-
   }, [curUser]);
 
   return (
