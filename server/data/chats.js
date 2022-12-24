@@ -57,20 +57,38 @@ module.exports = {
     const users = await usersCollection();
     const chat = await chats.findOne({ _id: new ObjectId(chatId) });
     if (chat.users) {
-      const fromUser = await users.findOne({
-        _id: new ObjectId(chat.users[0]),
-      });
-      const toUser = await users.findOne({ _id: new ObjectId(chat.users[1]) });
-
       let friendCount = 0;
-      toUser?.friends?.forEach((friend) => {
-        if (friend._id.toString() == fromUser._id.toString()) friendCount += 1;
-      });
-      fromUser?.friends?.forEach((friend) => {
-        if (friend._id.toString() == toUser._id.toString()) friendCount += 1;
-      });
-      if (friendCount !== 2) {
-        throw "Send message failed.";
+      if (chat.type === constant.chatType.group) {
+        if (chat.groupId) {
+          const sendMsgUser = await users.findOne({ _id: ObjectId(userId) });
+          let inGroup = false;
+          if (sendMsgUser?.groups?.length > 0) {
+            sendMsgUser?.groups.forEach((group) => {
+              if (group?.groupId === chat.groupId) inGroup = true;
+            });
+          }
+          if(!inGroup){
+            throw 'Send message failed.'
+          }
+        }
+      } else if (chat.type === constant.chatType.individual) {
+        const fromUser = await users.findOne({
+          _id: new ObjectId(chat.users[0]),
+        });
+        const toUser = await users.findOne({
+          _id: new ObjectId(chat.users[1]),
+        });
+
+        toUser?.friends?.forEach((friend) => {
+          if (friend._id.toString() == fromUser._id.toString())
+            friendCount += 1;
+        });
+        fromUser?.friends?.forEach((friend) => {
+          if (friend._id.toString() == toUser._id.toString()) friendCount += 1;
+        });
+        if (friendCount !== 2) {
+          throw "Send message failed.";
+        }
       }
     } else {
       throw "Chat information error.";
