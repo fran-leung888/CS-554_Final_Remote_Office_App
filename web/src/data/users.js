@@ -1,0 +1,54 @@
+import axios from "../config/axios";
+
+const addUser = async (name, username, passwd) => {
+  let response = await axios.post("/user", {
+    name,
+    username,
+    passwd,
+  });
+  return response;
+};
+
+const login = async (username, passwd) => {
+  let response = await axios.post("/login", {
+    username,
+    passwd,
+  });
+
+  return response;
+};
+
+const searchUser = async (name) => {
+  let response = await axios.get("/user?name=" + name);
+
+  return response;
+};
+
+const getUser = async (id) => {
+  let response = await axios.get(id);
+  return response;
+};
+const addFriend = async (friendId) => {
+  let response = await axios.post("/add", {
+    // curId,
+    friendId,
+  });
+  return response;
+};
+
+const deleteFriend = async (friendId) => {
+  let response = await axios.post("/delete", {
+    // curId,
+    friendId,
+  });
+  return response;
+};
+
+export default {
+  addUser,
+  login,
+  searchUser,
+  getUser,
+  addFriend,
+  deleteFriend,
+};
