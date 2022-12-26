@@ -34,17 +34,17 @@ router.post("/login", async (req, res) => {
 
 router.post("/add", async (req, res) => {
   // const curUser = req.body.curName;
-  const otherId = req.body.otherId;
+  console.log(req.body);
+  const otherId = req.body.friendId;
   if (!otherId) {
-    return res
-      .status(400)
-      .json({ message: "Please input your friend name and id" });
+    return res.status(400).json({ message: "Please input your friend id" });
   }
   let session = req.cookies[store.SESSION_KEY];
   let curUser = await users.getUser(session);
   // console.log("\tCurrent user is ", curUser);
   // console.log(JSON.stringify(curUser._id));
   const curId = curUser._id.toString();
+  console.log(curId);
   // const otherName = req.body.otherName;
   if (curId === otherId) {
     return res.status(400).json({ message: "You cannot add yourself" });
@@ -72,7 +72,7 @@ router.post("/add", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
-    if (!req.body.otherId) {
+    if (!req.body.friendId) {
       return res
         .status(400)
         .json({ message: "please input the friend you want to delete" });
@@ -81,14 +81,14 @@ router.post("/delete", async (req, res) => {
     let curUser = await users.getUser(session);
     const curId = curUser._id.toString();
 
-    if (curId === req.body.otherId) {
+    if (curId === req.body.friendId) {
       return res.status(400).json({ message: "you cannot delete yourself~" });
     }
 
     let temp = "";
     for (let i = 0; i < curUser.friends.length; i++) {
-      if (curUser.friends[i]._id.toString() === req.body.otherId) {
-        temp = req.body.otherId;
+      if (curUser.friends[i]._id.toString() === req.body.friendId) {
+        temp = req.body.friendId;
         break;
       }
     }
@@ -98,7 +98,7 @@ router.post("/delete", async (req, res) => {
         .json({ message: "you have not this friend, please try again" });
     }
 
-    const updatedInfo = await users.deleteFriend(curId, req.body.otherId);
+    const updatedInfo = await users.deleteFriend(curId, req.body.friendId);
     console.log(updatedInfo);
     res.send(new response(updatedInfo).success(res));
   } catch (e) {
@@ -107,15 +107,16 @@ router.post("/delete", async (req, res) => {
 });
 
 router.get("/user", async (req, res) => {
-  // console.log(req.query);
-  const name = req.body.name;
-  const id = req.body.id;
-  console.log(req.query);
+  // console.log(`req.body.name: ${req.query.name}`);
+  const name = req.query.name;
+  const id = req.query.id;
+  // console.log(`req.query: ${req.query}`);
   try {
     if (!name && !id) throw "Bad request.";
     let user = null;
     if (id) user = await users.getUser(id);
     else if (name) user = await users.getUserByname(name);
+    console.log(`user: ${user}`);
     res.send(new response(user).success(res));
   } catch (e) {
     res.send(new response(null, e).fail(res));
